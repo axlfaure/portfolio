@@ -11,7 +11,7 @@ import { Nav } from "@/components/layout/Nav";
 import { PageLoader } from "@/components/layout/PageLoader";
 import { Logo } from "@/components/ui/Logo";
 import { site } from "@/lib/site";
-import "./globals.css";
+import "../globals.css";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],

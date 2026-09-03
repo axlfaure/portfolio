@@ -12,10 +12,10 @@ export const metadata: Metadata = {
   alternates: { canonical: "/projets" },
 };
 
-export default function ProjetsPage() {
+export default async function ProjetsPage() {
   // Les cartes sont rendues ici : elles vérifient sur disque la présence
   // des visuels, ce que la grille cliente ne peut pas faire.
-  const items = getProjects().map((project, i) => ({
+  const items = (await getProjects()).map((project, i) => ({
     slug: project.slug,
     disciplines: project.disciplines,
     card: <ProjectCard project={project} index={i} />,

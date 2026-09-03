@@ -3,7 +3,7 @@ import { getPosts, getProjects, getServices } from "@/lib/content";
 import { site } from "@/lib/site";
 
 /** Plan du site : pages fixes, services, projets et articles. */
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
   const fixed = [
@@ -14,17 +14,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${site.url}/mentions-legales`, priority: 0.2 },
   ];
 
-  const services = getServices().map((service) => ({
+  const services = (await getServices()).map((service) => ({
     url: `${site.url}/services/${service.slug}`,
     priority: 0.9,
   }));
 
-  const projects = getProjects().map((project) => ({
+  const projects = (await getProjects()).map((project) => ({
     url: `${site.url}/projets/${project.slug}`,
     priority: 0.6,
   }));
 
-  const posts = getPosts().map((post) => ({
+  const posts = (await getPosts()).map((post) => ({
     url: `${site.url}/blog/${post.slug}`,
     priority: 0.6,
   }));

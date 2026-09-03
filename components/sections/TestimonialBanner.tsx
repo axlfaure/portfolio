@@ -3,8 +3,8 @@ import { Stars } from "@/components/ui/Stars";
 import { getFeaturedTestimonial } from "@/lib/content";
 
 /** Respiration pleine largeur. Contenu issu du témoignage marqué `featured`. */
-export function TestimonialBanner() {
-  const featured = getFeaturedTestimonial();
+export async function TestimonialBanner() {
+  const featured = await getFeaturedTestimonial();
   if (!featured) return null;
 
   return (

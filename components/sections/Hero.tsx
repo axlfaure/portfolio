@@ -6,10 +6,13 @@ import { Avatar } from "@/components/ui/Media";
 import { Stars } from "@/components/ui/Stars";
 import { Ticker } from "@/components/ui/Ticker";
 import { heroStats } from "@/lib/data";
-import { clientFaces, clientLogos, site } from "@/lib/site";
+import { getLogos } from "@/lib/content";
+import { clientFaces, site } from "@/lib/site";
 import { HeroBackground } from "./HeroBackground";
 
-export function Hero() {
+export async function Hero() {
+  const logos = await getLogos();
+
   return (
     <section className="relative isolate -mt-20 overflow-hidden">
       <HeroBackground />
@@ -97,7 +100,7 @@ export function Hero() {
           duration={45}
           gap={2}
           soft
-          items={clientLogos.map((logo) => (
+          items={logos.map((logo) => (
             <Image
               key={logo.src}
               src={logo.src}

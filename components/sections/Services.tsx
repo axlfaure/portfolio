@@ -2,8 +2,8 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { ServiceCard } from "@/components/ui/ServiceCard";
 import { getServices } from "@/lib/content";
 
-export function Services() {
-  const services = getServices();
+export async function Services() {
+  const services = await getServices();
 
   return (
     <section id="services" className="section scroll-mt-24">

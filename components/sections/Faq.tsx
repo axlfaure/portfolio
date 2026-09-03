@@ -2,8 +2,8 @@ import { Mdx } from "@/components/mdx/Mdx";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { getFaq } from "@/lib/content";
 
-export function Faq() {
-  const faq = getFaq();
+export async function Faq() {
+  const faq = await getFaq();
 
   return (
     <section id="faq" className="section scroll-mt-24">

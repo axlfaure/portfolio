@@ -8,8 +8,8 @@ import { MobileMenu } from "./MobileMenu";
 import { NavLinks } from "./NavLinks";
 import { StickyHeader } from "./StickyHeader";
 
-export function Nav() {
-  const services: NavService[] = getServices().map((service) => ({
+export async function Nav() {
+  const services: NavService[] = (await getServices()).map((service) => ({
     slug: service.slug,
     title: service.title,
     short: service.short,

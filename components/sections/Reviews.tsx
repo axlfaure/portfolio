@@ -27,8 +27,8 @@ function Card({ testimonial }: { testimonial: Testimonial }) {
   );
 }
 
-export function Reviews() {
-  const testimonials = getTestimonials();
+export async function Reviews() {
+  const testimonials = await getTestimonials();
   // Seconde rangée dans l'ordre inverse : avec un défilement opposé, les deux
   // bandes ne présentent jamais la même carte au même endroit.
   const second = [...testimonials].reverse();

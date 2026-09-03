@@ -11,8 +11,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/blog" },
 };
 
-export default function BlogPage() {
-  const posts = getPosts();
+export default async function BlogPage() {
+  const posts = await getPosts();
 
   return (
     <>

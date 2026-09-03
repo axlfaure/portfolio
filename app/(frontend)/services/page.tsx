@@ -12,8 +12,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/services" },
 };
 
-export default function ServicesPage() {
-  const services = getServices();
+export default async function ServicesPage() {
+  const services = await getServices();
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",

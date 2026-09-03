@@ -10,12 +10,15 @@ import { Ticker } from "@/components/ui/Ticker";
 import {
   getFeaturedProjects,
   getProjects,
-  getTestimonial,
+  getTestimonials,
 } from "@/lib/content";
 
-export function Projects() {
-  const featuredProjects = getFeaturedProjects();
-  const projectTiles = getProjects();
+export async function Projects() {
+  const featuredProjects = await getFeaturedProjects();
+  const projectTiles = await getProjects();
+  // Chargés une fois puis retrouvés en mémoire : les résoudre dans la boucle
+  // demanderait un `await` dans un `map`, qui n est pas asynchrone.
+  const testimonials = await getTestimonials();
 
   return (
     <section id="projets" className="section scroll-mt-24">
@@ -43,7 +46,9 @@ export function Projects() {
         {/* Stacking cards : sticky pur, tops incrémentaux. */}
         <div className="mt-14">
           {featuredProjects.map((project, i) => {
-            const vouch = getTestimonial(project.testimonial);
+            const vouch = testimonials.find(
+              (t) => t.slug === project.testimonial,
+            );
 
             return (
               <div

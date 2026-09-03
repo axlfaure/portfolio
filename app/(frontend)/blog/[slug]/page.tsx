@@ -12,13 +12,13 @@ import { site } from "@/lib/site";
 
 type Params = { params: Promise<{ slug: string }> };
 
-export function generateStaticParams() {
-  return getPosts().map((post) => ({ slug: post.slug }));
+export async function generateStaticParams() {
+  return (await getPosts()).map((post) => ({ slug: post.slug }));
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  const post = getPost(slug);
+  const post = await getPost(slug);
   if (!post) return {};
 
   return {
@@ -37,11 +37,11 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
 export default async function PostPage({ params }: Params) {
   const { slug } = await params;
-  const post = getPost(slug);
+  const post = await getPost(slug);
   if (!post) notFound();
 
-  const service = post.related ? getService(post.related) : undefined;
-  const others = getPosts()
+  const service = post.related ? await getService(post.related) : undefined;
+  const others = (await getPosts())
     .filter((p) => p.slug !== post.slug)
     .slice(0, 3);
 

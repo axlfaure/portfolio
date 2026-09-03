@@ -18,13 +18,13 @@ import { site } from "@/lib/site";
 
 type Params = { params: Promise<{ slug: string }> };
 
-export function generateStaticParams() {
-  return getServices().map((service) => ({ slug: service.slug }));
+export async function generateStaticParams() {
+  return (await getServices()).map((service) => ({ slug: service.slug }));
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  const service = getService(slug);
+  const service = await getService(slug);
   if (!service) return {};
 
   return {
@@ -123,11 +123,11 @@ const SECTION =
 
 export default async function ServicePage({ params }: Params) {
   const { slug } = await params;
-  const service = getService(slug);
+  const service = await getService(slug);
   if (!service) notFound();
 
-  const projects = getServiceProjects(service.slug);
-  const others = getServices().filter((s) => s.slug !== service.slug);
+  const projects = await getServiceProjects(service.slug);
+  const others = (await getServices()).filter((s) => s.slug !== service.slug);
 
   return (
     <>

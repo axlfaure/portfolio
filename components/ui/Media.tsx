@@ -1,17 +1,18 @@
-import fs from "node:fs";
-import path from "node:path";
 import Image from "next/image";
 import { cn } from "@/lib/cn";
-import { publicDir } from "@/lib/paths";
 
-/** Le fichier existe-t-il vraiment dans /public ? */
+/**
+ * Y a-t-il un visuel à afficher ?
+ *
+ * Avant la bascule vers le CMS, cette fonction testait l'existence du fichier
+ * sur le disque, ce qui rendait tout composant l'utilisant dépendant de Node.
+ * Un champ vide en base répond à la même question sans toucher au système de
+ * fichiers : `Media` et `Avatar` sont redevenus de simples composants, et
+ * l'emplacement en pointillés continue de s'afficher tant qu'aucune image
+ * n'est téléversée.
+ */
 export function hasAsset(src?: string | null): boolean {
-  if (!src || !src.startsWith("/")) return false;
-  try {
-    return fs.existsSync(path.join(publicDir, src.slice(1)));
-  } catch {
-    return false;
-  }
+  return typeof src === "string" && src.length > 0;
 }
 
 type MediaProps = {

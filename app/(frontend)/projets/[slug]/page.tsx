@@ -15,13 +15,13 @@ import {
 
 type Params = { params: Promise<{ slug: string }> };
 
-export function generateStaticParams() {
-  return getProjects().map((project) => ({ slug: project.slug }));
+export async function generateStaticParams() {
+  return (await getProjects()).map((project) => ({ slug: project.slug }));
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  const project = getProject(slug);
+  const project = await getProject(slug);
   if (!project) return {};
 
   return {
@@ -37,11 +37,11 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
 export default async function ProjetPage({ params }: Params) {
   const { slug } = await params;
-  const project = getProject(slug);
+  const project = await getProject(slug);
   if (!project) notFound();
 
-  const testimonial = getTestimonial(project.testimonial);
-  const next = getNextProject(project.slug);
+  const testimonial = await getTestimonial(project.testimonial);
+  const next = await getNextProject(project.slug);
 
   return (
     <>
