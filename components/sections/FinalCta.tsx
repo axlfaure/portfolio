@@ -1,7 +1,7 @@
+import { Rise } from "@/components/ui/Rise";
 import { CtaButton } from "@/components/ui/CtaButton";
 import { Avatar } from "@/components/ui/Media";
 import { Pill } from "@/components/ui/Pill";
-import { CornerTicks } from "@/components/ui/SectionHeader";
 import { availability, site } from "@/lib/site";
 
 export function FinalCta() {
@@ -10,16 +10,15 @@ export function FinalCta() {
       <div className="container-site flex justify-center">
         <div
           data-reveal
-          className="relative isolate w-full max-w-[52rem] overflow-hidden rounded-cta border border-line bg-surface px-6 py-[clamp(2.75rem,6vw,4rem)] text-center shadow-e2 sm:px-12">
-          <span
-            aria-hidden="true"
-            className="grid-trame hero-grid pointer-events-none absolute inset-0 -z-10"
-          />
-          <CornerTicks className="absolute inset-0 z-10" />
-
+          className="relative isolate w-full max-w-[52rem] overflow-hidden rounded-cta border border-line bg-surface px-6 py-[clamp(2.75rem,6vw,4rem)] text-center shadow-e2 sm:px-12"
+        >
           <Pill dot>{availability.label}</Pill>
 
-          <h2 className="h2 mt-7">Parlons de votre projet.</h2>
+          <h2 className="h2 mt-7">
+            <Rise>
+              Parlons de <em className="accent hl hl--scroll">votre projet.</em>
+            </Rise>
+          </h2>
 
           <p className="lead mx-auto mt-5 max-w-[38rem] text-balance">
             Trente minutes pour comprendre votre contexte et vous dire ce que je
@@ -32,7 +31,7 @@ export function FinalCta() {
                 <Avatar
                   src={site.portrait}
                   alt="Portrait d'Axel Faure"
-                  size={40}
+                  size={48}
                   initials="AF"
                 />
               }

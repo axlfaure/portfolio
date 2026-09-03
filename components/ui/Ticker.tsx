@@ -8,6 +8,10 @@ type Props = {
   duration?: number;
   /** Espacement entre les éléments, en rem. */
   gap?: number;
+  /** Défilement de la gauche vers la droite. */
+  reverse?: boolean;
+  /** Fondu latéral large : la bande occupe moins de largeur à l'écran. */
+  soft?: boolean;
   className?: string;
 };
 
@@ -16,10 +20,21 @@ type Props = {
  * Le second jeu est masqué aux lecteurs d'écran, la lecture se met
  * en pause au survol et au focus clavier.
  */
-export function Ticker({ items, duration = 40, gap = 2.5, className }: Props) {
+export function Ticker({
+  items,
+  duration = 40,
+  gap = 2.5,
+  reverse = false,
+  soft = false,
+  className,
+}: Props) {
   return (
     <div
-      className={cn("ticker overflow-hidden", className)}
+      className={cn(
+        "ticker overflow-hidden",
+        soft && "ticker--soft",
+        className,
+      )}
       style={
         {
           "--ticker-duration": `${duration}s`,
@@ -27,7 +42,7 @@ export function Ticker({ items, duration = 40, gap = 2.5, className }: Props) {
         } as React.CSSProperties
       }
     >
-      <div className="ticker-track">
+      <div className={cn("ticker-track", reverse && "ticker-track--reverse")}>
         {items.map((item, i) => (
           <div key={`a-${i}`} className="shrink-0">
             {item}

@@ -23,10 +23,13 @@
   --color-line-2: #d6d7db;
   --color-accent: #2f42d8;
   --color-success: #12a05c;
+  /* Bleu du trait tracé sous l'accent du titre. */
+  --color-stroke: #7396ff;
 
   /* ---- Typographie ---- */
   --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, "SFMono-Regular", monospace;
+  --font-serif: var(--font-instrument), Georgia, "Times New Roman", serif;
 
   /* ---- Formes ---- */
   --radius-card: 16px;
@@ -42,6 +45,13 @@
 
   /* ---- Mouvement ---- */
   --ease-site: cubic-bezier(0.2, 0.7, 0.3, 1);
+  /* Sortie très marquée : ralenti long, sensation « premium ». */
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  /* Léger dépassement, pour les micro-interactions. */
+  --ease-back: cubic-bezier(0.34, 1.42, 0.64, 1);
+  /* Geste de tracé : la main démarre, tient sa vitesse, puis freine.
+     --ease-expo dessinerait 70 % du trait en 190 ms — un claquement. */
+  --ease-stroke: cubic-bezier(0.62, 0.04, 0.24, 1);
 }
 
 :root {
@@ -100,19 +110,34 @@
     padding-block: var(--section-y);
   }
 
+  /* ---- Accent serif italique ---- */
+  .accent {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+
   /* ---- Titres ---- */
+  .h1-hero {
+    font-size: clamp(2.15rem, 4.2vw, 3.6rem);
+    line-height: 1.06;
+    font-weight: 500;
+    letter-spacing: -0.035em;
+  }
+
   .h1 {
     font-size: clamp(2.4rem, 6.4vw, 4.35rem);
     line-height: 1.02;
-    font-weight: 700;
+    font-weight: 500;
     letter-spacing: -0.035em;
     text-wrap: balance;
   }
 
   .h2 {
-    font-size: clamp(1.85rem, 4.4vw, 3rem);
+    font-size: clamp(1.7rem, 3.6vw, 2.6rem);
     line-height: 1.06;
-    font-weight: 700;
+    font-weight: 500;
     letter-spacing: -0.035em;
     text-wrap: balance;
   }
@@ -123,6 +148,34 @@
     font-weight: 700;
     letter-spacing: -0.025em;
     text-wrap: balance;
+  }
+
+  /* ---- Surlignage au feutre, dans le bleu du trait ----
+     La bande passe DERRIÈRE le texte plutôt qu'en dessous. À 22 %
+     d'alpha sur le papier, l'encre reste à environ 13:1 — très
+     au-dessus du seuil AA, y compris sur les gros titres. */
+  .hl {
+    --hl-ink: color-mix(in srgb, var(--color-stroke) 22%, transparent);
+    background-image: linear-gradient(var(--hl-ink), var(--hl-ink));
+    background-repeat: no-repeat;
+    background-position: 0 92%;
+    background-size: 100% 46%;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+    border-radius: 3px;
+    padding-inline: 0.16em;
+  }
+
+  /* Variante discrète, pour les lignes de texte courant. */
+  .marker {
+    --hl-ink: color-mix(in srgb, var(--color-stroke) 32%, transparent);
+    background-image: linear-gradient(var(--hl-ink), var(--hl-ink));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 100% 56%;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+    padding-inline: 0.14em;
   }
 
   /* ---- Textes ---- */
@@ -149,6 +202,15 @@
     line-height: 1;
   }
 
+  .label {
+    font-size: 0.78rem;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--color-label);
+    line-height: 1.2;
+    font-weight: 500;
+  }
+
   .meta {
     font-family: var(--font-mono);
     font-size: 0.72rem;
@@ -168,15 +230,24 @@
     border: 1px solid var(--color-line);
     border-radius: var(--radius-card);
   }
+}
 
-  /* ---- Trame de grille ---- */
-  .grid-trame {
-    background-image:
-      linear-gradient(to right, var(--color-line) 1px, transparent 1px),
-      linear-gradient(to bottom, var(--color-line) 1px, transparent 1px);
-    background-size: 76px 76px;
-    opacity: 0.4;
-  }
+/* Voile de la bande projets : opaque au centre, ouvert sur les bords. */
+.bg-veil-projets {
+  background:
+    radial-gradient(
+      46% 56% at 50% 50%,
+      var(--color-paper) 0%,
+      color-mix(in srgb, var(--color-paper) 74%, transparent) 44%,
+      transparent 72%
+    ),
+    linear-gradient(
+      to bottom,
+      var(--color-paper) 0%,
+      transparent 20%,
+      transparent 80%,
+      var(--color-paper) 100%
+    );
 }
 
 /* ---- Tickers ---- */
@@ -190,8 +261,14 @@
 }
 
 .ticker {
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
-  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+}
+
+/* Fondu large, pour les bandes qui doivent occuper moins de largeur. */
+.ticker--soft {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 22%, #000 78%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 22%, #000 78%, transparent);
 }
 
 .ticker-track {
@@ -202,9 +279,62 @@
   animation: ticker-scroll var(--ticker-duration, 40s) linear infinite;
 }
 
+.ticker-track--reverse {
+  animation-direction: reverse;
+}
+
 .ticker:hover .ticker-track,
 .ticker:focus-within .ticker-track {
   animation-play-state: paused;
+}
+
+/* ---- Bouton principal : micro-interactions ----
+   Le bouton dépasse légèrement sa position d'arrivée, le portrait suit avec
+   un temps de retard, et l'enfoncement est plus court que la sortie. */
+.cta {
+  transition:
+    transform 340ms var(--ease-back),
+    box-shadow 340ms var(--ease-expo),
+    border-color 260ms ease;
+}
+
+.cta:hover,
+.cta:focus-visible {
+  transform: translate3d(0, -3px, 0);
+}
+
+.cta:active {
+  transform: translate3d(0, -1px, 0) scale(0.985);
+  transition-duration: 130ms;
+}
+
+.cta-avatar {
+  transition: transform 420ms var(--ease-back) 70ms;
+}
+
+.cta:hover .cta-avatar,
+.cta:focus-visible .cta-avatar {
+  transform: scale(1.06);
+}
+
+.cta-label {
+  transition: transform 340ms var(--ease-expo) 40ms;
+}
+
+.cta:hover .cta-label,
+.cta:focus-visible .cta-label {
+  transform: translate3d(2px, 0, 0);
+}
+
+/* ---- Flèche diagonale des cartes projet ----
+   Elle glisse dans son propre axe : le mouvement prolonge le tracé. */
+.arrow-diag {
+  transition: transform 260ms var(--ease-site);
+}
+
+.group:hover .arrow-diag,
+.group:focus-visible .arrow-diag {
+  transform: translate3d(2px, 2px, 0);
 }
 
 /* ---- Pastille de disponibilité ---- */
@@ -266,35 +396,32 @@
 }
 
 .hero-blob-a {
-  background: radial-gradient(38% 46% at 68% 28%, rgba(47, 66, 216, 0.13), transparent 68%);
+  background: radial-gradient(38% 46% at 30% 32%, rgba(47, 66, 216, 0.13), transparent 68%);
   animation: hero-drift-a 26s ease-in-out infinite;
 }
 
 .hero-blob-b {
-  background: radial-gradient(44% 52% at 84% 62%, rgba(22, 23, 26, 0.12), transparent 68%);
+  background: radial-gradient(44% 52% at 74% 58%, rgba(22, 23, 26, 0.12), transparent 68%);
   animation: hero-drift-b 32s ease-in-out infinite;
 }
 
 .hero-blob-c {
-  background: radial-gradient(40% 40% at 72% 86%, rgba(155, 158, 165, 0.22), transparent 70%);
+  background: radial-gradient(40% 40% at 50% 84%, rgba(155, 158, 165, 0.22), transparent 70%);
   animation: hero-drift-c 38s ease-in-out infinite;
 }
 
-.hero-grid {
-  -webkit-mask-image: radial-gradient(70% 70% at 68% 44%, #000 15%, transparent 100%);
-  mask-image: radial-gradient(70% 70% at 68% 44%, #000 15%, transparent 100%);
-}
-
 .hero-media {
-  opacity: 0.45;
-  mix-blend-mode: luminosity;
+  opacity: 1;
+  /* La vidéo source est irisée ; la maquette est neutre. */
+  filter: grayscale(1);
 }
 
-.hero-yt {
+.hero-player iframe {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  /* Agrandi pour repousser hors cadre le chrome résiduel du lecteur. */
+  transform: translate(-50%, -50%) scale(1.35);
   width: 100vw;
   height: 56.25vw;
   min-width: 177.78vh;
@@ -306,14 +433,13 @@
 .hero-veil {
   background:
     linear-gradient(
-      to right,
-      rgba(255, 255, 255, 0.95) 0%,
-      rgba(255, 255, 255, 0.9) 30%,
-      rgba(255, 255, 255, 0.62) 56%,
-      rgba(255, 255, 255, 0.3) 78%,
-      rgba(255, 255, 255, 0.24) 100%
+      343deg,
+      rgba(255, 255, 255, 0.14) 0%,
+      rgba(255, 255, 255, 0.82) 36%,
+      rgba(255, 255, 255, 0.74) 73%,
+      rgba(255, 255, 255, 0.14) 100%
     ),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0) 22%, rgba(255, 255, 255, 0) 60%, #fff 100%);
+    linear-gradient(to bottom, rgba(255, 255, 255, 0) 84%, var(--color-paper) 100%);
 }
 
 /* ================================================================
@@ -340,11 +466,14 @@ html.lenis body {
   overflow: hidden;
 }
 
-/* ---- Séquence d'entrée du hero ---- */
+/* ---- Séquence d'entrée du hero ----
+   Chaque élément part de plus bas et met plus longtemps à s'installer que
+   le précédent (ralenti à l'arrivée, actions qui se chevauchent). Les
+   distances varient avec le poids visuel : un titre voyage plus qu'un label. */
 @keyframes enter-up {
   from {
     opacity: 0;
-    transform: translate3d(0, 16px, 0);
+    transform: translate3d(0, var(--enter-y, 14px), 0);
   }
   to {
     opacity: 1;
@@ -354,23 +483,147 @@ html.lenis body {
 
 [data-js] [data-hero-step] {
   opacity: 0;
-  animation: enter-up 650ms var(--ease-site) forwards;
+  animation: enter-up var(--enter-dur, 760ms) var(--ease-expo) forwards;
+  animation-delay: var(--enter-delay, 0ms);
 }
 
-[data-js] [data-hero-step="1"] { animation-delay: 40ms; }
-[data-js] [data-hero-step="2"] { animation-delay: 120ms; }
-[data-js] [data-hero-step="3"] { animation-delay: 200ms; }
-[data-js] [data-hero-step="4"] { animation-delay: 280ms; }
-[data-js] [data-hero-step="5"] { animation-delay: 370ms; }
-[data-js] [data-hero-step="6"] { animation-delay: 450ms; }
+[data-js] [data-hero-step="1"] { --enter-delay: 60ms; --enter-y: 10px; --enter-dur: 620ms; }
+[data-js] [data-hero-step="3"] { --enter-delay: 560ms; --enter-y: 16px; }
+[data-js] [data-hero-step="4"] { --enter-delay: 680ms; --enter-y: 16px; }
+[data-js] [data-hero-step="5"] { --enter-delay: 800ms; --enter-y: 18px; }
+[data-js] [data-hero-step="6"] { --enter-delay: 1000ms; --enter-y: 0px; --enter-dur: 900ms; }
+
+/* Gelées derrière le voile de chargement : la séquence démarre sur une mise
+   en page stable, une fois les polices posées. */
+[data-js]:not([data-ready]) [data-hero-step],
+[data-js]:not([data-ready]) .reveal-line > span,
+[data-js]:not([data-ready]) .hl--draw {
+  animation-play-state: paused;
+}
+
+@keyframes loader-breathe {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.04); }
+}
+
+/* ---- Titres de section : montée masquée, déclenchée au scroll ----
+   Même geste que le hero. Le masque vit sur un conteneur `data-reveal`,
+   qui porte déjà le déclencheur. */
+.rise {
+  display: block;
+  /* Marge de masque : sans elle, jambages et accents se font rogner. */
+  padding-bottom: 0.22em;
+  margin-bottom: -0.22em;
+}
+
+[data-js] [data-reveal] .rise {
+  overflow: hidden;
+}
+
+[data-js] [data-reveal] .rise > span {
+  display: block;
+  transform: translate3d(0, 105%, 0);
+}
+
+[data-js] [data-reveal].is-in .rise > span {
+  animation: line-rise 980ms var(--ease-expo) forwards;
+  animation-delay: calc(var(--reveal-delay, 0ms) + 40ms);
+}
+
+/* Le conteneur ne doit plus se déplacer : la montée est portée par la
+   ligne masquée, les deux cumulés donneraient un double mouvement. */
+[data-js] [data-reveal]:has(.rise) {
+  transform: none;
+}
+
+/* ---- Titre : lignes qui montent derrière un masque ---- */
+@keyframes line-rise {
+  from {
+    transform: translate3d(0, 110%, 0);
+  }
+  to {
+    transform: none;
+  }
+}
+
+.reveal-line {
+  display: block;
+  /* Marge de masque pour ne pas rogner les jambages ni le trait tracé. */
+  padding-bottom: 0.5em;
+  margin-bottom: -0.5em;
+}
+
+[data-js] .reveal-line {
+  overflow: hidden;
+}
+
+[data-js] .reveal-line > span {
+  display: block;
+  transform: translate3d(0, 110%, 0);
+  animation: line-rise 1050ms var(--ease-expo) forwards;
+  animation-delay: var(--line-delay, 0ms);
+}
+
+/* ---- Pile d'avatars : découpe au lieu du liseré ----
+   --face-cut-x : centre de la pastille suivante, --face-cut-r : son rayon
+   augmenté de l'écart voulu. Les deux se calculent dans le composant. */
+.face-cut {
+  -webkit-mask-image: radial-gradient(
+    circle at var(--face-cut-x) 50%,
+    transparent var(--face-cut-r),
+    #000 calc(var(--face-cut-r) + 0.5px)
+  );
+  mask-image: radial-gradient(
+    circle at var(--face-cut-x) 50%,
+    transparent var(--face-cut-r),
+    #000 calc(var(--face-cut-r) + 0.5px)
+  );
+}
+
+/* ---- Badges clients ----
+   L'entrée est portée par le conteneur `.face-in`. Aucun survol : le
+   masque de découpe est figé dans la pastille, il ne peut pas suivre une
+   voisine qui se déplace sans laisser un trou dans le vide. */
+.face {
+  display: flex;
+}
+
+/* ---- Surlignage tracé ----
+   Deux déclencheurs pour la même bande : `hl--draw` part sur un délai fixe
+   dans le hero, `hl--scroll` attend que la section entre dans le champ. */
+@keyframes hl-sweep {
+  from {
+    background-size: 0% 46%;
+  }
+  to {
+    background-size: 100% 46%;
+  }
+}
+
+[data-js] .hl--draw {
+  background-size: 0% 46%;
+  animation: hl-sweep 760ms var(--ease-stroke) forwards;
+  animation-delay: var(--hl-delay, 1040ms);
+}
+
+[data-js] [data-reveal] .hl--scroll {
+  background-size: 0% 46%;
+}
+
+[data-js] [data-reveal].is-in .hl--scroll {
+  animation: hl-sweep 760ms var(--ease-stroke) forwards;
+  /* Après la montée du titre, jamais pendant : le trait se poserait sur
+     une ligne encore en mouvement. */
+  animation-delay: calc(var(--reveal-delay, 0ms) + 620ms);
+}
 
 /* ---- Révélations au scroll ---- */
 [data-js] [data-reveal] {
   opacity: 0;
   transform: translate3d(0, 16px, 0);
   transition:
-    opacity 650ms var(--ease-site),
-    transform 650ms var(--ease-site);
+    opacity 820ms var(--ease-expo),
+    transform 820ms var(--ease-expo);
   transition-delay: var(--reveal-delay, 0ms);
 }
 
@@ -383,17 +636,178 @@ html.lenis body {
 @keyframes page-fade {
   from {
     opacity: 0;
+    transform: translate3d(0, 10px, 0);
   }
   to {
     opacity: 1;
+    transform: none;
   }
 }
 
 [data-js] .page-enter {
-  animation: page-fade 250ms var(--ease-site) both;
+  animation: page-fade 520ms var(--ease-expo) both;
+}
+
+/* --------------------------------------------------------------------------
+   Liste de tâches animée (section « Le contexte »).
+
+   Les items se cochent l'un après l'autre : la pastille se remplit, la coche
+   se trace, la ligne se barre. Le trait de rature passe par un dégradé de
+   fond plutôt qu'un pseudo-élément positionné : un item sur deux lignes est
+   alors barré sur ses deux lignes, ce qu'un `::after` en position absolue ne
+   sait pas faire.
+
+   Sans JavaScript aucun item n'est coché : la liste se lit comme une liste,
+   et la ligne de chute reste visible. C'est un état honnête, pas un défaut.
+   -------------------------------------------------------------------------- */
+
+.todo-bar {
+  transform-origin: left center;
+  scale: 0 1;
+  transition: scale 560ms var(--ease-expo);
+}
+
+.todo-item {
+  transition: opacity 460ms var(--ease-site);
+}
+
+.todo-item[data-on] {
+  opacity: 0.52;
+}
+
+.todo-label {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 58%;
+  background-size: 0% 1px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  transition: background-size 460ms var(--ease-stroke) 120ms;
+}
+
+.todo-item[data-on] .todo-label {
+  background-size: 100% 1px;
+}
+
+.todo-check {
+  transition:
+    background-color 360ms var(--ease-site),
+    border-color 360ms var(--ease-site);
+}
+
+.todo-item[data-on] .todo-check {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+  animation: todo-pop 420ms var(--ease-back);
+}
+
+/* La coche se dessine au lieu d'apparaître : c'est le geste qui rend le
+   cochage lisible, pas la coche elle-même. */
+.todo-tick {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+  transition: stroke-dashoffset 320ms var(--ease-site) 80ms;
+}
+
+.todo-item[data-on] .todo-tick {
+  stroke-dashoffset: 0;
+}
+
+@keyframes todo-pop {
+  0% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.18);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+[data-js] .todo-foot {
+  opacity: 0;
+  translate: 0 6px;
+  transition:
+    opacity 520ms var(--ease-expo),
+    translate 520ms var(--ease-expo);
+}
+
+[data-js] .todo-foot[data-on] {
+  opacity: 1;
+  translate: none;
+}
+
+/* --------------------------------------------------------------------------
+   Boîte de réception animée (section « Le contexte »).
+
+   Les messages arrivent par le haut et poussent les précédents vers le bas.
+   Rien ne part jamais — c'est ça, être débordé.
+
+   Chaque ligne est un conteneur de hauteur fixe (`--row-h`, deux valeurs selon
+   qu'il y a une pièce jointe ou non) dont le contenu réel vit dans un enfant.
+   Une ligne en attente vaut zéro ; son arrivée anime sa seule hauteur, et les
+   suivantes descendent d'elles-mêmes. Le padding et le filet sont portés par
+   l'enfant, sinon une ligne à zéro les conserverait et laisserait un résidu.
+
+   C'est de la mise en page animée, pas une transformation composée — un choix
+   assumé : c'est ce qui permet à la fenêtre d'être un vrai conteneur
+   défilable, donc de remonter les messages déjà passés. Dix lignes, une seule
+   animée à la fois : le coût est négligeable.
+
+   Sans JavaScript, `[data-pending]` n'a aucun effet : les dix messages
+   s'affichent, résolus, celui d'Axel en tête.
+   -------------------------------------------------------------------------- */
+
+.inbox-window {
+  height: 25rem;
+  overflow-y: auto;
+  /* Le dernier message s'estompe au lieu d'être coupé net : on comprend qu'il
+     y en a d'autres, et c'est l'invitation à faire défiler. */
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 2.25rem), transparent);
+  /* Une insertion en tête ne doit pas faire corriger le défilement au
+     navigateur : la liste doit visiblement pousser vers le bas. */
+  overflow-anchor: none;
+}
+
+/* Barre de défilement toujours visible : c'est elle qui dit qu'il y a autre
+   chose en dessous. Volontairement pas de `scrollbar-width` ni de
+   `scrollbar-color` — depuis Chromium 121, leur seule présence fait ignorer les
+   pseudo-éléments qui suivent, et on retombe sur la barre superposée du
+   système, qui s'efface au repos sur macOS. */
+.inbox-window::-webkit-scrollbar {
+  width: 9px;
+}
+
+.inbox-window::-webkit-scrollbar-track {
+  background-color: var(--color-sunk);
+}
+
+.inbox-window::-webkit-scrollbar-thumb {
+  background-color: var(--color-line-2);
+  border: 2px solid var(--color-sunk);
+  border-radius: 999px;
+}
+
+.inbox-window::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-faint);
+}
+
+.inbox-row {
+  height: var(--row-h);
+  overflow: hidden;
+  transition: height 620ms var(--ease-expo);
+}
+
+[data-js] .inbox-row[data-pending] {
+  height: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
+  [data-js] .reveal-line > span,
+  [data-js] .rise > span,
+  [data-js] .hl--draw,
+  [data-js] .hl--scroll,
   [data-js] [data-hero-step],
   [data-js] [data-reveal],
   [data-js] [data-reveal].is-in {
@@ -401,6 +815,22 @@ html.lenis body {
     transform: none !important;
     animation: none !important;
     transition: none !important;
+    background-size: 100% 46% !important;
+  }
+
+  .cta,
+  .cta-avatar,
+  .cta-label,
+  .arrow-diag,
+  .todo-bar,
+  .todo-item,
+  .todo-label,
+  .todo-check,
+  .todo-tick,
+  [data-js] .todo-foot,
+  .inbox-row {
+    transition: none !important;
+    animation: none !important;
   }
 
   [data-js] .page-enter {

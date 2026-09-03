@@ -80,6 +80,8 @@ type AvatarProps = {
   /** Initiales affichées tant que la photo n'est pas fournie. */
   initials?: string;
   className?: string;
+  /** Variables CSS du masque de pile, notamment. */
+  style?: React.CSSProperties;
 };
 
 /** Portrait circulaire, même logique de bascule automatique. */
@@ -89,6 +91,7 @@ export function Avatar({
   size = 40,
   initials = "",
   className,
+  style,
 }: AvatarProps) {
   const ready = hasAsset(src);
 
@@ -99,7 +102,7 @@ export function Avatar({
         !ready && "border border-line-2",
         className,
       )}
-      style={{ width: size, height: size }}
+      style={{ width: size, height: size, ...style }}
     >
       {ready ? (
         <Image

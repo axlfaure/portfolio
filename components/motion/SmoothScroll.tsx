@@ -3,8 +3,12 @@
 import Lenis from "lenis";
 import { useEffect } from "react";
 
-/** Décalage de la nav collante lors d'un saut d'ancre. */
-const NAV_OFFSET = -88;
+/**
+ * Lenis tient déjà compte du `scroll-margin-top` des sections (`scroll-mt-24`,
+ * soit 96px, au-dessus des 80px de la nav). Un décalage supplémentaire ici
+ * ferait descendre la cible deux fois trop bas.
+ */
+const NAV_OFFSET = 0;
 
 /**
  * Smooth scroll Lenis.
@@ -30,7 +34,8 @@ export function SmoothScroll() {
 
     const onClick = (event: MouseEvent) => {
       if (event.defaultPrevented || event.button !== 0) return;
-      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
+        return;
 
       const anchor = (event.target as HTMLElement)?.closest?.("a");
       if (!anchor) return;
@@ -48,15 +53,18 @@ export function SmoothScroll() {
       const target = document.querySelector(hash);
       if (!target) return;
 
+      // stopPropagation est indispensable : sans lui le <Link> de Next
+      // pousse la route et saute à l'ancre avant que Lenis n'anime.
       event.preventDefault();
+      event.stopPropagation();
       lenis.scrollTo(target as HTMLElement, { offset: NAV_OFFSET });
       window.history.pushState(null, "", hash);
     };
 
-    document.addEventListener("click", onClick);
+    document.addEventListener("click", onClick, true);
 
     return () => {
-      document.removeEventListener("click", onClick);
+      document.removeEventListener("click", onClick, true);
       cancelAnimationFrame(frame);
       lenis.destroy();
     };

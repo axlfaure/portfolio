@@ -1,9 +1,15 @@
 import type { Metadata, Viewport } from "next";
-import { JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
+import {
+  Instrument_Serif,
+  JetBrains_Mono,
+  Plus_Jakarta_Sans,
+} from "next/font/google";
 import { Footer } from "@/components/layout/Footer";
 import { RevealObserver } from "@/components/motion/RevealObserver";
 import { SmoothScroll } from "@/components/motion/SmoothScroll";
 import { Nav } from "@/components/layout/Nav";
+import { PageLoader } from "@/components/layout/PageLoader";
+import { Logo } from "@/components/ui/Logo";
 import { site } from "@/lib/site";
 import "./globals.css";
 
@@ -21,11 +27,18 @@ const jetbrains = JetBrains_Mono({
   display: "swap",
 });
 
+const instrument = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-instrument",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default:
-      "Axel Faure · Designer freelance tech et industrie à Grenoble",
+    default: "Axel Faure · Designer freelance tech et industrie à Grenoble",
     template: "%s · Axel Faure",
   },
   description:
@@ -44,7 +57,7 @@ export default function RootLayout({
     <html
       lang="fr"
       data-js="1"
-      className={`${jakarta.variable} ${jetbrains.variable}`}
+      className={`${jakarta.variable} ${jetbrains.variable} ${instrument.variable}`}
     >
       <head>
         {/* Sans JavaScript, les animations ne doivent jamais masquer le
@@ -66,6 +79,9 @@ export default function RootLayout({
         >
           Aller au contenu
         </a>
+        <PageLoader>
+          <Logo />
+        </PageLoader>
         <SmoothScroll />
         <RevealObserver />
         <Nav />

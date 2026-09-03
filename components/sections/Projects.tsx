@@ -1,9 +1,17 @@
+import { Rise } from "@/components/ui/Rise";
 import Link from "next/link";
+import { ArrowDiag } from "@/components/ui/ArrowDiag";
 import { GhostButton } from "@/components/ui/GhostButton";
-import { Media } from "@/components/ui/Media";
+import { Avatar, Media } from "@/components/ui/Media";
+import { ProjectBento } from "@/components/ui/ProjectBento";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { Stars } from "@/components/ui/Stars";
 import { Ticker } from "@/components/ui/Ticker";
-import { getFeaturedProjects, getProjects } from "@/lib/content";
+import {
+  getFeaturedProjects,
+  getProjects,
+  getTestimonial,
+} from "@/lib/content";
 
 export function Projects() {
   const featuredProjects = getFeaturedProjects();
@@ -13,11 +21,14 @@ export function Projects() {
     <section id="projets" className="section scroll-mt-24">
       <div className="container-site">
         <SectionHeader
-          index="02"
           eyebrow="Projets"
-          meta={`${featuredProjects.length} projets phares`}
           title={
-            <>Vos innovations méritent d&apos;être comprises à leur juste valeur.</>
+            <>
+              Vos innovations méritent d&apos;être{" "}
+              <em className="accent hl hl--scroll">
+                comprises à leur juste valeur.
+              </em>
+            </>
           }
           lead={
             <>
@@ -31,113 +42,158 @@ export function Projects() {
 
         {/* Stacking cards : sticky pur, tops incrémentaux. */}
         <div className="mt-14">
-          {featuredProjects.map((project, i) => (
-            <div
-              key={project.slug}
-              className="sticky"
-              style={{
-                top: `${5.5 + i}rem`,
-                marginBottom: i < featuredProjects.length - 1 ? "1.75rem" : 0,
-              }}
-            >
-              <Link
-                href={`/projets/${project.slug}`}
+          {featuredProjects.map((project, i) => {
+            const vouch = getTestimonial(project.testimonial);
+
+            return (
+              <div
+                key={project.slug}
                 data-reveal
-                className="group block overflow-hidden rounded-project border border-line bg-surface shadow-e1 transition-shadow duration-200 ease-site hover:shadow-e2"
+                className="sticky"
+                style={{
+                  top: `${5.5 + i}rem`,
+                  marginBottom: i < featuredProjects.length - 1 ? "1.75rem" : 0,
+                }}
               >
-                <div className="flex flex-col gap-6 p-5 md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] md:items-stretch md:gap-8 md:p-7">
-                  <div className="order-1 md:order-2">
-                    <Media
-                      src={project.cover}
-                      alt={`${project.client} — ${project.title}`}
-                      ratio="4 / 3"
-                      sizes="(min-width: 56rem) 36rem, 92vw"
-                      className="h-full rounded-[12px]"
-                    />
-                  </div>
-
-                  <div className="order-2 flex flex-col md:order-1 md:py-2">
-                    <div className="flex items-baseline justify-between gap-4 border-b border-line pb-3">
-                      <p className="meta">{project.client}</p>
-                      <p className="eyebrow">
-                        {String(project.order).padStart(2, "0")}
-                      </p>
+                <Link
+                  href={`/projets/${project.slug}`}
+                  className="group block overflow-hidden rounded-project border border-line bg-surface shadow-e1 transition-shadow duration-200 ease-site hover:shadow-e2"
+                >
+                  <div className="flex flex-col gap-6 p-5 md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] md:items-stretch md:gap-8 md:p-7">
+                    {/* Pas de `h-full` sur le visuel : la colonne est étirée
+                        par le texte, et entre 768 et 1100 px son cadre devient
+                        portrait. Un visuel en 4/3 y perdait jusqu'à la moitié
+                        de sa largeur au recadrage. Le ratio prime, quitte à
+                        laisser un peu d'air sous l'image. */}
+                    <div className="order-1 md:order-2">
+                      {project.panels.length > 0 ? (
+                        <ProjectBento
+                          panels={project.panels}
+                          alt={`${project.client}, ${project.title}`}
+                          sizes="(min-width: 56rem) 18rem, 46vw"
+                        />
+                      ) : (
+                        <Media
+                          src={project.cover}
+                          alt={`${project.client} — ${project.title}`}
+                          ratio="4 / 3"
+                          sizes="(min-width: 56rem) 36rem, 92vw"
+                          className="rounded-[12px]"
+                        />
+                      )}
                     </div>
 
-                    <h3 className="h3 mt-5">{project.title}</h3>
-                    <p className="prose-p mt-3 text-[0.95rem]">
-                      {project.teaser}
-                    </p>
+                    {/* Deux blocs, l'espace libre entre les deux : le bas de
+                        colonne reste ancré même quand l'accroche est courte. */}
+                    <div className="order-2 flex flex-col justify-between gap-9 md:order-1 md:py-2">
+                      <div>
+                        <p className="eyebrow">{project.client}</p>
+                        <h3 className="h3 mt-4">{project.title}</h3>
+                        {project.teaser ? (
+                          <p className="prose-p mt-3 text-[0.95rem]">
+                            {project.teaser}
+                          </p>
+                        ) : null}
 
-                    <ul className="mt-6 flex flex-wrap gap-2">
-                      {project.disciplines.map((d) => (
-                        <li
-                          key={d}
-                          className="rounded-full border border-line bg-paper px-3 py-1 text-[0.75rem] font-medium text-muted"
-                        >
-                          {d}
-                        </li>
-                      ))}
-                    </ul>
+                        <ul className="mt-6 flex flex-wrap gap-2">
+                          {project.disciplines.map((d) => (
+                            <li
+                              key={d}
+                              className="rounded-full border border-line bg-paper px-3 py-1 text-[0.75rem] font-medium text-muted"
+                            >
+                              {d}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
 
-                    <div className="mt-auto flex items-center justify-between gap-4 border-t border-line pt-5 md:mt-8">
-                      <span className="inline-flex items-center gap-2 text-[0.9rem] font-semibold text-ink">
-                        Voir le projet
-                        <span
-                          aria-hidden="true"
-                          className="transition-transform duration-200 ease-site group-hover:translate-x-[3px]"
-                        >
-                          →
+                      {/* Bas de colonne : qui valide le projet, puis où aller. */}
+                      <div className="border-t border-line pt-6">
+                        {vouch ? (
+                          <figure className="flex items-center gap-3">
+                            <Avatar
+                              src={vouch.avatar}
+                              alt=""
+                              size={42}
+                              initials={vouch.name.slice(0, 1)}
+                              className="shrink-0"
+                            />
+                            <figcaption className="min-w-0">
+                              <div className="flex items-center gap-2.5">
+                                <p className="truncate text-[0.85rem] font-bold text-ink">
+                                  {vouch.name}
+                                </p>
+                                <span className="shrink-0">
+                                  <Stars rating={vouch.rating} size={12} />
+                                </span>
+                              </div>
+                              <p className="mt-0.5 text-[0.78rem] leading-snug text-label">
+                                {vouch.role} · {vouch.org}
+                              </p>
+                            </figcaption>
+                          </figure>
+                        ) : null}
+
+                        <span className="mt-6 inline-flex items-center gap-2 text-[0.9rem] font-semibold text-ink">
+                          Voir le projet
+                          <ArrowDiag size={16} className="arrow-diag" />
                         </span>
-                      </span>
-                      <span className="meta">{project.year}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Link>
-            </div>
-          ))}
+                </Link>
+              </div>
+            );
+          })}
         </div>
       </div>
 
-      {/* Ticker des douze tuiles projet, débordant des gouttières. */}
-      <div className="mt-[clamp(3.5rem,7vw,5rem)]">
-        <div className="container-site mb-5 flex items-baseline justify-between gap-6" data-reveal>
-          <p className="eyebrow">Toutes les réalisations</p>
-          <p className="eyebrow">{projectTiles.length} projets</p>
+      {/* Bande d'appel : les visuels portent l'ambiance, le texte porte l'action. */}
+      <div className="relative isolate mt-[clamp(3.5rem,7vw,5rem)] overflow-hidden py-[clamp(7rem,15vw,10rem)]">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 flex items-center"
+        >
+          <Ticker
+            duration={70}
+            gap={1.1}
+            className="w-full opacity-[0.55] [filter:grayscale(1)]"
+            items={projectTiles.map((tile) => (
+              <div
+                key={tile.slug}
+                className="w-[clamp(9.5rem,16vw,13rem)] overflow-hidden rounded-project"
+              >
+                <Media
+                  src={tile.cover}
+                  alt=""
+                  ratio="2 / 3"
+                  sizes="13rem"
+                  className="rounded-project"
+                />
+              </div>
+            ))}
+          />
         </div>
 
-        <Ticker
-          duration={60}
-          gap={1.25}
-          items={projectTiles.map((tile) => (
-            <Link
-              key={tile.slug}
-              href={`/projets/${tile.slug}`}
-              className="group block w-[15.5rem] overflow-hidden rounded-card border border-line bg-surface p-2.5 shadow-e1 transition-[transform,box-shadow] duration-200 ease-site hover:-translate-y-0.5 hover:shadow-e2"
-            >
-              <Media
-                src={tile.cover}
-                alt={`${tile.client} — ${tile.short}`}
-                ratio="4 / 3"
-                sizes="15.5rem"
-                className="rounded-[9px]"
-              />
-              <div className="px-1 pb-1 pt-3">
-                <p className="meta truncate">{tile.client}</p>
-                <p className="mt-1.5 truncate text-[0.9rem] font-semibold text-ink">
-                  {tile.short}
-                </p>
-                <p className="mt-1 truncate text-[0.8rem] text-label">
-                  {tile.tags}
-                </p>
-              </div>
-            </Link>
-          ))}
+        {/* Voile : sans lui le titre passerait sur des visuels contrastés. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-veil-projets"
         />
 
-        <div className="container-site mt-10 flex justify-center" data-reveal>
-          <GhostButton href="/projets">Voir tous les projets</GhostButton>
+        <div
+          className="container-site relative flex flex-col items-center text-center"
+          data-reveal
+        >
+          <h2 className="h2 max-w-[18ch]">
+            <Rise>
+              Le reste du travail est{" "}
+              <em className="accent hl hl--scroll">juste là.</em>
+            </Rise>
+          </h2>
+          <GhostButton href="/projets" size="lg" className="mt-9">
+            Voir tous les projets
+          </GhostButton>
         </div>
       </div>
     </section>

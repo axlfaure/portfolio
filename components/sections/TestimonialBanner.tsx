@@ -30,13 +30,7 @@ export function TestimonialBanner() {
         </blockquote>
 
         <figcaption className="mt-8 flex items-center gap-3">
-          <Avatar
-            src={featured.avatar}
-            alt=""
-            size={44}
-            initials="··"
-            className="ring-2 ring-surface"
-          />
+          <Avatar src={featured.avatar} alt="" size={44} initials="··" />
           <span className="text-left">
             <span className="block text-[0.9rem] font-bold text-ink">
               {featured.name}

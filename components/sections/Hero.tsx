@@ -1,41 +1,65 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Counter } from "@/components/ui/Counter";
 import { CtaButton } from "@/components/ui/CtaButton";
-import { GhostButton } from "@/components/ui/GhostButton";
 import { Avatar } from "@/components/ui/Media";
-import { Pill } from "@/components/ui/Pill";
-import { CornerTicks } from "@/components/ui/SectionHeader";
 import { Stars } from "@/components/ui/Stars";
 import { Ticker } from "@/components/ui/Ticker";
-import { getTestimonials } from "@/lib/content";
-import { clientNames, heroStats } from "@/lib/data";
-import { site } from "@/lib/site";
+import { heroStats } from "@/lib/data";
+import { clientFaces, clientLogos, site } from "@/lib/site";
 import { HeroBackground } from "./HeroBackground";
 
 export function Hero() {
   return (
-    <section className="relative isolate overflow-hidden">
+    <section className="relative isolate -mt-20 overflow-hidden">
       <HeroBackground />
 
-      <div className="container-site pb-[clamp(3.5rem,8vw,5.5rem)] pt-[clamp(3.5rem,8vw,6rem)]">
-        <div data-hero-step="1">
-          <Pill dot>{site.baseline}</Pill>
-        </div>
+      <div className="mx-auto flex w-full max-w-[84rem] flex-col items-center px-[var(--gutter)] pb-[clamp(3.5rem,8vw,5.5rem)] pt-[calc(5rem+clamp(2.5rem,6vw,4.5rem))] text-center">
+        <SocialProof />
 
-        <h1 className="h1 mt-9 text-balance" data-hero-step="2">
-          Votre expertise est complexe.
-          <span className="block">
-            Votre communication ne devrait pas l&apos;être.
+        <h1 className="h1-hero mt-9 w-full text-balance">
+          <span
+            className="reveal-line"
+            style={{ "--line-delay": "200ms" } as React.CSSProperties}
+          >
+            <span>
+              Votre{" "}
+              <em
+                className="accent hl hl--draw"
+                style={{ "--hl-delay": "900ms" } as React.CSSProperties}
+              >
+                expertise
+              </em>{" "}
+              est complexe.
+            </span>
+          </span>
+          <span
+            className="reveal-line"
+            style={{ "--line-delay": "310ms" } as React.CSSProperties}
+          >
+            <span>
+              Votre communication{" "}
+              <em
+                className="accent hl hl--draw"
+                style={{ "--hl-delay": "1240ms" } as React.CSSProperties}
+              >
+                ne devrait pas l&apos;être.
+              </em>
+            </span>
           </span>
         </h1>
 
-        <p className="lead mt-7 max-w-[44ch]" data-hero-step="3">
-          Je développe la communication des structures innovantes en créant des
+        <p
+          className="lead mx-auto mt-8 max-w-[68ch] text-balance"
+          data-hero-step="3"
+        >
+          Studio créatif spécialisé tech &amp; industrie, basé à Grenoble. Je
+          développe la communication des structures innovantes en créant des
           visuels cohérents et adaptés à leur écosystème.
         </p>
 
         <div
-          className="mt-10 flex flex-wrap items-center gap-3"
+          className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-4"
           data-hero-step="4"
         >
           <CtaButton
@@ -43,31 +67,46 @@ export function Hero() {
               <Avatar
                 src={site.portrait}
                 alt="Portrait d'Axel Faure"
-                size={40}
+                size={48}
                 initials="AF"
               />
             }
           />
-          <GhostButton href="/projets" size="lg">
+          <Link
+            href="/projets"
+            className="group inline-flex items-center gap-2 text-[0.95rem] font-semibold text-ink underline decoration-line-2 underline-offset-4 transition-colors duration-200 hover:decoration-ink"
+          >
             Voir les réalisations
-          </GhostButton>
+            <span
+              aria-hidden="true"
+              className="transition-transform duration-200 ease-site group-hover:translate-x-[3px]"
+            >
+              →
+            </span>
+          </Link>
         </div>
 
-        <SocialProof />
         <Stats />
       </div>
 
-      <div className="pb-[clamp(3.5rem,8vw,5.5rem)]" data-hero-step="6">
+      <div
+        className="mx-auto w-full max-w-[84rem] px-[var(--gutter)] pb-[clamp(3rem,7vw,4.5rem)]"
+        data-hero-step="6"
+      >
         <Ticker
-          duration={40}
-          gap={4}
-          items={clientNames.map((name) => (
-            <span
-              key={name}
-              className="whitespace-nowrap text-[1.05rem] font-semibold tracking-[-0.01em] text-label"
-            >
-              {name}
-            </span>
+          duration={45}
+          gap={2}
+          soft
+          items={clientLogos.map((logo) => (
+            <Image
+              key={logo.src}
+              src={logo.src}
+              alt={logo.name}
+              width={900}
+              height={600}
+              sizes="96px"
+              className="h-16 w-24 object-contain opacity-60 transition-opacity duration-200 hover:opacity-100"
+            />
           ))}
         />
       </div>
@@ -75,66 +114,116 @@ export function Hero() {
   );
 }
 
-/**
- * Preuve sociale sous les boutons : visages clients, notation, et le
- * chiffre qui compte. Renvoie vers la section Avis.
- */
+/** Visages clients, notation et volume accompagné, au-dessus du titre. */
 function SocialProof() {
-  const testimonials = getTestimonials();
-
   return (
     <Link
       href="#avis"
-      className="group mt-10 inline-flex flex-col gap-3"
-      data-hero-step="5"
+      className="group flex flex-wrap items-center justify-center gap-x-5 gap-y-3"
     >
-      <span className="flex items-center gap-4">
-        <span className="flex -space-x-2.5">
-          {testimonials.slice(0, 4).map((t) => (
-            <Avatar
-              key={t.slug}
-              src={t.avatar}
-              alt=""
-              size={36}
-              initials="·"
-              className="ring-2 ring-paper"
-            />
-          ))}
+      <span className="flex items-center">
+        {clientFaces.map((src, i) => (
+          <span
+            key={src}
+            data-hero-step="1"
+            style={
+              {
+                "--enter-delay": `${60 + i * 45}ms`,
+                "--enter-y": "-12px",
+                "--enter-dur": "520ms",
+              } as React.CSSProperties
+            }
+            className="face-in relative -ml-2.5 first:ml-0"
+          >
+            <span className="face">
+              <Avatar
+                src={src}
+                alt=""
+                size={40}
+                initials="·"
+                className="face-cut"
+                style={
+                  {
+                    "--face-cut-x": "50px",
+                    "--face-cut-r": "23px",
+                  } as React.CSSProperties
+                }
+              />
+            </span>
+          </span>
+        ))}
+
+        <span
+          data-hero-step="1"
+          style={
+            {
+              "--enter-delay": `${60 + clientFaces.length * 45}ms`,
+              "--enter-y": "-12px",
+              "--enter-dur": "520ms",
+            } as React.CSSProperties
+          }
+          className="face-in relative z-10 -ml-2.5"
+        >
+          <span className="face">
+            <span className="grid h-10 w-10 place-items-center rounded-full border border-line bg-surface text-[0.72rem] font-bold text-ink">
+              +30
+            </span>
+          </span>
         </span>
-        <Stars rating={5} size={16} />
       </span>
 
-      <span className="eyebrow transition-colors duration-200 group-hover:text-ink">
-        {site.socialProof}
+      <span
+        data-hero-step="1"
+        style={
+          {
+            "--enter-delay": "400ms",
+            "--enter-y": "-10px",
+          } as React.CSSProperties
+        }
+      >
+        <Stars rating={5} size={15} />
+      </span>
+
+      <span
+        data-hero-step="1"
+        className="label"
+        style={
+          {
+            "--enter-delay": "450ms",
+            "--enter-y": "-10px",
+          } as React.CSSProperties
+        }
+      >
+        <strong className="font-bold text-ink">
+          {site.socialProof.strong}
+        </strong>{" "}
+        {site.socialProof.rest}
       </span>
     </Link>
   );
 }
 
-/** Bandeau des quatre chiffres. */
+/** Quatre chiffres posés directement sur le fond, sans carte ni filet. */
 function Stats() {
   return (
-    <div
-      data-hero-step="5"
-      className="relative mt-[clamp(3rem,6vw,4.5rem)] overflow-hidden rounded-card border border-line bg-surface shadow-e1"
-    >
-      <CornerTicks className="absolute inset-0 z-10" />
-
-      <dl className="grid grid-cols-2 gap-px bg-line md:grid-cols-4">
-        {heroStats.map((stat) => (
-          <div
-            key={stat.label}
-            className="flex flex-col bg-surface px-5 py-6 md:px-6 md:py-7"
-          >
-            <dt className="text-[clamp(1.75rem,3.6vw,2.35rem)] font-bold leading-none text-ink">
-              <Counter value={stat.value} />
-            </dt>
-            <dd className="mt-2.5 text-[0.85rem] leading-snug text-muted">
-              {stat.label}
-            </dd>
-          </div>
-        ))}
-      </dl>
-    </div>
+    <dl className="mt-[clamp(3rem,7vw,5rem)] grid w-full max-w-[62rem] grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4">
+      {heroStats.map((stat, i) => (
+        <div
+          key={stat.label}
+          data-hero-step="5"
+          style={
+            { "--enter-delay": `${800 + i * 70}ms` } as React.CSSProperties
+          }
+          className="flex flex-col items-center"
+        >
+          <dt className="font-mono text-[clamp(1.75rem,3.4vw,2.3rem)] font-medium leading-none tracking-[-0.03em] text-ink/85">
+            <Counter value={stat.value} />
+          </dt>
+          <dd className="mt-3 text-[0.875rem] leading-snug text-muted">
+            {stat.label}
+          </dd>
+        </div>
+      ))}
+    </dl>
   );
 }

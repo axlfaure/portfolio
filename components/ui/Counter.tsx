@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { onReady } from "@/lib/ready";
 
 const useIsomorphicLayoutEffect =
   typeof window === "undefined" ? useEffect : useLayoutEffect;
@@ -51,7 +52,6 @@ export function Counter({ value }: { value: string }) {
     if (!parsed) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     setDisplay(`${parsed.prefix}${format(0, parsed.decimals)}${parsed.suffix}`);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -73,18 +73,25 @@ export function Counter({ value }: { value: string }) {
       frame = requestAnimationFrame(tick);
     };
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (!entries[0]?.isIntersecting) return;
-        observer.disconnect();
-        run();
-      },
-      { threshold: 0.4 },
-    );
-    observer.observe(node);
+    let observer: IntersectionObserver | undefined;
+
+    // Le voile de chargement masque le hero : sans cette attente, le compteur
+    // aurait fini de tourner avant d'être visible.
+    const stop = onReady(() => {
+      observer = new IntersectionObserver(
+        (entries) => {
+          if (!entries[0]?.isIntersecting) return;
+          observer?.disconnect();
+          run();
+        },
+        { threshold: 0.4 },
+      );
+      observer.observe(node);
+    });
 
     return () => {
-      observer.disconnect();
+      stop();
+      observer?.disconnect();
       cancelAnimationFrame(frame);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

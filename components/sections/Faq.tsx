@@ -9,10 +9,13 @@ export function Faq() {
     <section id="faq" className="section scroll-mt-24">
       <div className="container-site grid gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.35fr)] lg:gap-16">
         <SectionHeader
-          index="06"
           eyebrow="FAQ"
-          meta={`${faq.length} questions`}
-          title="Ce que vous vous demandez déjà."
+          title={
+            <>
+              Ce que vous vous{" "}
+              <em className="accent hl hl--scroll">demandez déjà.</em>
+            </>
+          }
           className="lg:sticky lg:top-24 lg:self-start"
         />
 

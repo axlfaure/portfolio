@@ -20,19 +20,18 @@ type Props = {
  */
 export function CtaButton({ variant = "full", avatar, className }: Props) {
   const base =
-    "group inline-flex items-center rounded-full border border-line bg-surface shadow-e1 " +
-    "transition-[transform,box-shadow] duration-200 ease-site " +
-    "hover:-translate-y-0.5 hover:shadow-e2 active:translate-y-0";
+    "cta group inline-flex items-center rounded-full border border-line bg-surface " +
+    "shadow-e1 hover:border-line-2 hover:shadow-e2";
 
   if (variant === "compact") {
     return (
       <button
         type="button"
         onClick={openCalendly}
-        className={cn(base, "gap-2 py-2 pl-3.5 pr-4", className)}
+        className={cn(base, "h-11 gap-2.5 pl-4 pr-5", className)}
       >
         <Dot />
-        <span className="text-[0.85rem] font-semibold text-ink">
+        <span className="text-[0.875rem] font-semibold text-ink">
           Parlons de votre projet
         </span>
       </button>
@@ -43,14 +42,14 @@ export function CtaButton({ variant = "full", avatar, className }: Props) {
     <button
       type="button"
       onClick={openCalendly}
-      className={cn(base, "h-14 gap-3 pl-2 pr-6 text-left", className)}
+      className={cn(base, "h-[4.25rem] gap-4 pl-2.5 pr-8 text-left", className)}
     >
-      {avatar}
+      <span className="cta-avatar inline-flex shrink-0">{avatar}</span>
       <span className="flex flex-col leading-tight">
-        <span className="text-[0.95rem] font-bold text-ink">
+        <span className="cta-label block text-[1rem] font-bold text-ink">
           Parlons de votre projet
         </span>
-        <span className="mt-0.5 flex items-center gap-1.5 text-[0.8rem] text-muted">
+        <span className="mt-1 flex items-center gap-1.5 text-[0.85rem] text-muted">
           <Dot />
           {availability.label}
         </span>

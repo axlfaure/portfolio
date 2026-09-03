@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { notFound } from "next/navigation";
 import { Mdx } from "@/components/mdx/Mdx";
 import { FinalCta } from "@/components/sections/FinalCta";
@@ -45,18 +46,13 @@ export default async function ProjetPage({ params }: Params) {
   return (
     <>
       <article className="container-site pt-[clamp(2rem,5vw,3rem)]">
-        {/* 1 — Fil d'ariane */}
-        <nav aria-label="Fil d'ariane" className="eyebrow flex items-center gap-2">
-          <Link href="/" className="transition-colors hover:text-ink">
-            Accueil
-          </Link>
-          <span aria-hidden="true">/</span>
-          <Link href="/projets" className="transition-colors hover:text-ink">
-            Projets
-          </Link>
-          <span aria-hidden="true">/</span>
-          <span className="truncate text-ink-2">{project.client}</span>
-        </nav>
+        <Breadcrumb
+          trail={[
+            { href: "/", label: "Accueil" },
+            { href: "/projets", label: "Projets" },
+          ]}
+          current={project.client}
+        />
 
         {/* 2 — Titre */}
         <header className="mt-10 border-t border-line pt-8" data-reveal>
@@ -67,9 +63,7 @@ export default async function ProjetPage({ params }: Params) {
 
           <h1 className="h1 mt-5 max-w-[20ch]">{project.title}</h1>
 
-          {project.teaser && (
-            <p className="lead mt-5">{project.teaser}</p>
-          )}
+          {project.teaser && <p className="lead mt-5">{project.teaser}</p>}
 
           <ul className="mt-7 flex flex-wrap gap-2">
             {project.disciplines.map((d) => (
@@ -115,7 +109,10 @@ export default async function ProjetPage({ params }: Params) {
 
         {/* 6 — KPI */}
         {project.kpis.length > 0 && (
-          <dl data-reveal className="mt-[clamp(3rem,6vw,4.5rem)] grid gap-px overflow-hidden rounded-card border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+          <dl
+            data-reveal
+            className="mt-[clamp(3rem,6vw,4.5rem)] grid gap-px overflow-hidden rounded-card border border-line bg-line sm:grid-cols-2 lg:grid-cols-3"
+          >
             {project.kpis.map((kpi) => (
               <div key={kpi.value} className="bg-surface px-6 py-7">
                 <dt className="num text-[clamp(1.75rem,4vw,2.35rem)] font-bold leading-none text-ink">
@@ -151,18 +148,16 @@ export default async function ProjetPage({ params }: Params) {
 
         {/* 8 — Témoignage */}
         {testimonial && (
-          <figure data-reveal className="mt-[clamp(3rem,6vw,4.5rem)] rounded-card border border-line bg-surface p-8">
+          <figure
+            data-reveal
+            className="mt-[clamp(3rem,6vw,4.5rem)] rounded-card border border-line bg-surface p-8"
+          >
             <Stars rating={testimonial.rating} />
             <blockquote className="mt-5 max-w-[42rem] text-[1.1rem] font-semibold leading-snug text-ink">
               « {testimonial.quote} »
             </blockquote>
             <figcaption className="mt-6 flex items-center gap-3 border-t border-line pt-5">
-              <Avatar
-                src={testimonial.avatar}
-                alt=""
-                size={40}
-                initials="··"
-              />
+              <Avatar src={testimonial.avatar} alt="" size={40} initials="··" />
               <span>
                 <span className="block text-[0.875rem] font-bold text-ink">
                   {testimonial.name}
