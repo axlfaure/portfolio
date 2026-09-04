@@ -186,12 +186,134 @@
    commander.
    -------------------------------------------------------------------------- */
 
+/* Le gabarit de Payload rogne ce qui dépasse : on tient la marque DANS la
+   boîte plutôt que de lui imposer une hauteur qui débordait en largeur. */
 .af-mark {
   display: block;
-  width: auto !important;
-  max-width: none !important;
   object-fit: contain;
+  object-position: left center;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
 }
 
-.af-mark--nav { height: 22px !important; }
-.af-mark--login { height: 40px !important; }
+.af-mark--nav { max-height: 20px; max-width: 30px; }
+.af-mark--login { max-height: 40px; max-width: 58px; }
+
+/* --------------------------------------------------------------------------
+   Écran d'accueil.
+
+   Deux blocs : ce qui manque, puis où aller. Le premier porte l'information
+   qu'on ne trouve nulle part ailleurs, le second remplace les grandes cartes
+   d'origine par une grille dense qui, elle, dit au moins les volumes.
+   -------------------------------------------------------------------------- */
+
+.af-home {
+  display: grid;
+  gap: 2.25rem;
+  padding: clamp(1.25rem, 3vw, 2.5rem);
+  max-width: 72rem;
+}
+
+.af-start {
+  border: 1px solid var(--theme-elevation-100);
+  border-radius: var(--style-radius-l);
+  background: var(--theme-elevation-0);
+  padding: clamp(1.4rem, 3vw, 2rem);
+}
+
+.af-quick__title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  margin: 0 0 1rem;
+}
+
+.af-quick__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  gap: 0.7rem;
+}
+
+.af-quick__grid li {
+  position: relative;
+}
+
+.af-quick__card {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.95rem 1.1rem;
+  border: 1px solid var(--theme-elevation-100);
+  border-radius: var(--style-radius-m);
+  background: var(--theme-elevation-0);
+  text-decoration: none;
+  color: inherit;
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease;
+}
+
+.af-quick__card:hover,
+.af-quick__card:focus-visible {
+  border-color: var(--theme-elevation-250);
+  background: var(--theme-elevation-50);
+}
+
+.af-quick__count {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 1.35rem;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.af-quick__name {
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.af-quick__group {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--theme-elevation-450);
+}
+
+/* Le « + » est une action distincte de l'ouverture de la liste : il ne peut
+   pas vivre à l'intérieur du lien qui l'entoure. */
+.af-quick__add {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.55rem;
+  width: 1.7rem;
+  height: 1.7rem;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  font-size: 1.1rem;
+  line-height: 1;
+  text-decoration: none;
+  color: var(--theme-elevation-400);
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.af-quick__add:hover,
+.af-quick__add:focus-visible {
+  background: var(--color-blue-100);
+  color: var(--color-blue-600);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .af-quick__card,
+  .af-quick__add {
+    transition: none;
+  }
+}

@@ -1,4 +1,21 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import type { CollectionConfig } from "payload";
+
+/**
+ * Dossier des fichiers téléversés, en chemin absolu ancré sur ce fichier.
+ *
+ * Un chemin relatif est résolu depuis le répertoire courant du processus, qui
+ * n'est pas le même selon la façon dont le serveur est lancé : les fichiers
+ * étaient écrits dans le projet et cherchés un dossier au-dessus. Les
+ * visuels remontaient alors en 500, et `next/image` répondait « la ressource
+ * demandée n'est pas une image valide » — une erreur qui ne dit rien du vrai
+ * problème. Même piège que pour l'URL de la base.
+ */
+const mediaDir = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "../../media",
+);
 
 /**
  * Bibliothèque de médias, unique pour tout le site.
@@ -19,7 +36,7 @@ export const Media: CollectionConfig = {
   access: { read: () => true },
   admin: { useAsTitle: "filename", group: "Bibliothèque" },
   upload: {
-    staticDir: "media",
+    staticDir: mediaDir,
     mimeTypes: ["image/*", "video/*"],
     focalPoint: true,
     imageSizes: [

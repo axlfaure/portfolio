@@ -56,7 +56,11 @@ export default buildConfig({
         Icon: "@/cms/components/Brand#Icon",
         Logo: "@/cms/components/Brand#Logo",
       },
-      beforeDashboard: ["@/cms/components/Dashboard#Dashboard"],
+      views: {
+        // Remplacement complet : le tableau de bord d'origine rejouait la
+        // navigation de gauche en grandes cartes, sans rien ajouter.
+        dashboard: { Component: "@/cms/components/Dashboard#Dashboard" },
+      },
     },
   },
 
