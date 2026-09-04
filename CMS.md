@@ -71,3 +71,21 @@ npm run seed
 
 Relit les fichiers MDX de `content/` et les réinjecte. Réentrant : relancer ne
 duplique rien. Ces fichiers sont conservés comme archive de la reprise.
+
+## Construction : webpack, pas Turbopack
+
+`npm run build` passe volontairement par webpack (`next build --webpack`).
+
+Turbopack échoue sur Linux avec `TurbopackInternalError: Failed to write app
+endpoint`, causé par `pino`, le journaliseur de Payload : son
+`transport.js` référence `worker.js` d'une façon que le traçage de Turbopack
+interprète comme un dossier. Lire un fichier comme un répertoire renvoie
+`EINVAL` sur Linux, et le build panique. Sur Windows la même opération est
+tolérée, d'où un build vert en local et rouge sur le serveur.
+
+Ce n'est pas contournable par la configuration : `pino` figure déjà dans la
+liste d'exclusions par défaut de Next, avec un commentaire décrivant ce bug
+précis dans leur propre source.
+
+`npm run build:turbo` reste disponible pour tester si une version future de
+Next corrige le problème.
