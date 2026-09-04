@@ -1,0 +1,21 @@
+node_modules
+.next
+.git
+.gitignore
+Dockerfile
+Dockerfile.*
+docker-compose*.yml
+npm-debug.log*
+README.md
+.env*
+!.env.example
+# Données d'exécution : elles vivent dans un volume, jamais dans l'image.
+# Les copier figerait le contenu au moment du build et le ferait diverger
+# de ce que l'admin écrit ensuite.
+.data
+media
+
+# Sorties et outils locaux
+.claude
+_verif
+assets
