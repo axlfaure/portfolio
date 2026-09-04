@@ -57,7 +57,21 @@ function measure(dir) {
 
 measure(target);
 
+/*
+ * Une archive plutôt que 516 fichiers : un seul transfert, aucun risque
+ * d'oubli en cours de route, et bien plus rapide qu'un dépôt fichier par
+ * fichier sur une liaison SFTP.
+ */
+const { execFileSync } = await import("node:child_process");
+execFileSync("tar", ["-czf", "next-build.tar.gz", ".next"], {
+  cwd: path.join(root, "deploy"),
+});
+const archive = fs.statSync(path.join(root, "deploy", "next-build.tar.gz")).size;
+
 console.log(`Dossier prêt : deploy/.next`);
 console.log(`${files} fichiers, ${(bytes / 1024 / 1024).toFixed(1)} Mo`);
 console.log("");
-console.log("À envoyer à la racine du site, en remplaçant le .next existant.");
+console.log(
+  `Archive : deploy/next-build.tar.gz — ${(archive / 1024 / 1024).toFixed(1)} Mo`,
+);
+console.log("À envoyer à la racine du site, puis à extraire sur place.");
