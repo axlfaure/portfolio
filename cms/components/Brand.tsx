@@ -16,7 +16,7 @@ export function Icon() {
       alt=""
       width={32}
       height={24}
-      style={{ height: 24, width: "auto", display: "block" }}
+      className="af-mark af-mark--nav"
     />
   );
 }
@@ -30,7 +30,7 @@ export function Logo() {
         alt=""
         width={56}
         height={42}
-        style={{ height: 40, width: "auto", display: "block" }}
+        className="af-mark af-mark--login"
       />
       <span style={{ display: "grid", gap: ".2rem", textAlign: "left" }}>
         <strong
