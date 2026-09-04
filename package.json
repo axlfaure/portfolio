@@ -8,8 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "generate:types": "payload generate:types",
-    "seed": "tsx --env-file=.env cms/seed.ts",
-    "payload": "payload"
+    "seed": "tsx cms/seed.ts",
+    "payload": "payload",
+    "audit": "tsx cms/audit.ts"
   },
   "dependencies": {
     "@payloadcms/db-sqlite": "^3.88.0",
@@ -26,7 +27,8 @@
     "payload": "^3.88.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "sharp": "^0.35.4"
+    "sharp": "^0.35.4",
+    "tsx": "^4.22.4"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
