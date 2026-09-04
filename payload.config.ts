@@ -1,6 +1,5 @@
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { sqliteAdapter } from "@payloadcms/db-sqlite";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import { fr } from "@payloadcms/translations/languages/fr";
@@ -16,25 +15,31 @@ import { Services } from "./cms/collections/Services";
 import { Testimonials } from "./cms/collections/Testimonials";
 import { Users } from "./cms/collections/Users";
 
-const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /**
- * Chemin absolu de la base, ancré sur ce fichier.
+ * Emplacement de la base.
  *
- * Un chemin relatif serait résolu depuis le répertoire courant du processus,
- * qui n'est pas le même selon qu'on lance le serveur de développement, le
- * build ou un script : le serveur ouvrait alors un fichier inexistant pendant
- * que le script de reprise écrivait dans le bon.
+ * Surtout pas déduit de l'emplacement de ce fichier : webpack fige cette
+ * valeur au moment de la compilation, et un build fait sur un poste puis
+ * exécuté sur un serveur emporterait le chemin du poste.
+ *
+ * `DATABASE_URI` a donc le dernier mot. À défaut, on part du répertoire
+ * d'exécution, que `next start` place à la racine du projet.
  */
-const dataDir = path.resolve(dirname, ".data");
+const dataDir = path.resolve(process.cwd(), ".data");
 
 /*
  * SQLite crée le fichier de base, jamais le dossier qui le contient. Or `.data`
  * est exclu du dépôt : sur un serveur fraîchement cloné il est absent, et la
  * connexion échoue en SQLITE_CANTOPEN — une erreur qui ne dit pas qu'il ne
- * manque qu'un répertoire.
+ * manque qu'un répertoire. L'échec de création reste toléré : il ne doit pas
+ * emporter toute l'application au démarrage.
  */
-fs.mkdirSync(dataDir, { recursive: true });
+try {
+  fs.mkdirSync(dataDir, { recursive: true });
+} catch {
+  // Chemin inaccessible : la connexion échouera plus loin, avec son message.
+}
 
 const localDb = `file:${path.join(dataDir, "site.db").replace(/\\/g, "/")}`;
 
@@ -89,7 +94,9 @@ export default buildConfig({
 
   // Rend les types de la base disponibles côté site, régénérés à chaque
   // démarrage : le contenu et le code ne peuvent pas diverger en silence.
-  typescript: { outputFile: path.resolve(dirname, "cms/payload-types.ts") },
+  typescript: {
+    outputFile: path.resolve(process.cwd(), "cms/payload-types.ts"),
+  },
 
   secret: process.env.PAYLOAD_SECRET || "",
 

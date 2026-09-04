@@ -1,26 +1,35 @@
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import type { CollectionConfig } from "payload";
 
 /**
- * Dossier des fichiers téléversés, en chemin absolu ancré sur ce fichier.
+ * Dossier des fichiers téléversés.
  *
- * Un chemin relatif est résolu depuis le répertoire courant du processus, qui
- * n'est pas le même selon la façon dont le serveur est lancé : les fichiers
- * étaient écrits dans le projet et cherchés un dossier au-dessus. Les
- * visuels remontaient alors en 500, et `next/image` répondait « la ressource
- * demandée n'est pas une image valide » — une erreur qui ne dit rien du vrai
- * problème. Même piège que pour l'URL de la base.
+ * Surtout pas déduit de l'emplacement de ce fichier : webpack fige cette
+ * valeur au moment de la compilation. Le site étant construit sur un poste
+ * Windows puis exécuté sur un serveur Linux, le chemin gravé dans le build
+ * désignait `C:/Users/...`, introuvable, et toute l'administration tombait au
+ * démarrage.
+ *
+ * `MEDIA_DIR` fixe donc le chemin explicitement en production. À défaut, on
+ * part du répertoire d'exécution, que `next start` place à la racine du
+ * projet.
  */
-const mediaDir = path.resolve(
-  path.dirname(fileURLToPath(import.meta.url)),
-  "../../media",
-);
+const mediaDir = process.env.MEDIA_DIR
+  ? path.resolve(process.env.MEDIA_DIR)
+  : path.resolve(process.cwd(), "media");
 
-// Même raison que pour la base : le dossier est exclu du dépôt, Payload ne
-// le crée pas, et un déploiement neuf échouerait au premier téléversement.
-fs.mkdirSync(mediaDir, { recursive: true });
+/*
+ * Le dossier est exclu du dépôt : Payload ne le crée pas, et un déploiement
+ * neuf échouerait au premier téléversement. L'échec reste toléré — une
+ * variable mal renseignée ne doit pas emporter toute l'administration au
+ * démarrage, elle doit se manifester au moment d'un téléversement.
+ */
+try {
+  fs.mkdirSync(mediaDir, { recursive: true });
+} catch {
+  // Chemin inaccessible : Payload le signalera lui-même à l'usage.
+}
 
 /**
  * Bibliothèque de médias, unique pour tout le site.
