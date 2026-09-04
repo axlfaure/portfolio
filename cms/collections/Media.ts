@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import type { CollectionConfig } from "payload";
@@ -16,6 +17,10 @@ const mediaDir = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "../../media",
 );
+
+// Même raison que pour la base : le dossier est exclu du dépôt, Payload ne
+// le crée pas, et un déploiement neuf échouerait au premier téléversement.
+fs.mkdirSync(mediaDir, { recursive: true });
 
 /**
  * Bibliothèque de médias, unique pour tout le site.

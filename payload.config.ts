@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { sqliteAdapter } from "@payloadcms/db-sqlite";
@@ -25,7 +26,17 @@ const dirname = path.dirname(fileURLToPath(import.meta.url));
  * build ou un script : le serveur ouvrait alors un fichier inexistant pendant
  * que le script de reprise écrivait dans le bon.
  */
-const localDb = `file:${path.resolve(dirname, ".data/site.db").replace(/\\/g, "/")}`;
+const dataDir = path.resolve(dirname, ".data");
+
+/*
+ * SQLite crée le fichier de base, jamais le dossier qui le contient. Or `.data`
+ * est exclu du dépôt : sur un serveur fraîchement cloné il est absent, et la
+ * connexion échoue en SQLITE_CANTOPEN — une erreur qui ne dit pas qu'il ne
+ * manque qu'un répertoire.
+ */
+fs.mkdirSync(dataDir, { recursive: true });
+
+const localDb = `file:${path.join(dataDir, "site.db").replace(/\\/g, "/")}`;
 
 /**
  * Configuration Payload.
