@@ -46,3 +46,6 @@ next-env.d.ts
 /cms/payload-types.ts
 .env
 .env*.local
+
+# dossier de transfert produit par npm run package
+/deploy

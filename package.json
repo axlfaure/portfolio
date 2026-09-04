@@ -11,7 +11,8 @@
     "seed": "tsx cms/seed.ts",
     "payload": "payload",
     "audit": "tsx cms/audit.ts",
-    "build:turbo": "next build"
+    "build:turbo": "next build",
+    "package": "node scripts/package-deploy.mjs"
   },
   "dependencies": {
     "@payloadcms/db-sqlite": "^3.88.0",
