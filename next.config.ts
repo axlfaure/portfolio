@@ -2,15 +2,19 @@ import { withPayload } from "@payloadcms/next/withPayload";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /**
-   * Sortie autonome, pour l'hébergement en conteneur.
+  /*
+   * Pas de `output: "standalone"` ici.
    *
-   * Next assemble alors dans `.next/standalone` un serveur complet avec les
-   * seules dépendances qu'il utilise vraiment. C'est ce dossier que le
-   * Dockerfile copie — sans cette option il n'existe pas, et l'image se
-   * construisait sur du vide.
+   * Cette option assemble un serveur autonome dans `.next/standalone`, ce dont
+   * le Dockerfile a besoin — mais Next 16 refuse alors de démarrer par
+   * `next start`, qui est la commande d'exécution du site Node.js chez
+   * l'hébergeur. Les deux modes s'excluent.
+   *
+   * Le déploiement se faisant aujourd'hui par dépôt git et `next start`, c'est
+   * ce mode qui prime. Si le site repassait un jour en conteneur, il faudrait
+   * rétablir `output: "standalone"` et changer la commande d'exécution en
+   * `node .next/standalone/server.js`.
    */
-  output: "standalone",
 
   experimental: {
     /**
