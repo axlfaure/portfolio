@@ -9,7 +9,7 @@ export const Posts: CollectionConfig = {
   access: { read: () => true },
   admin: {
     useAsTitle: "title",
-    defaultColumns: ["title", "category", "date"],
+    defaultColumns: ["cover", "title", "category", "date"],
     group: "Contenu",
   },
   hooks: revalidate((doc) => ["/blog", `/blog/${doc.slug}`]),

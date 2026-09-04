@@ -16,7 +16,7 @@ export const Logos: CollectionConfig = {
   access: { read: () => true },
   admin: {
     useAsTitle: "name",
-    defaultColumns: ["name", "order"],
+    defaultColumns: ["image", "name", "order"],
     group: "Accueil",
     description: "Bandeau défilant du haut de page.",
   },

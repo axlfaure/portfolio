@@ -45,8 +45,18 @@ const localDb = `file:${path.resolve(dirname, ".data/site.db").replace(/\\/g, "/
 export default buildConfig({
   admin: {
     user: Users.slug,
-    meta: {
-      titleSuffix: " · Administration Axel Faure",
+    meta: { titleSuffix: " · Administration Axel Faure" },
+
+    // Le site est en clair uniquement ; alterner entre les deux à chaque
+    // aller-retour entre l'édition et le rendu fatigue pour rien.
+    theme: "light",
+
+    components: {
+      graphics: {
+        Icon: "@/cms/components/Brand#Icon",
+        Logo: "@/cms/components/Brand#Logo",
+      },
+      beforeDashboard: ["@/cms/components/Dashboard#Dashboard"],
     },
   },
 

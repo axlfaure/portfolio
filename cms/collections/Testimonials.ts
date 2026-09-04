@@ -9,7 +9,7 @@ export const Testimonials: CollectionConfig = {
   access: { read: () => true },
   admin: {
     useAsTitle: "name",
-    defaultColumns: ["name", "org", "rating", "featured"],
+    defaultColumns: ["avatar", "name", "org", "rating", "featured"],
     group: "Contenu",
   },
   hooks: revalidate(() => [HOME]),

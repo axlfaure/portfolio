@@ -95,14 +95,20 @@ export const Services: CollectionConfig = {
               name: "forWho",
               type: "array",
               label: "Pour qui",
-              admin: { description: "Affiché en liste à puces cochées." },
+              admin: {
+                description: "Affiché en liste à puces cochées.",
+                components: { RowLabel: "@/cms/components/RowLabels#ValueRowLabel" },
+              },
               fields: [{ name: "value", type: "text", required: true, label: "Profil" }],
             },
             {
               name: "deliverables",
               type: "array",
               label: "Livrables",
-              admin: { description: "Grille bento avec un pictogramme par ligne." },
+              admin: {
+                description: "Grille bento avec un pictogramme par ligne.",
+                components: { RowLabel: "@/cms/components/RowLabels#DeliverableRowLabel" },
+              },
               fields: [
                 { name: "name", type: "text", required: true, label: "Livrable" },
                 {
@@ -120,7 +126,10 @@ export const Services: CollectionConfig = {
               name: "process",
               type: "array",
               label: "Déroulé",
-              admin: { description: "Chronologie verticale, avec jauge de progression au défilement." },
+              admin: {
+                description: "Chronologie verticale, avec jauge de progression au défilement.",
+                components: { RowLabel: "@/cms/components/RowLabels#StepRowLabel" },
+              },
               fields: [
                 { name: "step", type: "text", required: true, label: "Étape" },
                 { name: "duration", type: "text", required: true, label: "Durée" },
@@ -131,6 +140,7 @@ export const Services: CollectionConfig = {
               name: "engagements",
               type: "array",
               label: "Formats d'engagement",
+              admin: { components: { RowLabel: "@/cms/components/RowLabels#EngagementRowLabel" } },
               fields: [
                 { name: "name", type: "text", required: true, label: "Format" },
                 { name: "best", type: "text", required: true, label: "Idéal pour" },
@@ -138,6 +148,7 @@ export const Services: CollectionConfig = {
                   name: "points",
                   type: "array",
                   label: "Avantages",
+                  admin: { components: { RowLabel: "@/cms/components/RowLabels#ValueRowLabel" } },
                   fields: [{ name: "value", type: "text", required: true, label: "Avantage" }],
                 },
               ],
@@ -146,6 +157,7 @@ export const Services: CollectionConfig = {
               name: "faq",
               type: "array",
               label: "Questions propres au service",
+              admin: { components: { RowLabel: "@/cms/components/RowLabels#QaRowLabel" } },
               fields: [
                 { name: "q", type: "text", required: true, label: "Question" },
                 { name: "a", type: "textarea", required: true, label: "Réponse" },

@@ -12,6 +12,8 @@ import config from "@payload-config";
 import { handleServerFunctions, RootLayout } from "@payloadcms/next/layouts";
 import { importMap } from "./admin/importMap";
 import "@payloadcms/next/css";
+// Après celle de Payload : elle ne fait que redéfinir des variables.
+import "@/cms/styles/admin.css";
 
 type Args = { children: React.ReactNode };
 

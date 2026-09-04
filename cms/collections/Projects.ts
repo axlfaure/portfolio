@@ -27,7 +27,7 @@ export const Projects: CollectionConfig = {
   access: { read: () => true },
   admin: {
     useAsTitle: "title",
-    defaultColumns: ["title", "client", "featured", "order"],
+    defaultColumns: ["cover", "title", "client", "featured", "order"],
     group: "Contenu",
   },
   hooks: revalidate((doc) => [HOME, "/projets", `/projets/${doc.slug}`]),
@@ -72,6 +72,7 @@ export const Projects: CollectionConfig = {
               label: "Disciplines",
               admin: {
                 description: "Étiquettes des cartes, et filtres de la page Projets.",
+                components: { RowLabel: "@/cms/components/RowLabels#ValueRowLabel" },
               },
               fields: [{ name: "value", type: "text", required: true, label: "Discipline" }],
             },
@@ -92,6 +93,7 @@ export const Projects: CollectionConfig = {
               type: "array",
               label: "Chiffres clés",
               maxRows: 3,
+              admin: { components: { RowLabel: "@/cms/components/RowLabels#KpiRowLabel" } },
               fields: [
                 { name: "value", type: "text", required: true, label: "Valeur" },
                 { name: "label", type: "text", required: true, label: "Libellé" },
@@ -127,7 +129,8 @@ export const Projects: CollectionConfig = {
               maxRows: 4,
               admin: {
                 description:
-                  "Trois ou quatre visuels. L'ordre fixe la place : 1 large, 2 presque carré, 3 large, 4 presque carré. À trois, le troisième occupe toute la largeur du bas.",
+                  "L'ordre fixe la place. À quatre visuels : carrée, large, large, carrée. À trois : large, carrée, puis un bandeau pleine largeur. Chaque ligne repliée annonce sa case.",
+                components: { RowLabel: "@/cms/components/RowLabels#PanelRowLabel" },
               },
               fields: [
                 { name: "image", type: "upload", relationTo: "media", required: true, label: "Visuel" },
@@ -137,7 +140,10 @@ export const Projects: CollectionConfig = {
               name: "gallery",
               type: "array",
               label: "Galerie de la page projet",
-              admin: { description: "Visuels de détail, sous le récit du projet." },
+              admin: {
+                description: "Visuels de détail, sous le récit du projet.",
+                components: { RowLabel: "@/cms/components/RowLabels#GalleryRowLabel" },
+              },
               fields: [
                 { name: "image", type: "upload", relationTo: "media", required: true, label: "Visuel" },
               ],
