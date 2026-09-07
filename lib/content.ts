@@ -367,11 +367,24 @@ export const getLogos = cache(async (): Promise<ClientLogo[]> => {
  */
 export const getMails = cache(async (): Promise<Mail[]> => {
   const payload = await db();
-  const { docs } = await payload.find({
-    collection: "mails",
-    sort: "order",
-    ...QUERY,
-  });
+
+  /*
+   * La table peut manquer : elle est créée par `npm run seed:sections`, et
+   * l'exécutable de production ne modifie pas le schéma tout seul. Entre le
+   * déploiement du code et cette commande, la requête échouerait et
+   * emporterait toute la page d'accueil. Le repli évite d'imposer un ordre
+   * qu'il suffirait d'inverser une fois pour mettre le site à terre.
+   */
+  let docs: MailDoc[];
+  try {
+    ({ docs } = await payload.find({
+      collection: "mails",
+      sort: "order",
+      ...QUERY,
+    }));
+  } catch {
+    return MAILS_PAR_DEFAUT;
+  }
 
   if (docs.length === 0) return MAILS_PAR_DEFAUT;
 
@@ -407,7 +420,15 @@ export type AboutSection = {
  */
 export const getAbout = cache(async (): Promise<AboutSection | null> => {
   const payload = await db();
-  const doc = await payload.findGlobal({ slug: "about", depth: 2 });
+
+  // Même raison que pour les messages : la table du global n'existe qu'après
+  // `npm run seed:sections`. Le composant sait se passer de ce contenu.
+  let doc: Awaited<ReturnType<typeof payload.findGlobal>> | null;
+  try {
+    doc = await payload.findGlobal({ slug: "about", depth: 2 });
+  } catch {
+    return null;
+  }
 
   if (!doc?.titleStart) return null;
 
