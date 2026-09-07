@@ -18,7 +18,11 @@ export async function Nav() {
 
   return (
     <StickyHeader>
-      <div className="container-site grid h-20 grid-cols-[auto_1fr_auto] items-center gap-6">
+      {/* Flex et non grille à trois colonnes : les liens disparaissent sous
+          56rem, et une grille les remplace par une colonne vide. Le groupe de
+          droite glissait alors dans la colonne du milieu, ce qui plaçait le
+          burger juste après le logo au lieu du bord droit. */}
+      <div className="container-site flex h-20 items-center justify-between gap-6">
         <Link href="/" aria-label={`${site.name} — accueil`}>
           <Logo />
         </Link>

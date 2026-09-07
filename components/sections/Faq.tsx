@@ -7,7 +7,7 @@ export async function Faq() {
 
   return (
     <section id="faq" className="section scroll-mt-24">
-      <div className="container-site grid gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.35fr)] lg:gap-16">
+      <div className="container-site grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.35fr)] lg:gap-16">
         <SectionHeader
           eyebrow="FAQ"
           title={

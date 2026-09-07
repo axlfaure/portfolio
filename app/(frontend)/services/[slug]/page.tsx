@@ -150,7 +150,7 @@ export default async function ServicePage({ params }: Params) {
 
         {/* 2 — En-tête : la promesse à gauche, l'action et les repères à droite */}
         <header
-          className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.62fr)] lg:items-end lg:gap-16"
+          className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.62fr)] lg:items-end lg:gap-16"
           data-reveal
         >
           <div>
@@ -199,7 +199,7 @@ export default async function ServicePage({ params }: Params) {
           <section className={SECTION} data-reveal>
             <p className="eyebrow">Le contexte</p>
 
-            <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,0.62fr)_minmax(0,1fr)] lg:gap-16">
+            <div className="mt-8 grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,0.62fr)_minmax(0,1fr)] lg:gap-16">
               <Media
                 src={`/services/${service.slug}/contexte.jpg`}
                 alt=""

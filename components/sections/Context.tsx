@@ -36,7 +36,7 @@ const strains: { icon: FeatureIconName; lead: string; line: string }[] = [
 export function Context() {
   return (
     <section className="section">
-      <div className="container-site grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] lg:gap-16">
+      <div className="container-site grid grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] lg:gap-16">
         <div data-reveal>
           <p className="eyebrow">Le contexte</p>
 

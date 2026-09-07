@@ -52,7 +52,7 @@ export function NavLinks({ services }: { services: NavService[] }) {
   return (
     <nav
       aria-label="Navigation principale"
-      className="hidden items-center justify-center gap-8 nav:flex"
+      className="hidden flex-1 items-center justify-center gap-8 nav:flex"
     >
       {navLinks.map((link) => {
         const current =
