@@ -11,7 +11,7 @@ export const site = {
   city: "Grenoble",
   url: "https://axelfaure.fr",
   email: "contact@axelfaure.fr",
-  calendlyUrl: "https://calendly.com/axelfaure/30min",
+  calendlyUrl: "https://calendly.com/axelfaure64/30min",
   /** Portrait détouré, fond bleu conservé. */
   portrait: "/axel.png",
   /** Libellé sous la pile d'avatars du hero. La partie `strong` est en gras. */

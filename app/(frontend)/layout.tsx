@@ -4,6 +4,7 @@ import {
   JetBrains_Mono,
   Plus_Jakarta_Sans,
 } from "next/font/google";
+import { CalendlyModal } from "@/components/layout/CalendlyModal";
 import { Footer } from "@/components/layout/Footer";
 import { RevealObserver } from "@/components/motion/RevealObserver";
 import { SmoothScroll } from "@/components/motion/SmoothScroll";
@@ -87,6 +88,7 @@ export default function RootLayout({
         <Nav />
         <main id="contenu">{children}</main>
         <Footer />
+        <CalendlyModal />
       </body>
     </html>
   );
