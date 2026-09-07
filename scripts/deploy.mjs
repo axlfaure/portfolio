@@ -63,10 +63,16 @@ const install = [
 console.log(`\n2/2  Transfert et installation (${(size / 1024 / 1024).toFixed(1)} Mo)`);
 console.log("     Le mot de passe SSH est demandé une fois.\n");
 
-server.run(install, {
-  input: fs.readFileSync(archive),
-  stdio: ["pipe", "inherit", "inherit"],
-});
+/*
+ * L'archive est lue directement depuis le fichier, sans passer par la mémoire
+ * de Node : un tampon de cette taille en ressort tronqué.
+ */
+const input = fs.openSync(archive, "r");
+try {
+  server.run(install, { stdio: [input, "inherit", "inherit"] });
+} finally {
+  fs.closeSync(input);
+}
 
 console.log("");
 console.log("Transfert terminé.");

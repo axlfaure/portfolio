@@ -50,14 +50,33 @@ const collect = [
 console.log(`Destination : ${dir}`);
 console.log("Le mot de passe SSH est demandé une fois.\n");
 
-const archive = server.run(collect, {
-  stdio: ["inherit", "pipe", "inherit"],
-  maxBuffer: 512 * 1024 * 1024,
-});
-
 const tarball = path.join(dir, "contenu.tar.gz");
-fs.writeFileSync(tarball, archive);
-execFileSync("tar", ["-xzf", "contenu.tar.gz"], { cwd: dir });
+
+/*
+ * L'archive est écrite directement dans le fichier, sans passer par la mémoire
+ * de Node. Un premier essai la faisait remonter en tampon : elle en revenait
+ * tronquée, et l'extraction s'arrêtait au milieu d'une image.
+ */
+const out = fs.openSync(tarball, "w");
+try {
+  server.run(collect, { stdio: ["inherit", out, "inherit"] });
+} finally {
+  fs.closeSync(out);
+}
+
+console.log(`\nArchive reçue : ${(fs.statSync(tarball).size / 1024 / 1024).toFixed(1)} Mo`);
+
+/*
+ * Une sauvegarde incomplète est pire qu'une sauvegarde absente : elle en a
+ * l'air. Si l'extraction échoue, le dossier part avec elle.
+ */
+try {
+  execFileSync("tar", ["-xzf", "contenu.tar.gz"], { cwd: dir, stdio: "inherit" });
+} catch {
+  fs.rmSync(dir, { recursive: true, force: true });
+  console.error("\nArchive illisible, sauvegarde abandonnée et dossier retiré.");
+  process.exit(1);
+}
 fs.rmSync(tarball);
 
 /** Poids réel de la copie, seule preuve qu'elle n'est pas vide. */
