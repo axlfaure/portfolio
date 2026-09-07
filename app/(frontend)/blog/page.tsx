@@ -18,6 +18,7 @@ export default async function BlogPage() {
     <>
       <div className="container-site pb-[var(--section-y)] pt-[clamp(3rem,7vw,4.5rem)]">
         <SectionHeader
+          as="h1"
           eyebrow="Blog"
           title={
             <>

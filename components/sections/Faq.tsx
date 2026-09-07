@@ -26,16 +26,13 @@ export async function Faq() {
           data-reveal
           className="overflow-hidden rounded-card border border-line bg-surface"
         >
-          {faq.map((item, i) => (
+          {faq.map((item) => (
             <details
               key={item.slug}
               name="faq"
               className="group border-line [&:not(:first-child)]:border-t"
             >
               <summary className="flex cursor-pointer list-none items-start gap-4 px-6 py-5 text-left transition-colors duration-200 hover:bg-paper">
-                <span className="eyebrow mt-1 shrink-0 tabular-nums">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
                 <span className="flex-1 text-[0.975rem] font-semibold leading-snug text-ink">
                   {item.question}
                 </span>
@@ -55,7 +52,7 @@ export async function Faq() {
                 </svg>
               </summary>
 
-              <div className="pb-6 pl-[3.9rem] pr-14 text-[0.925rem] [&>p:first-child]:mt-0">
+              <div className="pb-6 pl-6 pr-14 text-[0.925rem] [&>p:first-child]:mt-0">
                 <Mdx source={item.body} />
               </div>
             </details>

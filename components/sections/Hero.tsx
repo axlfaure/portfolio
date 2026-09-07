@@ -88,7 +88,9 @@ export async function Hero() {
           />
           <Link
             href={hero?.linkHref || "/projets"}
-            className="group inline-flex items-center gap-2 text-[0.95rem] font-semibold text-ink underline decoration-line-2 underline-offset-4 transition-colors duration-200 hover:decoration-ink"
+            /* `-my-2.5 py-2.5` : 44 px de haut au doigt sans décaler le lien
+               d'un pixel par rapport au bouton qui le précède. */
+            className="group -my-2.5 inline-flex items-center gap-2 py-2.5 text-[0.95rem] font-semibold text-ink underline decoration-line-2 underline-offset-4 transition-colors duration-200 hover:decoration-ink"
           >
             {hero?.linkLabel || "Voir les réalisations"}
             <span

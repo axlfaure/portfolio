@@ -87,6 +87,20 @@
     border-radius: 4px;
   }
 
+  /* Le navigateur donne au bouton la flèche par défaut, réservée au texte
+     inerte. Rien ne distingue alors le bouton de prise de rendez-vous d'un
+     paragraphe, alors que le moindre lien à côté fait apparaître la main. */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  summary {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+
   a {
     color: inherit;
     text-decoration: none;

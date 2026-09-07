@@ -52,12 +52,12 @@ export function Footer() {
           {columns.map((column) => (
             <nav key={column.title} aria-label={column.title}>
               <p className="eyebrow">{column.title}</p>
-              <ul className="mt-5 space-y-3">
+              <ul className="mt-4 space-y-0.5">
                 {column.links.map((link) => (
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-[0.9rem] text-muted transition-colors duration-200 hover:text-ink"
+                      className="inline-block py-1.5 text-[0.9rem] text-muted transition-colors duration-200 hover:text-ink"
                     >
                       {link.label}
                     </Link>

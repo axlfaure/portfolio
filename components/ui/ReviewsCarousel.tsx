@@ -178,14 +178,18 @@ export function ReviewsCarousel({ items }: { items: ReactNode[] }) {
             // biome-ignore lint/suspicious/noArrayIndexKey: l'ordre des avis est
             // fixe et la liste n'est ni triée ni filtrée après le rendu.
             key={i}
-            className="w-full shrink-0 snap-start"
+            /* `relative` n'est pas décoratif : les mentions `sr-only` des
+               étoiles sont en position absolue. Sans bloc conteneur ici, elles
+               se posent dans la page entière, hors de la piste, et ajoutent
+               314 px de défilement horizontal au document. */
+            className="relative w-full shrink-0 snap-start"
           >
             {carte}
           </div>
         ))}
       </div>
 
-      <div className="mt-6 flex justify-center gap-2.5">
+      <div className="-my-2.5 mt-4 flex justify-center gap-1">
         {items.map((_, i) => (
           <button
             // biome-ignore lint/suspicious/noArrayIndexKey: même raison.
@@ -194,9 +198,9 @@ export function ReviewsCarousel({ items }: { items: ReactNode[] }) {
             onClick={() => aller(i)}
             aria-label={`Avis ${i + 1} sur ${items.length}`}
             aria-current={i === actif}
-            /* Cible de 24 px au doigt pour une pastille de 7 : le point visible
-               n'a pas à dicter la surface touchable. */
-            className="grid h-6 w-6 place-items-center"
+            /* Cible de 44 px de haut au doigt pour une pastille de 7 :
+               le point visible n'a pas à dicter la surface touchable. */
+            className="grid h-11 w-8 place-items-center"
           >
             <span
               className={cn(

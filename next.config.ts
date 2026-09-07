@@ -36,6 +36,15 @@ const nextConfig: NextConfig = {
      * effet notable en local, où la mémoire n'est pas la contrainte.
      */
     webpackMemoryOptimizations: true,
+
+    /**
+     * Sert `app/global-not-found.tsx` aux adresses qui ne correspondent à
+     * aucune route. Sans ce drapeau, elles reçoivent l'écran noir anglophone
+     * de Next : le site a deux mises en page racines, l'une publique et
+     * l'une pour l'administration, et Next n'a donc pas de racine commune où
+     * poser un 404. C'est exactement le cas que cette option couvre.
+     */
+    globalNotFound: true,
   },
 };
 

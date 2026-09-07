@@ -96,6 +96,21 @@ export function ProjectsGrid({
         ))}
       </div>
 
+      {/* Un filtre qui ne renvoie rien laisse sinon une page blanche sous les
+          boutons, sans rien qui dise ce qui vient de se passer. */}
+      {shown.length === 0 && (
+        <p className="mt-10 rounded-card border border-dashed border-line-2 px-6 py-10 text-center text-[0.95rem] text-muted">
+          Aucun projet dans cette famille pour le moment.{" "}
+          <button
+            type="button"
+            onClick={() => setActive(ALL)}
+            className="font-semibold text-ink underline underline-offset-4"
+          >
+            Voir tous les projets
+          </button>
+        </p>
+      )}
+
       <p aria-live="polite" className="sr-only">
         {shown.length} projet{shown.length > 1 ? "s" : ""} affiché
         {shown.length > 1 ? "s" : ""}.

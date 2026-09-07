@@ -44,6 +44,22 @@ export const metadata: Metadata = {
   },
   description:
     "Studio créatif tech & industrie à Grenoble. Branding, supports salon et print, sites web et interfaces pour les structures de la recherche, de l'innovation et de l'industrie.",
+  /*
+   * Sans ce bloc, une adresse du site collée dans LinkedIn, WhatsApp ou un
+   * mail sort en ligne de texte grise, sans titre ni image. La vignette
+   * elle-même est dessinée par opengraph-image.tsx, que Next rattache seul
+   * à toutes les pages du groupe.
+   */
+  openGraph: {
+    type: "website",
+    locale: "fr_FR",
+    siteName: site.name,
+    url: site.url,
+    title: "Axel Faure · Designer freelance tech et industrie à Grenoble",
+    description:
+      "Studio créatif tech & industrie à Grenoble. Branding, supports salon et print, sites web et interfaces pour les structures de la recherche, de l'innovation et de l'industrie.",
+  },
+  twitter: { card: "summary_large_image" },
 };
 
 export const viewport: Viewport = {
