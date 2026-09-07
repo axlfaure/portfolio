@@ -16,6 +16,9 @@ const CADENCE = 5200;
 /** Répit accordé après un geste, avant que l'avance reprenne la main. */
 const REPIT = 12000;
 
+/** Silence à observer avant de considérer que le défilement est retombé. */
+const REPOS = 140;
+
 const REQUETE = "(prefers-reduced-motion: reduce)";
 
 /**
@@ -35,6 +38,23 @@ function useReglageCalme(): boolean {
 }
 
 /**
+ * Pas réel d'une carte à la suivante.
+ *
+ * Mesuré entre deux cartes, jamais déduit de la largeur du conteneur : la
+ * gouttière s'ajoute à chaque pas, et l'ignorer décale la position un peu plus
+ * à chaque avance jusqu'à immobiliser la piste entre deux cartes.
+ */
+function pas(piste: HTMLElement): number {
+  const cartes = piste.children;
+  if (cartes.length > 1) {
+    const a = (cartes[0] as HTMLElement).offsetLeft;
+    const b = (cartes[1] as HTMLElement).offsetLeft;
+    if (b > a) return b - a;
+  }
+  return piste.clientWidth || 1;
+}
+
+/**
  * Carrousel des avis, pour les écrans étroits.
  *
  * Les deux bandes défilantes de la version large ne tiennent pas sur un
@@ -42,19 +62,18 @@ function useReglageCalme(): boolean {
  * on ne lit ni l'une ni l'autre. Ici une seule carte à la fois, qu'on fait
  * glisser au doigt.
  *
- * Le défilement est celui du navigateur, avec accroche : le geste garde son
- * inertie, sa vitesse et son rebond natifs, ce qu'aucune reprise en JavaScript
- * n'égale. Le code ne fait que lire la position pour allumer la bonne pastille,
- * et proposer une avance automatique.
+ * Le défilement est celui du navigateur, avec aimantation : le geste garde son
+ * inertie et son rebond natifs, ce qu'aucune reprise en JavaScript n'égale. Le
+ * code ne fait que lire la position pour allumer la bonne pastille, et proposer
+ * une avance automatique.
  *
  * Cette avance s'efface devant l'utilisateur : tout geste lui coupe la parole
- * pour douze secondes. Rien n'est plus agaçant qu'un carrousel qui reprend la
- * main au milieu d'une lecture. Elle ne démarre pas du tout si le système
- * demande de réduire les animations.
+ * pour douze secondes. Elle ne démarre pas du tout si le système demande de
+ * réduire les animations.
  */
 export function ReviewsCarousel({ items }: { items: ReactNode[] }) {
   const [actif, setActif] = useState(0);
-  const [hauteur, setHauteur] = useState<number | undefined>(undefined);
+  const [pose, setPose] = useState(0);
   const piste = useRef<HTMLDivElement>(null);
   const repit = useRef(0);
   const calme = useReglageCalme();
@@ -62,50 +81,63 @@ export function ReviewsCarousel({ items }: { items: ReactNode[] }) {
   /*
    * `useCallback` n'est pas ici une optimisation : il déclare que cette
    * fonction est un gestionnaire d'évènement. Sans lui, le compilateur React
-   * la lit comme du code de rendu et refuse l'appel à `Date.now`, qui n'y
-   * aurait effectivement rien à faire.
+   * la lit comme du code de rendu et refuse l'appel à `Date.now`.
    */
   const aller = useCallback((i: number) => {
     const el = piste.current;
     if (!el) return;
     repit.current = Date.now() + REPIT;
-    el.scrollTo({ left: i * el.clientWidth, behavior: "smooth" });
+    el.scrollTo({ left: i * pas(el), behavior: "smooth" });
   }, []);
 
+  /*
+   * Deux index, et c'est volontaire.
+   *
+   * `actif` suit le doigt : il allume la bonne pastille pendant le geste.
+   * `pose` n'est mis à jour qu'une fois le défilement retombé, et c'est lui
+   * seul qui commande la hauteur. Redimensionner un conteneur pendant qu'on
+   * le fait défiler perturbe l'aimantation du navigateur, et la piste
+   * s'immobilisait entre deux cartes.
+   */
   useEffect(() => {
     const el = piste.current;
     if (!el) return;
 
+    let repos: number | undefined;
+
     const onScroll = () => {
-      if (el.clientWidth === 0) return;
-      setActif(Math.round(el.scrollLeft / el.clientWidth));
+      const i = Math.round(el.scrollLeft / pas(el));
+      setActif(i);
+      window.clearTimeout(repos);
+      repos = window.setTimeout(() => setPose(i), REPOS);
     };
 
     el.addEventListener("scroll", onScroll, { passive: true });
-    return () => el.removeEventListener("scroll", onScroll);
+    return () => {
+      el.removeEventListener("scroll", onScroll);
+      window.clearTimeout(repos);
+    };
   }, []);
 
   /*
-   * La piste épouse la hauteur de la carte affichée.
-   *
-   * Les avis vont du simple au double : figer la hauteur sur le plus long
-   * ouvrirait trois cents pixels de vide sous les plus courts. La transition
-   * rend le changement lisible plutôt que brutal.
+   * La hauteur de la piste épouse la carte posée. Les avis vont du simple au
+   * double : la figer sur le plus long ouvrirait trois cents pixels de vide
+   * sous les plus courts.
    *
    * La mesure passe par un `ResizeObserver`, qui se déclenche dès qu'on
    * observe : la hauteur est donc posée depuis son rappel et non depuis le
-   * corps de l'effet, où un `setState` provoquerait un rendu en cascade. Il
-   * rattrape au passage le reflux des polices, qui change la hauteur du texte
-   * après le premier rendu.
+   * corps de l'effet. Il rattrape au passage le reflux des polices.
    */
+  const [hauteur, setHauteur] = useState<number | undefined>(undefined);
+
   useEffect(() => {
-    const carte = piste.current?.children[actif] as HTMLElement | undefined;
+    const carte = piste.current?.children[pose] as HTMLElement | undefined;
     if (!carte) return;
 
     const observateur = new ResizeObserver(() => setHauteur(carte.offsetHeight));
     observateur.observe(carte);
     return () => observateur.disconnect();
-  }, [actif]);
+  }, [pose]);
 
   useEffect(() => {
     if (calme || items.length < 2) return;
@@ -113,10 +145,10 @@ export function ReviewsCarousel({ items }: { items: ReactNode[] }) {
     const minuteur = window.setInterval(() => {
       if (Date.now() < repit.current) return;
       const el = piste.current;
-      if (!el || el.clientWidth === 0) return;
-      const suivant =
-        (Math.round(el.scrollLeft / el.clientWidth) + 1) % items.length;
-      el.scrollTo({ left: suivant * el.clientWidth, behavior: "smooth" });
+      if (!el) return;
+      const p = pas(el);
+      const suivant = (Math.round(el.scrollLeft / p) + 1) % items.length;
+      el.scrollTo({ left: suivant * p, behavior: "smooth" });
     }, CADENCE);
 
     return () => window.clearInterval(minuteur);
@@ -128,6 +160,10 @@ export function ReviewsCarousel({ items }: { items: ReactNode[] }) {
        * `overscroll-x-contain` empêche le geste de remonter à la page une fois
        * la dernière carte atteinte, ce qui déclencherait le retour arrière du
        * navigateur sur certains téléphones.
+       *
+       * `snap-start` plutôt que `snap-center` : les cartes occupent toute la
+       * largeur, les deux reviennent au même, mais l'alignement au bord se
+       * calcule sans ambiguïté quand une gouttière sépare les cartes.
        */}
       <div
         ref={piste}
@@ -135,16 +171,14 @@ export function ReviewsCarousel({ items }: { items: ReactNode[] }) {
         onPointerDown={() => {
           repit.current = Date.now() + REPIT;
         }}
-        /* `items-start` : sans lui les cartes s'étirent sur la hauteur de la
-           plus longue, et un grand vide s'ouvre sous les citations courtes. */
-        className="flex snap-x snap-mandatory items-start gap-4 overflow-x-auto overscroll-x-contain transition-[height] duration-400 ease-site motion-reduce:transition-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="flex snap-x snap-mandatory items-start gap-4 overflow-x-auto overscroll-x-contain transition-[height] duration-300 ease-site motion-reduce:transition-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {items.map((carte, i) => (
           <div
             // biome-ignore lint/suspicious/noArrayIndexKey: l'ordre des avis est
             // fixe et la liste n'est ni triée ni filtrée après le rendu.
             key={i}
-            className="w-full shrink-0 snap-center"
+            className="w-full shrink-0 snap-start"
           >
             {carte}
           </div>
