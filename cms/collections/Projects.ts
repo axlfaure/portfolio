@@ -122,18 +122,95 @@ export const Projects: CollectionConfig = {
               },
             },
             {
+              name: "cardMode",
+              type: "select",
+              required: true,
+              defaultValue: "bento",
+              label: "Affichage sur la carte d'accueil",
+              options: [
+                { label: "Bento de visuels", value: "bento" },
+                { label: "Vidéo", value: "video" },
+                { label: "Comparatif avant / après", value: "compare" },
+              ],
+              admin: {
+                description:
+                  "Un seul mode par projet. Les champs ci-dessous s'adaptent au choix : mélanger les trois dans une même carte ne tiendrait pas la mise en page, et un comparatif dans une cellule de bento serait inutilisable au doigt.",
+              },
+            },
+            {
               name: "panels",
               type: "array",
               label: "Bento de la page d'accueil",
               minRows: 0,
               maxRows: 4,
               admin: {
+                condition: (data) => (data?.cardMode ?? "bento") === "bento",
                 description:
                   "L'ordre fixe la place. À quatre visuels : carrée, large, large, carrée. À trois : large, carrée, puis un bandeau pleine largeur. Chaque ligne repliée annonce sa case.",
                 components: { RowLabel: "@/cms/components/RowLabels#PanelRowLabel" },
               },
               fields: [
                 { name: "image", type: "upload", relationTo: "media", required: true, label: "Visuel" },
+              ],
+            },
+            {
+              name: "video",
+              type: "upload",
+              relationTo: "media",
+              label: "Vidéo",
+              admin: {
+                condition: (data) => data?.cardMode === "video",
+                description:
+                  "Cadrage 4/3, sans son, en boucle et sans commandes. Viser 6 secondes et moins de 4 Mo : elle se déclenche seule sur la page d'accueil, donc sur le forfait mobile du visiteur. Format MP4 (H.264).",
+              },
+            },
+            {
+              name: "videoPoster",
+              type: "upload",
+              relationTo: "media",
+              label: "Image d'attente",
+              admin: {
+                condition: (data) => data?.cardMode === "video",
+                description:
+                  "Affichée le temps du chargement, et à la place de la vidéo pour les visiteurs qui ont demandé à leur système de réduire les animations.",
+              },
+            },
+            {
+              name: "compare",
+              type: "group",
+              label: "Comparatif avant / après",
+              admin: {
+                condition: (data) => data?.cardMode === "compare",
+                description:
+                  "Deux visuels au cadrage identique : c'est le même point de vue qui doit se retrouver de part et d'autre de la poignée, sinon la comparaison ne veut rien dire.",
+              },
+              fields: [
+                {
+                  type: "row",
+                  fields: [
+                    { name: "before", type: "upload", relationTo: "media", label: "Avant", admin: { width: "50%" } },
+                    { name: "after", type: "upload", relationTo: "media", label: "Après", admin: { width: "50%" } },
+                  ],
+                },
+                {
+                  type: "row",
+                  fields: [
+                    {
+                      name: "beforeLabel",
+                      type: "text",
+                      defaultValue: "Avant",
+                      label: "Libellé de gauche",
+                      admin: { width: "50%" },
+                    },
+                    {
+                      name: "afterLabel",
+                      type: "text",
+                      defaultValue: "Après",
+                      label: "Libellé de droite",
+                      admin: { width: "50%" },
+                    },
+                  ],
+                },
               ],
             },
             {

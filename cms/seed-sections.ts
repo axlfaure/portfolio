@@ -16,9 +16,11 @@ import config from "../payload.config";
  * donc pas être écrasé, contrairement à `npm run seed` qui, lui, réécrit tout
  * depuis les anciens fichiers MDX et ne doit plus jamais tourner en ligne.
  *
- * Il rend un second service sur le serveur : c'est lui qui crée la table et le
- * global manquants. L'exécutable de production ne modifie pas le schéma de la
- * base tout seul, alors que ce script, lancé par tsx, le met à jour.
+ * Il rend un second service sur le serveur : c'est lui qui met le schéma de la
+ * base à niveau, tables et colonnes nouvelles comprises. L'exécutable de
+ * production ne le fait pas de lui-même, alors que ce script, lancé par tsx,
+ * ouvre Payload en mode développement et applique les écarts. C'est donc la
+ * commande à passer après tout déploiement qui touche aux collections.
  *
  * Usage : `npm run seed:sections`
  */

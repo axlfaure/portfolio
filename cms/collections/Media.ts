@@ -49,6 +49,15 @@ export const Media: CollectionConfig = {
   labels: { singular: "Média", plural: "Médias" },
   access: { read: () => true },
   admin: { useAsTitle: "filename", group: "Bibliothèque" },
+
+  /*
+   * Dossiers de la bibliothèque. Fonction native de Payload, activée d'une
+   * ligne : les visuels se rangent par projet, par service ou comme on veut,
+   * au lieu d'une liste unique où chaque nouveau fichier repousse les autres.
+   * Aucun classement n'est imposé, les fichiers déjà en place restent à la
+   * racine tant qu'on ne les déplace pas.
+   */
+  folders: true,
   upload: {
     staticDir: mediaDir,
     mimeTypes: ["image/*", "video/*"],

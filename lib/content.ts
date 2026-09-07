@@ -51,6 +51,20 @@ export type Project = {
   /** Panneaux du bento des cartes de la page d'accueil. */
   panels: string[];
   gallery: string[];
+  /**
+   * Ce que la carte de la page d'accueil affiche à la place du bento.
+   * Un seul mode par projet : les trois ne se combinent pas dans un cadre de
+   * cette taille, et le comparatif demande une surface au doigt.
+   */
+  cardMode: "bento" | "video" | "compare";
+  video: string | null;
+  videoPoster: string | null;
+  compare: {
+    before: string | null;
+    after: string | null;
+    beforeLabel: string;
+    afterLabel: string;
+  };
   kpis: Kpi[];
   testimonial?: string;
   body: RichTextBody;
@@ -166,6 +180,15 @@ function toProject(doc: ProjectDoc): Project {
     cover: url(doc.cover),
     panels: urls(doc.panels),
     gallery: urls(doc.gallery),
+    cardMode: doc.cardMode ?? "bento",
+    video: url(doc.video),
+    videoPoster: url(doc.videoPoster),
+    compare: {
+      before: url(doc.compare?.before),
+      after: url(doc.compare?.after),
+      beforeLabel: doc.compare?.beforeLabel ?? "Avant",
+      afterLabel: doc.compare?.afterLabel ?? "Après",
+    },
     kpis: rows<Kpi>(doc.kpis),
     testimonial: relSlug(doc.testimonial),
     body: doc.body ?? null,

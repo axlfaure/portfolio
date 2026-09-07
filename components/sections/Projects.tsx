@@ -1,9 +1,11 @@
 import { Rise } from "@/components/ui/Rise";
 import Link from "next/link";
 import { ArrowDiag } from "@/components/ui/ArrowDiag";
+import { BeforeAfter } from "@/components/ui/BeforeAfter";
 import { GhostButton } from "@/components/ui/GhostButton";
 import { Avatar, Media } from "@/components/ui/Media";
 import { ProjectBento } from "@/components/ui/ProjectBento";
+import { ProjectVideo } from "@/components/ui/ProjectVideo";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Stars } from "@/components/ui/Stars";
 import { Ticker } from "@/components/ui/Ticker";
@@ -78,8 +80,36 @@ export async function Projects() {
                         portrait. Un visuel en 4/3 y perdait jusqu'à la moitié
                         de sa largeur au recadrage. Le ratio prime, quitte à
                         laisser un peu d'air sous l'image. */}
+                    {/* Trois modes possibles, jamais mélangés : le champ
+                        « Affichage sur la carte d'accueil » tranche, et chacun
+                        retombe sur le visuel principal s'il lui manque ses
+                        fichiers. Une carte sans image serait un trou dans la
+                        pile. */}
                     <div className="order-1 md:order-2">
-                      {project.panels.length > 0 ? (
+                      {project.cardMode === "video" && project.video ? (
+                        <ProjectVideo
+                          src={project.video}
+                          poster={project.videoPoster ?? project.cover}
+                          alt={`${project.client}, ${project.title}`}
+                        />
+                      ) : project.cardMode === "compare" &&
+                        project.compare.before &&
+                        project.compare.after ? (
+                        <BeforeAfter
+                          ratio="4 / 3"
+                          sizes="(min-width: 56rem) 32rem, 80vw"
+                          before={{
+                            src: project.compare.before,
+                            label: project.compare.beforeLabel,
+                            alt: `${project.client}, avant`,
+                          }}
+                          after={{
+                            src: project.compare.after,
+                            label: project.compare.afterLabel,
+                            alt: `${project.client}, après`,
+                          }}
+                        />
+                      ) : project.panels.length > 0 ? (
                         <ProjectBento
                           panels={project.panels}
                           alt={`${project.client}, ${project.title}`}
@@ -89,7 +119,7 @@ export async function Projects() {
                           src={project.cover}
                           alt={`${project.client} — ${project.title}`}
                           ratio="4 / 3"
-                          sizes="(min-width: 56rem) 36rem, 92vw"
+                          sizes="(min-width: 56rem) 32rem, 80vw"
                           className="rounded-[12px]"
                         />
                       )}

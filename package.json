@@ -17,7 +17,8 @@
     "backup": "node scripts/backup.mjs",
     "rollback": "node scripts/rollback.mjs",
     "sync": "node scripts/sync.mjs",
-    "seed:sections": "tsx cms/seed-sections.ts"
+    "seed:sections": "tsx cms/seed-sections.ts",
+    "db:sync": "node scripts/db-sync.mjs"
   },
   "dependencies": {
     "@payloadcms/db-sqlite": "^3.88.0",
