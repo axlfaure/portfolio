@@ -8,13 +8,24 @@ const ALL = "Tout";
 
 export type GridItem = {
   slug: string;
-  disciplines: string[];
+  /** Services auxquels le projet est rattaché, par leur titre. */
+  familles: string[];
   /** Carte déjà rendue côté serveur. */
   card: ReactNode;
 };
 
 /**
- * Grille projets filtrable par discipline.
+ * Grille projets filtrable.
+ *
+ * Le filtre porte sur les services, pas sur les disciplines. Les disciplines
+ * sont des étiquettes libres : treize projets en avaient produit quatorze, si
+ * proches les unes des autres que la barre de filtres devenait un mur sans
+ * hiérarchie. Les services, eux, sont six, ils sont déjà tenus à jour dans
+ * l'administration, et ce sont les mêmes portes d'entrée que dans la
+ * navigation.
+ *
+ * L'ordre des familles est celui des services, pas celui de leur fréquence :
+ * la barre doit se lire comme l'offre, pas comme un classement.
  *
  * Les cartes arrivent déjà rendues : `ProjectCard` lit le disque pour savoir
  * si un visuel existe, elle ne peut donc pas être importée depuis un
@@ -23,28 +34,20 @@ export type GridItem = {
  * Le filtre est purement client, sur des projets tous présents dans le HTML
  * statique : rien à recharger, et Google les indexe en entier.
  */
-export function ProjectsGrid({ items }: { items: GridItem[] }) {
+export function ProjectsGrid({
+  items,
+  familles,
+}: {
+  items: GridItem[];
+  familles: string[];
+}) {
   const [active, setActive] = useState(ALL);
-
-  const disciplines = useMemo(() => {
-    const counts = new Map<string, number>();
-    for (const item of items) {
-      for (const d of item.disciplines) {
-        counts.set(d, (counts.get(d) ?? 0) + 1);
-      }
-    }
-    // Les disciplines les plus représentées d'abord : le filtre le plus
-    // utile doit tomber sous le curseur en premier.
-    return [...counts.entries()]
-      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "fr"))
-      .map(([name]) => name);
-  }, [items]);
 
   const shown = useMemo(
     () =>
       active === ALL
         ? items
-        : items.filter((item) => item.disciplines.includes(active)),
+        : items.filter((item) => item.familles.includes(active)),
     [items, active],
   );
 
@@ -54,7 +57,7 @@ export function ProjectsGrid({ items }: { items: GridItem[] }) {
         className="mt-12 flex flex-wrap items-center gap-2 border-t border-line pt-8"
         data-reveal
       >
-        {[ALL, ...disciplines].map((name) => {
+        {[ALL, ...familles].map((name) => {
           const current = name === active;
           return (
             <button

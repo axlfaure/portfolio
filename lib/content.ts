@@ -1,12 +1,14 @@
 import { cache } from "react";
 import type {
   Faq as FaqDoc,
+  Mail as MailDoc,
   Post as PostDoc,
   Project as ProjectDoc,
   Service as ServiceDoc,
   Testimonial as TestimonialDoc,
 } from "@/cms/payload-types";
 import type { FeatureIconName } from "@/components/ui/FeatureIcon";
+import { MAILS_PAR_DEFAUT, type Mail } from "./inbox";
 import { db, rows, url, urls, values } from "./payload";
 
 /**
@@ -353,4 +355,71 @@ export const getLogos = cache(async (): Promise<ClientLogo[]> => {
   return docs
     .map((doc) => ({ name: doc.name, src: url(doc.image) }))
     .filter((logo): logo is ClientLogo => Boolean(logo.src));
+});
+
+/**
+ * Messages de la boîte de réception du constat.
+ *
+ * Le repli sur la liste par défaut n'est pas une précaution de trop : cette
+ * section porte l'argument central de la page, et une collection vidée par
+ * mégarde y laisserait un cadre de messagerie sans messages, c'est-à-dire une
+ * démonstration qui ne démontre rien.
+ */
+export const getMails = cache(async (): Promise<Mail[]> => {
+  const payload = await db();
+  const { docs } = await payload.find({
+    collection: "mails",
+    sort: "order",
+    ...QUERY,
+  });
+
+  if (docs.length === 0) return MAILS_PAR_DEFAUT;
+
+  return docs.map((doc: MailDoc) => ({
+    from: doc.from,
+    initials: doc.initials,
+    subject: doc.subject,
+    preview: doc.preview,
+    time: doc.time,
+    file: doc.file ?? undefined,
+    me: doc.me ?? undefined,
+  }));
+});
+
+export type AboutFact = { value: string; label: string };
+
+export type AboutSection = {
+  eyebrow: string;
+  titleStart: string;
+  titleAccent: string;
+  portrait: string | null;
+  body: RichTextBody;
+  facts: AboutFact[];
+};
+
+/**
+ * Bloc « À propos » de la page d'accueil.
+ *
+ * Un global n'existe pas tant qu'il n'a jamais été enregistré : Payload renvoie
+ * alors les valeurs par défaut des champs, donc des chaînes vides pour le titre.
+ * On rend la section muette dans ce cas plutôt que d'afficher une accroche
+ * amputée.
+ */
+export const getAbout = cache(async (): Promise<AboutSection | null> => {
+  const payload = await db();
+  const doc = await payload.findGlobal({ slug: "about", depth: 2 });
+
+  if (!doc?.titleStart) return null;
+
+  return {
+    eyebrow: doc.eyebrow ?? "À propos",
+    titleStart: doc.titleStart,
+    titleAccent: doc.titleAccent ?? "",
+    portrait: url(doc.portrait),
+    body: doc.body ?? null,
+    facts: rows(doc.facts ?? []).map((fact) => ({
+      value: fact.value,
+      label: fact.label,
+    })),
+  };
 });

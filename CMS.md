@@ -25,10 +25,38 @@ administrateur ; le mot de passe n'est stocké nulle part ailleurs.
 | Questions fréquentes | La FAQ de la page d'accueil |
 | Articles | Le blog |
 | Logos clients | Le bandeau défilant du haut de page |
+| Boîte de réception | Les messages de la section « Le contexte » |
 | Médias | Bibliothèque d'images commune |
+
+| Global | Contenu |
+|---|---|
+| À propos | Le bloc portrait de la page d'accueil |
 
 La mise en page reste dans le code. L'admin pilote les textes, les visuels,
 l'ordre d'affichage et les mises en avant.
+
+## Deux blocs amorcés une fois
+
+La boîte de réception et le texte « À propos » vivaient dans le code. La
+commande suivante les reprend en base :
+
+```bash
+npm run seed:sections
+```
+
+Elle n'écrit que si la destination est vide, donc la relancer ne peut rien
+écraser. À ne pas confondre avec `npm run seed`, qui réécrit tout depuis les
+anciens fichiers MDX et ne doit plus jamais tourner sur le serveur.
+
+Sur le serveur, c'est aussi cette commande qui crée la table et le global
+manquants : l'exécutable de production ne modifie pas le schéma de la base.
+
+## Filtres de la page projets
+
+Les filtres reprennent les six services, dans leur ordre. Un projet apparaît
+sous un filtre parce que le service le cite dans son champ « Projets ». Un
+projet qu'aucun service ne cite ne sort que sous « Tout » : c'est le signe
+qu'il reste à rattacher.
 
 ## Visuels manquants
 

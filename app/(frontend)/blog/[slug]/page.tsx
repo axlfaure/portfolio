@@ -74,7 +74,7 @@ export default async function PostPage({ params }: Params) {
           current={post.category}
         />
 
-        <header className="mt-10 max-w-[46rem]" data-reveal>
+        <header className="mt-10 max-w-[46rem] lg:mx-auto" data-reveal>
           <p className="meta">
             {new Date(post.date).toLocaleDateString("fr-FR", {
               day: "numeric",
@@ -98,14 +98,14 @@ export default async function PostPage({ params }: Params) {
           />
         </div>
 
-        <div className="mt-[clamp(2.5rem,6vw,4rem)] max-w-[44rem]" data-reveal>
+        <div className="mt-[clamp(2.5rem,6vw,4rem)] max-w-[40rem] lg:mx-auto" data-reveal>
           <Mdx source={post.body} />
         </div>
 
         {/* Un article ramène toujours vers la prestation qu'il éclaire. */}
         {service && (
           <div
-            className="mt-[clamp(3rem,7vw,4.5rem)] max-w-[44rem]"
+            className="mt-[clamp(3rem,7vw,4.5rem)] max-w-[40rem] lg:mx-auto"
             data-reveal
           >
             <Link

@@ -2,6 +2,7 @@ import { ContextInbox } from "@/components/ui/ContextInbox";
 import { FeatureIcon, type FeatureIconName } from "@/components/ui/FeatureIcon";
 import { Avatar } from "@/components/ui/Media";
 import { Rise } from "@/components/ui/Rise";
+import { getMails } from "@/lib/content";
 import { site } from "@/lib/site";
 
 /**
@@ -33,7 +34,9 @@ const strains: { icon: FeatureIconName; lead: string; line: string }[] = [
   },
 ];
 
-export function Context() {
+export async function Context() {
+  const mails = await getMails();
+
   return (
     <section className="section">
       <div className="container-site grid grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] lg:gap-16">
@@ -82,6 +85,7 @@ export function Context() {
               composant serveur, il est donc construit ici et passé en enfant à
               la boîte de réception, qui est cliente. */}
           <ContextInbox
+            mails={mails}
             portrait={
               <Avatar
                 src={site.portrait}

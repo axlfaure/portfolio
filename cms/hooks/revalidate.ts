@@ -1,4 +1,8 @@
-import type { CollectionAfterChangeHook, CollectionAfterDeleteHook } from "payload";
+import type {
+  CollectionAfterChangeHook,
+  CollectionAfterDeleteHook,
+  GlobalAfterChangeHook,
+} from "payload";
 import { revalidatePath } from "next/cache";
 
 /**
@@ -39,6 +43,28 @@ export function revalidate(paths: (doc: Record<string, unknown>) => string[]) {
   };
 
   return { afterChange: [afterChange], afterDelete: [afterDelete] };
+}
+
+/**
+ * Même purge, pour un global.
+ *
+ * Payload distingue les crochets de collection de ceux de global : mêmes
+ * arguments utiles, types différents. Un global n'ayant pas de suppression, il
+ * n'y a qu'un crochet à poser.
+ */
+export function revalidateGlobal(paths: string[]) {
+  const afterChange: GlobalAfterChangeHook = ({ doc }) => {
+    try {
+      for (const path of paths) {
+        revalidatePath(path);
+      }
+    } catch {
+      // Hors contexte de requête : rien à purger, l'écriture prime.
+    }
+    return doc;
+  };
+
+  return { afterChange: [afterChange] };
 }
 
 /** Pages qui agrègent du contenu : elles bougent dès qu'un document change. */

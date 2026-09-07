@@ -8,12 +8,14 @@ import sharp from "sharp";
 
 import { Faq } from "./cms/collections/Faq";
 import { Logos } from "./cms/collections/Logos";
+import { Mails } from "./cms/collections/Mails";
 import { Media } from "./cms/collections/Media";
 import { Posts } from "./cms/collections/Posts";
 import { Projects } from "./cms/collections/Projects";
 import { Services } from "./cms/collections/Services";
 import { Testimonials } from "./cms/collections/Testimonials";
 import { Users } from "./cms/collections/Users";
+import { About } from "./cms/globals/About";
 
 
 /**
@@ -94,7 +96,9 @@ export default buildConfig({
     },
   },
 
-  collections: [Projects, Services, Testimonials, Faq, Posts, Logos, Media, Users],
+  collections: [Projects, Services, Testimonials, Faq, Posts, Logos, Mails, Media, Users],
+
+  globals: [About],
 
   db: sqliteAdapter({
     client: { url: databaseUrl },

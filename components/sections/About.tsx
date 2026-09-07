@@ -1,22 +1,38 @@
-import { Rise } from "@/components/ui/Rise";
+import { Mdx } from "@/components/mdx/Mdx";
 import { Media } from "@/components/ui/Media";
+import { Rise } from "@/components/ui/Rise";
+import { getAbout } from "@/lib/content";
 import { site } from "@/lib/site";
 
-/** Repères factuels, tous tirés de chiffres déjà affichés ailleurs sur le site. */
-const facts = [
+/**
+ * Repères affichés tant que le bloc n'a pas été enregistré dans
+ * l'administration. Tous tirés de chiffres déjà présents ailleurs sur le site.
+ */
+const REPERES_PAR_DEFAUT = [
   { value: "Grenoble", label: "Isère, Auvergne-Rhône-Alpes" },
   { value: "5 ans", label: "dans la tech et l'industrie" },
   { value: "+30", label: "structures accompagnées" },
   { value: "24 h", label: "de délai de réponse" },
 ];
 
-export function About() {
+/**
+ * Bloc portrait de la page d'accueil.
+ *
+ * Le contenu vient du global « À propos ». Tant qu'il n'a jamais été
+ * enregistré, Payload ne renvoie rien d'exploitable : on retombe alors sur le
+ * texte d'origine, plutôt que d'afficher une section amputée de son titre.
+ */
+export async function About() {
+  const about = await getAbout();
+
+  const facts = about?.facts.length ? about.facts : REPERES_PAR_DEFAUT;
+
   return (
     <section id="a-propos" className="section scroll-mt-24">
       <div className="container-site grid grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1fr)] lg:gap-16">
         <div data-reveal>
           <Media
-            src={site.portrait}
+            src={about?.portrait ?? site.portrait}
             alt="Portrait d'Axel Faure"
             ratio="4 / 5"
             sizes="(min-width: 64rem) 28rem, 92vw"
@@ -28,29 +44,38 @@ export function About() {
           data-reveal
           style={{ "--reveal-delay": "90ms" } as React.CSSProperties}
         >
-          <p className="eyebrow">À propos</p>
+          <p className="eyebrow">{about?.eyebrow ?? "À propos"}</p>
 
           <h2 className="h2 mt-5 max-w-[18ch]">
             <Rise>
-              Vous parlez directement à{" "}
-              <em className="accent hl hl--scroll">la personne qui produit.</em>
+              {about?.titleStart ?? "Vous parlez directement à"}{" "}
+              <em className="accent hl hl--scroll">
+                {about?.titleAccent ?? "la personne qui produit."}
+              </em>
             </Rise>
           </h2>
 
-          <div className="mt-8 max-w-[42rem] space-y-5">
-            <p className="text-muted">
-              Je ne prétends pas être ingénieur. En revanche je sais poser les
-              questions qui font sortir l&apos;essentiel, et arbitrer entre ce
-              qui doit être montré et ce qui peut attendre. C&apos;est ce que je
-              fais depuis cinq ans avec des chercheurs et des ingénieurs.
-            </p>
-            <p className="text-muted">
-              Pas d&apos;équipe à briefer, pas d&apos;intermédiaire à qui
-              réexpliquer votre métier. C&apos;est ce qui permet de tenir des
-              délais courts sans que la cohérence en pâtisse — et de vous dire
-              non quand un délai n&apos;est pas tenable, plutôt que de livrer en
-              retard.
-            </p>
+          <div className="mt-8 max-w-[42rem]">
+            {about?.body ? (
+              <Mdx source={about.body} />
+            ) : (
+              <div className="space-y-5">
+                <p className="text-muted">
+                  Je ne prétends pas être ingénieur. En revanche je sais poser
+                  les questions qui font sortir l&apos;essentiel, et arbitrer
+                  entre ce qui doit être montré et ce qui peut attendre.
+                  C&apos;est ce que je fais depuis cinq ans avec des chercheurs
+                  et des ingénieurs.
+                </p>
+                <p className="text-muted">
+                  Pas d&apos;équipe à briefer, pas d&apos;intermédiaire à qui
+                  réexpliquer votre métier. C&apos;est ce qui permet de tenir
+                  des délais courts sans que la cohérence en pâtisse, et de vous
+                  dire non quand un délai n&apos;est pas tenable, plutôt que de
+                  livrer en retard.
+                </p>
+              </div>
+            )}
           </div>
 
           <dl className="mt-10 grid grid-cols-2 gap-x-6 gap-y-7 border-t border-line pt-8 sm:grid-cols-4">

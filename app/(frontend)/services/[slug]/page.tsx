@@ -200,8 +200,12 @@ export default async function ServicePage({ params }: Params) {
             <p className="eyebrow">Le contexte</p>
 
             <div className="mt-8 grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,0.62fr)_minmax(0,1fr)] lg:gap-16">
+              {/* Le champ « Visuel du contexte » de Payload prime. À défaut, on
+                  retombe sur la convention de fichier d'avant la bascule, ce
+                  qui évite de vider les pages dont le visuel n'a pas encore été
+                  redéposé dans la bibliothèque. */}
               <Media
-                src={`/services/${service.slug}/contexte.jpg`}
+                src={service.contextImage ?? `/services/${service.slug}/contexte.jpg`}
                 alt=""
                 ratio="4 / 5"
                 sizes="(min-width: 64rem) 24rem, 92vw"
