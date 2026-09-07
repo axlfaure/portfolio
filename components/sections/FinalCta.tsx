@@ -2,9 +2,13 @@ import { Rise } from "@/components/ui/Rise";
 import { CtaButton } from "@/components/ui/CtaButton";
 import { Avatar } from "@/components/ui/Media";
 import { Pill } from "@/components/ui/Pill";
+import { AccentTitle } from "@/components/ui/AccentTitle";
+import { getFinalCta } from "@/lib/content";
 import { availability, site } from "@/lib/site";
 
-export function FinalCta() {
+export async function FinalCta() {
+  const cta = await getFinalCta();
+
   return (
     <section id="contact" className="section scroll-mt-24">
       <div className="container-site flex justify-center">
@@ -16,13 +20,16 @@ export function FinalCta() {
 
           <h2 className="h2 mt-7">
             <Rise>
-              Parlons de <em className="accent hl hl--scroll">votre projet.</em>
+              <AccentTitle
+                start={cta?.titleStart ?? "Parlons de"}
+                accent={cta?.titleAccent ?? "votre projet."}
+              />
             </Rise>
           </h2>
 
           <p className="lead mx-auto mt-5 max-w-[38rem] text-balance">
-            Trente minutes pour comprendre votre contexte et vous dire ce que je
-            reprendrais en priorité. Visio ou téléphone, réponse sous 24 heures.
+            {cta?.lead ??
+              "Trente minutes pour comprendre votre contexte et vous dire ce que je reprendrais en priorité. Visio ou téléphone, réponse sous 24 heures."}
           </p>
 
           <div className="mt-9 flex justify-center">
@@ -39,7 +46,7 @@ export function FinalCta() {
           </div>
 
           <p className="eyebrow mt-10 border-t border-line pt-6">
-            {site.city} · Isère · Réponse sous 24 h
+            {cta?.footnote ?? `${site.city} · Isère · Réponse sous 24 h`}
           </p>
         </div>
       </div>

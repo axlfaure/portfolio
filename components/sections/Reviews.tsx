@@ -3,7 +3,8 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Stars } from "@/components/ui/Stars";
 import { Ticker } from "@/components/ui/Ticker";
 import type { Testimonial } from "@/lib/content";
-import { getTestimonials } from "@/lib/content";
+import { AccentTitle } from "@/components/ui/AccentTitle";
+import { getReviewsSection, getTestimonials } from "@/lib/content";
 
 function Card({ testimonial }: { testimonial: Testimonial }) {
   return (
@@ -29,6 +30,7 @@ function Card({ testimonial }: { testimonial: Testimonial }) {
 
 export async function Reviews() {
   const testimonials = await getTestimonials();
+  const tete = await getReviewsSection();
   // Seconde rangée dans l'ordre inverse : avec un défilement opposé, les deux
   // bandes ne présentent jamais la même carte au même endroit.
   const second = [...testimonials].reverse();
@@ -37,14 +39,13 @@ export async function Reviews() {
     <section id="avis" className="section scroll-mt-24">
       <div className="container-site">
         <SectionHeader
-          eyebrow="Avis clients"
+          eyebrow={tete?.eyebrow ?? "Avis clients"}
           title={
-            <>
-              Ce qu&apos;en disent{" "}
-              <em className="accent hl hl--scroll">
-                les équipes que j&apos;accompagne.
-              </em>
-            </>
+            <AccentTitle
+              start={tete?.titleStart ?? "Ce qu'en disent"}
+              accent={tete?.titleAccent ?? "les équipes que j'accompagne."}
+              end={tete?.titleEnd}
+            />
           }
         />
       </div>

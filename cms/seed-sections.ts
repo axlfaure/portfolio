@@ -41,6 +41,105 @@ Pas d'équipe à briefer, pas d'intermédiaire à qui réexpliquer votre métier
   ],
 };
 
+
+/**
+ * Contenu d'origine des sections de la page d'accueil, repris tel qu'il était
+ * écrit dans les composants. Une entrée est reconnue comme déjà remplie par la
+ * présence de son titre : un global jamais enregistré renvoie ses valeurs par
+ * défaut, donc un titre vide.
+ */
+const SECTIONS: { slug: string; data: Record<string, unknown> }[] = [
+  {
+    slug: "hero",
+    data: {
+      lines: [
+        { before: "Votre", accent: "expertise", after: "est complexe." },
+        { before: "Votre communication", accent: "ne devrait pas l'être.", after: "" },
+      ],
+      lead: "Studio créatif spécialisé tech & industrie, basé à Grenoble. Je développe la communication des structures innovantes en créant des visuels cohérents et adaptés à leur écosystème.",
+      linkLabel: "Voir les réalisations",
+      linkHref: "/projets",
+      socialProof: { strong: "100%", rest: "de clients satisfaits" },
+      stats: [
+        { value: "70+", label: "projets livrés" },
+        { value: "30+", label: "structures accompagnées" },
+        { value: "100%", label: "de satisfaction" },
+        { value: "+5 ans", label: "dans la tech et l'industrie" },
+      ],
+    },
+  },
+  {
+    slug: "context-section",
+    data: {
+      eyebrow: "Le contexte",
+      titleStart: "Vous êtes",
+      titleAccent: "seul, ou trop peu,",
+      titleEnd: "à porter la communication de votre structure.",
+      lead: "Vous couvrez l'événementiel, le web, les réseaux, le print et parfois la presse. Personne en interne ne sait faire de création : tout finit par remonter à vous.",
+      strains: [
+        {
+          icon: "users",
+          lead: "Tout converge vers vous.",
+          line: "Un imprimeur, un studio, un organisateur et trois chercheurs qui écrivent le même matin, pour un seul salon.",
+        },
+        {
+          icon: "exchange",
+          lead: "Personne ne parle le même langage.",
+          line: "Les experts veulent tout montrer, les prestataires ne comprennent pas la techno. Entre les deux, c'est vous qui traduisez.",
+        },
+        {
+          icon: "clock",
+          lead: "La date du salon ne bouge pas.",
+          line: "Le budget se resserre, les fichiers arrivent mal nommés, et il faut livrer quand même.",
+        },
+      ],
+    },
+  },
+  {
+    slug: "projects-section",
+    data: {
+      eyebrow: "Projets",
+      titleStart: "Vos innovations méritent d'être",
+      titleAccent: "comprises à leur juste valeur.",
+      lead: "Trop souvent, les meilleures innovations perdent face à ceux qui savent mieux se présenter. Je transforme la complexité de votre R&D en une image limpide, qui inspire confiance dès le premier regard.",
+      band: { titleStart: "Le reste du travail est", titleAccent: "juste là." },
+    },
+  },
+  {
+    slug: "services-section",
+    data: {
+      eyebrow: "Services",
+      titleStart: "Six leviers.",
+      titleAccent: "Un seul interlocuteur.",
+    },
+  },
+  {
+    slug: "reviews-section",
+    data: {
+      eyebrow: "Avis clients",
+      titleStart: "Ce qu'en disent",
+      titleAccent: "les équipes que j'accompagne.",
+    },
+  },
+  {
+    slug: "faq-section",
+    data: {
+      eyebrow: "FAQ",
+      titleStart: "Ce que vous vous",
+      titleAccent: "demandez déjà.",
+    },
+  },
+  {
+    slug: "final-cta",
+    data: {
+      titleStart: "Parlons de",
+      titleAccent: "votre projet.",
+      lead: "Trente minutes pour comprendre votre contexte et vous dire ce que je reprendrais en priorité. Visio ou téléphone, réponse sous 24 heures.",
+      footnote: "Grenoble · Isère · Réponse sous 24 h",
+    },
+  },
+];
+
 async function main() {
   const payload = await getPayload({ config });
 
@@ -98,6 +197,35 @@ async function main() {
     });
     console.log("à propos : texte d'origine repris en base");
   }
+
+  // --- Sections de la page d'accueil --------------------------------------
+  let sections = 0;
+  for (const { slug, data } of SECTIONS) {
+    const actuel = (await payload.findGlobal({
+      slug: slug as Parameters<typeof payload.findGlobal>[0]["slug"],
+      depth: 0,
+    })) as unknown as Record<string, unknown> | null;
+
+    // Le hero n'a pas de titre en un seul champ : c'est son tableau de lignes
+    // qui dit s'il a déjà été enregistré.
+    const rempli =
+      slug === "hero"
+        ? Array.isArray(actuel?.lines) && actuel.lines.length > 0
+        : Boolean(actuel?.titleStart);
+
+    if (rempli) continue;
+
+    await payload.updateGlobal({
+      slug: slug as Parameters<typeof payload.updateGlobal>[0]["slug"],
+      data: data as never,
+    });
+    sections += 1;
+  }
+  console.log(
+    sections > 0
+      ? `sections d'accueil : ${sections} reprises en base`
+      : "sections d'accueil : déjà renseignées, rien à faire",
+  );
 
   console.log("\nLe portrait reste celui du dossier public tant qu'aucun");
   console.log("fichier n'est déposé dans le champ « Portrait ».");

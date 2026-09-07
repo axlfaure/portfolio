@@ -6,59 +6,65 @@ import { Avatar } from "@/components/ui/Media";
 import { Stars } from "@/components/ui/Stars";
 import { Ticker } from "@/components/ui/Ticker";
 import { heroStats } from "@/lib/data";
-import { getLogos } from "@/lib/content";
+import { getHero, getLogos } from "@/lib/content";
+import type { HeroSection } from "@/lib/content";
 import { clientFaces, site } from "@/lib/site";
 import { HeroBackground } from "./HeroBackground";
 
+/** Titre d'origine, servi tant que le global « Hero » n'est pas enregistré. */
+const LIGNES_PAR_DEFAUT = [
+  { before: "Votre", accent: "expertise", after: "est complexe." },
+  { before: "Votre communication", accent: "ne devrait pas l'être.", after: "" },
+];
+
 export async function Hero() {
   const logos = await getLogos();
+  const hero = await getHero();
 
   return (
     <section className="relative isolate -mt-20 overflow-hidden">
       <HeroBackground />
 
       <div className="mx-auto flex w-full max-w-[84rem] flex-col items-center px-[var(--gutter)] pb-[clamp(3.5rem,8vw,5.5rem)] pt-[calc(5rem+clamp(2.5rem,6vw,4.5rem))] text-center">
-        <SocialProof />
+        <SocialProof preuve={hero?.socialProof} />
 
+        {/* Chaque ligne entre séparément, et son accent se souligne d'un
+            trait tracé. Les retards s'échelonnent depuis le code : ce sont des
+            réglages d'animation, pas du contenu, ils n'ont rien à faire dans un
+            formulaire de rédaction. */}
         <h1 className="h1-hero mt-9 w-full text-balance">
-          <span
-            className="reveal-line"
-            style={{ "--line-delay": "200ms" } as React.CSSProperties}
-          >
-            <span>
-              Votre{" "}
-              <em
-                className="accent hl hl--draw"
-                style={{ "--hl-delay": "900ms" } as React.CSSProperties}
-              >
-                expertise
-              </em>{" "}
-              est complexe.
+          {(hero?.lines ?? LIGNES_PAR_DEFAUT).map((ligne, i) => (
+            <span
+              key={ligne.accent}
+              className="reveal-line"
+              style={
+                { "--line-delay": `${200 + i * 110}ms` } as React.CSSProperties
+              }
+            >
+              <span>
+                {ligne.before ? `${ligne.before} ` : null}
+                <em
+                  className="accent hl hl--draw"
+                  style={
+                    {
+                      "--hl-delay": `${900 + i * 340}ms`,
+                    } as React.CSSProperties
+                  }
+                >
+                  {ligne.accent}
+                </em>
+                {ligne.after ? ` ${ligne.after}` : null}
+              </span>
             </span>
-          </span>
-          <span
-            className="reveal-line"
-            style={{ "--line-delay": "310ms" } as React.CSSProperties}
-          >
-            <span>
-              Votre communication{" "}
-              <em
-                className="accent hl hl--draw"
-                style={{ "--hl-delay": "1240ms" } as React.CSSProperties}
-              >
-                ne devrait pas l&apos;être.
-              </em>
-            </span>
-          </span>
+          ))}
         </h1>
 
         <p
           className="lead mx-auto mt-8 max-w-[68ch] text-balance"
           data-hero-step="3"
         >
-          Studio créatif spécialisé tech &amp; industrie, basé à Grenoble. Je
-          développe la communication des structures innovantes en créant des
-          visuels cohérents et adaptés à leur écosystème.
+          {hero?.lead ||
+            "Studio créatif spécialisé tech & industrie, basé à Grenoble. Je développe la communication des structures innovantes en créant des visuels cohérents et adaptés à leur écosystème."}
         </p>
 
         <div
@@ -76,10 +82,10 @@ export async function Hero() {
             }
           />
           <Link
-            href="/projets"
+            href={hero?.linkHref || "/projets"}
             className="group inline-flex items-center gap-2 text-[0.95rem] font-semibold text-ink underline decoration-line-2 underline-offset-4 transition-colors duration-200 hover:decoration-ink"
           >
-            Voir les réalisations
+            {hero?.linkLabel || "Voir les réalisations"}
             <span
               aria-hidden="true"
               className="transition-transform duration-200 ease-site group-hover:translate-x-[3px]"
@@ -89,7 +95,7 @@ export async function Hero() {
           </Link>
         </div>
 
-        <Stats />
+        <Stats chiffres={hero?.stats} />
       </div>
 
       <div
@@ -118,7 +124,11 @@ export async function Hero() {
 }
 
 /** Visages clients, notation et volume accompagné, au-dessus du titre. */
-function SocialProof() {
+function SocialProof({
+  preuve,
+}: {
+  preuve?: HeroSection["socialProof"];
+}) {
   return (
     <Link
       href="#avis"
@@ -198,19 +208,19 @@ function SocialProof() {
         }
       >
         <strong className="font-bold text-ink">
-          {site.socialProof.strong}
+          {preuve?.strong || site.socialProof.strong}
         </strong>{" "}
-        {site.socialProof.rest}
+        {preuve?.rest || site.socialProof.rest}
       </span>
     </Link>
   );
 }
 
 /** Quatre chiffres posés directement sur le fond, sans carte ni filet. */
-function Stats() {
+function Stats({ chiffres }: { chiffres?: HeroSection["stats"] }) {
   return (
     <dl className="mt-[clamp(3rem,7vw,5rem)] grid w-full max-w-[62rem] grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4">
-      {heroStats.map((stat, i) => (
+      {(chiffres?.length ? chiffres : heroStats).map((stat, i) => (
         <div
           key={stat.label}
           data-hero-step="5"

@@ -1,5 +1,6 @@
 import { Rise } from "@/components/ui/Rise";
 import Link from "next/link";
+import { AccentTitle } from "@/components/ui/AccentTitle";
 import { ArrowDiag } from "@/components/ui/ArrowDiag";
 import { BeforeAfter } from "@/components/ui/BeforeAfter";
 import { GhostButton } from "@/components/ui/GhostButton";
@@ -12,6 +13,7 @@ import { Ticker } from "@/components/ui/Ticker";
 import {
   getFeaturedProjects,
   getProjects,
+  getProjectsSection,
   getTestimonials,
 } from "@/lib/content";
 
@@ -21,27 +23,23 @@ export async function Projects() {
   // Chargés une fois puis retrouvés en mémoire : les résoudre dans la boucle
   // demanderait un `await` dans un `map`, qui n est pas asynchrone.
   const testimonials = await getTestimonials();
+  const tete = await getProjectsSection();
 
   return (
     <section id="projets" className="section scroll-mt-24">
       <div className="container-site">
         <SectionHeader
-          eyebrow="Projets"
+          eyebrow={tete?.eyebrow ?? "Projets"}
           title={
-            <>
-              Vos innovations méritent d&apos;être{" "}
-              <em className="accent hl hl--scroll">
-                comprises à leur juste valeur.
-              </em>
-            </>
+            <AccentTitle
+              start={tete?.titleStart ?? "Vos innovations méritent d'être"}
+              accent={tete?.titleAccent ?? "comprises à leur juste valeur."}
+              end={tete?.titleEnd}
+            />
           }
           lead={
-            <>
-              Trop souvent, les meilleures innovations perdent face à ceux qui
-              savent mieux se présenter. Je transforme la complexité de votre
-              R&amp;D en une image limpide, qui inspire confiance dès le premier
-              regard.
-            </>
+            tete?.lead ??
+            "Trop souvent, les meilleures innovations perdent face à ceux qui savent mieux se présenter. Je transforme la complexité de votre R&D en une image limpide, qui inspire confiance dès le premier regard."
           }
         />
 
@@ -229,8 +227,10 @@ export async function Projects() {
         >
           <h2 className="h2 max-w-[18ch]">
             <Rise>
-              Le reste du travail est{" "}
-              <em className="accent hl hl--scroll">juste là.</em>
+              <AccentTitle
+                start={tete?.band.titleStart || "Le reste du travail est"}
+                accent={tete?.band.titleAccent || "juste là."}
+              />
             </Rise>
           </h2>
           <GhostButton href="/projets" size="lg" className="mt-9">

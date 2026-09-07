@@ -1,20 +1,23 @@
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { ServiceCard } from "@/components/ui/ServiceCard";
-import { getServices } from "@/lib/content";
+import { AccentTitle } from "@/components/ui/AccentTitle";
+import { getServices, getServicesSection } from "@/lib/content";
 
 export async function Services() {
   const services = await getServices();
+  const tete = await getServicesSection();
 
   return (
     <section id="services" className="section scroll-mt-24">
       <div className="container-site">
         <SectionHeader
-          eyebrow="Services"
+          eyebrow={tete?.eyebrow ?? "Services"}
           title={
-            <>
-              Six leviers.{" "}
-              <em className="accent hl hl--scroll">Un seul interlocuteur.</em>
-            </>
+            <AccentTitle
+              start={tete?.titleStart ?? "Six leviers."}
+              accent={tete?.titleAccent ?? "Un seul interlocuteur."}
+              end={tete?.titleEnd}
+            />
           }
         />
 

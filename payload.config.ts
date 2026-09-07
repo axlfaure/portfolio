@@ -16,6 +16,15 @@ import { Services } from "./cms/collections/Services";
 import { Testimonials } from "./cms/collections/Testimonials";
 import { Users } from "./cms/collections/Users";
 import { About } from "./cms/globals/About";
+import { ContextSection } from "./cms/globals/ContextSection";
+import { FinalCta } from "./cms/globals/FinalCta";
+import { Hero } from "./cms/globals/Hero";
+import {
+  FaqSection,
+  ProjectsSection,
+  ReviewsSection,
+  ServicesSection,
+} from "./cms/globals/sections";
 
 
 /**
@@ -84,6 +93,14 @@ export default buildConfig({
     theme: "light",
 
     components: {
+      /*
+       * Pictogrammes de la barre latérale, posés en feuille de style plutôt
+       * qu'en remplaçant la navigation : celle-ci porte les groupes, l'état
+       * actif, le repli mobile et la déconnexion, autant de code qu'il faudrait
+       * réécrire pour n'ajouter qu'une image devant chaque libellé.
+       */
+      beforeNav: ["@/cms/components/NavIcons#NavIcons"],
+
       graphics: {
         Icon: "@/cms/components/Brand#Icon",
         Logo: "@/cms/components/Brand#Logo",
@@ -98,7 +115,21 @@ export default buildConfig({
 
   collections: [Projects, Services, Testimonials, Faq, Posts, Logos, Mails, Media, Users],
 
-  globals: [About],
+  /*
+   * Rangés dans l'ordre de la page, pas par ordre d'écriture : la barre
+   * latérale devient une carte du site, et retrouver une section revient à se
+   * souvenir de l'endroit où elle tombe en défilant.
+   */
+  globals: [
+    Hero,
+    ContextSection,
+    ProjectsSection,
+    ServicesSection,
+    About,
+    ReviewsSection,
+    FaqSection,
+    FinalCta,
+  ],
 
   db: sqliteAdapter({
     client: { url: databaseUrl },

@@ -29,8 +29,12 @@ import { DeliverableRowLabel as DeliverableRowLabel_3fecabbbc18cc3514e8aedf77afd
 import { StepRowLabel as StepRowLabel_3fecabbbc18cc3514e8aedf77afd20de } from '@/cms/components/RowLabels'
 import { EngagementRowLabel as EngagementRowLabel_3fecabbbc18cc3514e8aedf77afd20de } from '@/cms/components/RowLabels'
 import { QaRowLabel as QaRowLabel_3fecabbbc18cc3514e8aedf77afd20de } from '@/cms/components/RowLabels'
+import { FolderTableCell as FolderTableCell_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
+import { FolderField as FolderField_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
+import { FolderTypeField as FolderTypeField_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
 import { Icon as Icon_c3cc6d66ddf88c920e771f910024e3c2 } from '@/cms/components/Brand'
 import { Logo as Logo_c3cc6d66ddf88c920e771f910024e3c2 } from '@/cms/components/Brand'
+import { NavIcons as NavIcons_a0295f56b0835ee56468453c5e339d65 } from '@/cms/components/NavIcons'
 import { Dashboard as Dashboard_9ec3c8950169b0c4437681748bede4ee } from '@/cms/components/Dashboard'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
@@ -67,8 +71,12 @@ export const importMap = {
   "@/cms/components/RowLabels#StepRowLabel": StepRowLabel_3fecabbbc18cc3514e8aedf77afd20de,
   "@/cms/components/RowLabels#EngagementRowLabel": EngagementRowLabel_3fecabbbc18cc3514e8aedf77afd20de,
   "@/cms/components/RowLabels#QaRowLabel": QaRowLabel_3fecabbbc18cc3514e8aedf77afd20de,
+  "@payloadcms/next/rsc#FolderTableCell": FolderTableCell_f9c02e79a4aed9a3924487c0cd4cafb1,
+  "@payloadcms/next/rsc#FolderField": FolderField_f9c02e79a4aed9a3924487c0cd4cafb1,
+  "@payloadcms/next/client#FolderTypeField": FolderTypeField_2b8867833a34864a02ddf429b0728a40,
   "@/cms/components/Brand#Icon": Icon_c3cc6d66ddf88c920e771f910024e3c2,
   "@/cms/components/Brand#Logo": Logo_c3cc6d66ddf88c920e771f910024e3c2,
+  "@/cms/components/NavIcons#NavIcons": NavIcons_a0295f56b0835ee56468453c5e339d65,
   "@/cms/components/Dashboard#Dashboard": Dashboard_9ec3c8950169b0c4437681748bede4ee,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

@@ -28,28 +28,64 @@ administrateur ; le mot de passe n'est stocké nulle part ailleurs.
 | Boîte de réception | Les messages de la section « Le contexte » |
 | Médias | Bibliothèque d'images commune |
 
-| Global | Contenu |
+Le groupe **Page d'accueil** liste les sections dans l'ordre où elles
+défilent, chacune avec son pictogramme :
+
+| Section | Contenu |
 |---|---|
-| À propos | Le bloc portrait de la page d'accueil |
+| Hero | Titre, accroche, chiffres, boutons du premier écran |
+| Constat | Le texte à gauche de la boîte de réception |
+| Projets | L'introduction des cartes empilées, et la bande de fin |
+| Services | L'introduction de la grille des six services |
+| À propos | Le bloc portrait |
+| Avis | L'introduction des bandes de témoignages |
+| FAQ | L'introduction des questions fréquentes |
+| Appel final | La carte de contact, reprise en bas de toutes les pages |
+
+La section « Témoignage » n'y figure pas : elle n'a aucun texte propre, tout
+vient du témoignage marqué comme mis en avant.
 
 La mise en page reste dans le code. L'admin pilote les textes, les visuels,
 l'ordre d'affichage et les mises en avant.
 
-## Deux blocs amorcés une fois
+## Mettre la base au niveau du code
 
-La boîte de réception et le texte « À propos » vivaient dans le code. La
-commande suivante les reprend en base :
+Une seule commande, à passer sur le serveur après tout déploiement qui touche
+aux collections :
 
 ```bash
-npm run seed:sections
+npm run db:sync
 ```
 
-Elle n'écrit que si la destination est vide, donc la relancer ne peut rien
-écraser. À ne pas confondre avec `npm run seed`, qui réécrit tout depuis les
-anciens fichiers MDX et ne doit plus jamais tourner sur le serveur.
+Elle met le schéma à jour, puis reprend en base les blocs qui vivaient encore
+dans le code. Elle n'écrit que si la destination est vide : la relancer ne peut
+rien écraser. À ne pas confondre avec `npm run seed`, qui réécrit tout depuis
+les anciens fichiers MDX et ne doit plus jamais tourner sur le serveur.
 
-Sur le serveur, c'est aussi cette commande qui crée la table et le global
-manquants : l'exécutable de production ne modifie pas le schéma de la base.
+Elle rattrape aussi le seul défaut connu de la mise à jour de schéma de
+Payload, qui recrée parfois un index sans l'avoir supprimé d'abord et s'arrête
+en chemin. La commande supprime l'index en cause et réessaie ; un index n'étant
+qu'un chemin d'accès, aucune donnée n'est touchée.
+
+## Visuels des cartes projet
+
+Chaque projet choisit son mode d'affichage sur la page d'accueil : bento de
+visuels, vidéo, ou comparatif avant/après. Les champs du formulaire suivent le
+choix.
+
+La vidéo doit rester légère : elle démarre seule sur la page d'accueil, donc
+sur le forfait mobile du visiteur. Viser six secondes et moins de 4 Mo, en MP4.
+Prévoir une image d'attente : c'est elle qui s'affiche pour les visiteurs dont
+le système demande de réduire les animations.
+
+Le comparatif attend deux visuels au cadrage identique. C'est le même point de
+vue qui doit se retrouver de part et d'autre de la poignée, sinon la
+comparaison ne veut rien dire.
+
+## Dossiers de la bibliothèque
+
+Les médias se rangent en dossiers. Rien n'est imposé : les fichiers déjà en
+place restent à la racine tant qu'on ne les déplace pas.
 
 ## Filtres de la page projets
 

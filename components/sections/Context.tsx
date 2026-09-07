@@ -2,7 +2,8 @@ import { ContextInbox } from "@/components/ui/ContextInbox";
 import { FeatureIcon, type FeatureIconName } from "@/components/ui/FeatureIcon";
 import { Avatar } from "@/components/ui/Media";
 import { Rise } from "@/components/ui/Rise";
-import { getMails } from "@/lib/content";
+import { AccentTitle } from "@/components/ui/AccentTitle";
+import { getContextSection, getMails } from "@/lib/content";
 import { site } from "@/lib/site";
 
 /**
@@ -36,29 +37,35 @@ const strains: { icon: FeatureIconName; lead: string; line: string }[] = [
 
 export async function Context() {
   const mails = await getMails();
+  const tete = await getContextSection();
+  const tensions = tete?.strains.length ? tete.strains : strains;
 
   return (
     <section className="section">
       <div className="container-site grid grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] lg:gap-16">
         <div data-reveal>
-          <p className="eyebrow">Le contexte</p>
+          <p className="eyebrow">{tete?.eyebrow ?? "Le contexte"}</p>
 
           <h2 className="h2 mt-5 max-w-[22ch]">
             <Rise>
-              Vous êtes{" "}
-              <em className="accent hl hl--scroll">seul, ou trop peu,</em> à
-              porter la communication de votre structure.
+              <AccentTitle
+                start={tete?.titleStart ?? "Vous êtes"}
+                accent={tete?.titleAccent ?? "seul, ou trop peu,"}
+                end={
+                  tete?.titleEnd ??
+                  "à porter la communication de votre structure."
+                }
+              />
             </Rise>
           </h2>
 
           <p className="mt-7 max-w-[38rem] text-muted">
-            Vous couvrez l&apos;événementiel, le web, les réseaux, le print et
-            parfois la presse. Personne en interne ne sait faire de création :
-            tout finit par remonter à vous.
+            {tete?.lead ||
+              "Vous couvrez l'événementiel, le web, les réseaux, le print et parfois la presse. Personne en interne ne sait faire de création : tout finit par remonter à vous."}
           </p>
 
           <ul className="mt-9 max-w-[38rem] space-y-6">
-            {strains.map((strain) => (
+            {tensions.map((strain) => (
               <li key={strain.lead} className="flex gap-4">
                 <span
                   aria-hidden="true"

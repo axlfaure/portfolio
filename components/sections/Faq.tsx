@@ -1,20 +1,23 @@
 import { Mdx } from "@/components/mdx/Mdx";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { getFaq } from "@/lib/content";
+import { AccentTitle } from "@/components/ui/AccentTitle";
+import { getFaq, getFaqSection } from "@/lib/content";
 
 export async function Faq() {
   const faq = await getFaq();
+  const tete = await getFaqSection();
 
   return (
     <section id="faq" className="section scroll-mt-24">
       <div className="container-site grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.35fr)] lg:gap-16">
         <SectionHeader
-          eyebrow="FAQ"
+          eyebrow={tete?.eyebrow ?? "FAQ"}
           title={
-            <>
-              Ce que vous vous{" "}
-              <em className="accent hl hl--scroll">demandez déjà.</em>
-            </>
+            <AccentTitle
+              start={tete?.titleStart ?? "Ce que vous vous"}
+              accent={tete?.titleAccent ?? "demandez déjà."}
+              end={tete?.titleEnd}
+            />
           }
           className="lg:sticky lg:top-24 lg:self-start"
         />

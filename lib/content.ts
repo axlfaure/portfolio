@@ -1,7 +1,15 @@
 import { cache } from "react";
 import type {
+  About as AboutDoc,
+  ContextSection as ContextSectionDoc,
   Faq as FaqDoc,
+  FaqSection as FaqSectionDoc,
+  FinalCta as FinalCtaDoc,
+  Hero as HeroDoc,
   Mail as MailDoc,
+  ProjectsSection as ProjectsSectionDoc,
+  ReviewsSection as ReviewsSectionDoc,
+  ServicesSection as ServicesSectionDoc,
   Post as PostDoc,
   Project as ProjectDoc,
   Service as ServiceDoc,
@@ -445,10 +453,10 @@ export const getAbout = cache(async (): Promise<AboutSection | null> => {
   const payload = await db();
 
   // Même raison que pour les messages : la table du global n'existe qu'après
-  // `npm run seed:sections`. Le composant sait se passer de ce contenu.
-  let doc: Awaited<ReturnType<typeof payload.findGlobal>> | null;
+  // `npm run db:sync`. Le composant sait se passer de ce contenu.
+  let doc: AboutDoc | null;
   try {
-    doc = await payload.findGlobal({ slug: "about", depth: 2 });
+    doc = (await payload.findGlobal({ slug: "about", depth: 2 })) as AboutDoc;
   } catch {
     return null;
   }
@@ -465,5 +473,165 @@ export const getAbout = cache(async (): Promise<AboutSection | null> => {
       value: fact.value,
       label: fact.label,
     })),
+  };
+});
+
+/* ---------------------------------------------------------------------------
+   Sections de la page d'accueil.
+
+   Chaque section a son global, dans l'ordre de la page. Toutes suivent la même
+   forme d'en-tête, d'où le type partagé : un surtitre, un titre coupé en trois
+   morceaux dont celui du milieu est accentué, parfois une accroche.
+
+   Toutes les lectures tolèrent l'absence de la table. Le schéma n'est mis à
+   niveau que par `npm run db:sync`, et entre un déploiement et cette commande
+   la requête échouerait : les composants retombent alors sur leur texte
+   d'origine plutôt que d'emporter la page.
+   -------------------------------------------------------------------------- */
+
+export type SectionHeader = {
+  eyebrow: string;
+  titleStart: string;
+  titleAccent: string;
+  titleEnd: string;
+};
+
+/** Lit un global en tolérant que sa table n'existe pas encore. */
+async function lireGlobal<T>(slug: string): Promise<T | null> {
+  const payload = await db();
+  try {
+    return (await payload.findGlobal({
+      slug: slug as Parameters<typeof payload.findGlobal>[0]["slug"],
+      depth: 2,
+    })) as T;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Un global jamais enregistré renvoie ses valeurs par défaut, donc un titre
+ * vide. Les champs facultatifs remontent en `null` depuis la base, d'où la
+ * forme lâche acceptée en entrée.
+ */
+type EnTeteBrut = {
+  eyebrow?: string | null;
+  titleStart?: string | null;
+  titleAccent?: string | null;
+  titleEnd?: string | null;
+};
+
+function enTete(doc: EnTeteBrut | null): SectionHeader | null {
+  if (!doc?.titleStart) return null;
+  return {
+    eyebrow: doc.eyebrow ?? "",
+    titleStart: doc.titleStart,
+    titleAccent: doc.titleAccent ?? "",
+    titleEnd: doc.titleEnd ?? "",
+  };
+}
+
+export type HeroSection = {
+  lines: { before: string; accent: string; after: string }[];
+  lead: string;
+  linkLabel: string;
+  linkHref: string;
+  socialProof: { strong: string; rest: string };
+  stats: { value: string; label: string }[];
+};
+
+export const getHero = cache(async (): Promise<HeroSection | null> => {
+  const doc = await lireGlobal<HeroDoc>("hero");
+  if (!doc?.lines?.length || !doc.lead) return null;
+
+  return {
+    lines: doc.lines.map((l) => ({
+      before: l.before ?? "",
+      accent: l.accent,
+      after: l.after ?? "",
+    })),
+    lead: doc.lead,
+    linkLabel: doc.linkLabel,
+    linkHref: doc.linkHref,
+    socialProof: {
+      strong: doc.socialProof?.strong ?? "",
+      rest: doc.socialProof?.rest ?? "",
+    },
+    stats: (doc.stats ?? []).map((s) => ({ value: s.value, label: s.label })),
+  };
+});
+
+export type ContextSectionContent = SectionHeader & {
+  lead: string;
+  strains: { icon: FeatureIconName; lead: string; line: string }[];
+};
+
+export const getContextSection = cache(
+  async (): Promise<ContextSectionContent | null> => {
+    const doc = await lireGlobal<ContextSectionDoc>("context-section");
+    const tete = enTete(doc);
+    if (!doc || !tete) return null;
+
+    return {
+      ...tete,
+      lead: doc.lead ?? "",
+      strains: (doc.strains ?? []).map((s) => ({
+        icon: s.icon as FeatureIconName,
+        lead: s.lead,
+        line: s.line,
+      })),
+    };
+  },
+);
+
+export type ProjectsSectionContent = SectionHeader & {
+  lead: string;
+  /** Phrase posée sur les visuels défilants, avant le bouton final. */
+  band: { titleStart: string; titleAccent: string };
+};
+
+export const getProjectsSection = cache(
+  async (): Promise<ProjectsSectionContent | null> => {
+    const doc = await lireGlobal<ProjectsSectionDoc>("projects-section");
+    const tete = enTete(doc);
+    if (!tete) return null;
+    return {
+      ...tete,
+      lead: doc?.lead ?? "",
+      band: {
+        titleStart: doc?.band?.titleStart ?? "",
+        titleAccent: doc?.band?.titleAccent ?? "",
+      },
+    };
+  },
+);
+
+export const getServicesSection = cache(async (): Promise<SectionHeader | null> =>
+  enTete(await lireGlobal<ServicesSectionDoc>("services-section")),
+);
+
+export const getReviewsSection = cache(async (): Promise<SectionHeader | null> =>
+  enTete(await lireGlobal<ReviewsSectionDoc>("reviews-section")),
+);
+
+export const getFaqSection = cache(async (): Promise<SectionHeader | null> =>
+  enTete(await lireGlobal<FaqSectionDoc>("faq-section")),
+);
+
+export type FinalCtaContent = {
+  titleStart: string;
+  titleAccent: string;
+  lead: string;
+  footnote: string;
+};
+
+export const getFinalCta = cache(async (): Promise<FinalCtaContent | null> => {
+  const doc = await lireGlobal<FinalCtaDoc>("final-cta");
+  if (!doc?.titleStart) return null;
+  return {
+    titleStart: doc.titleStart,
+    titleAccent: doc.titleAccent,
+    lead: doc.lead,
+    footnote: doc.footnote,
   };
 });
