@@ -26,22 +26,36 @@ import { Users } from "./cms/collections/Users";
  * `DATABASE_URI` a donc le dernier mot. À défaut, on part du répertoire
  * d'exécution, que `next start` place à la racine du projet.
  */
-const dataDir = path.resolve(process.cwd(), ".data");
+const defaultDb = `file:${path
+  .join(path.resolve(process.cwd(), ".data"), "site.db")
+  .replace(/\\/g, "/")}`;
+
+const databaseUrl = process.env.DATABASE_URI || defaultDb;
 
 /*
  * SQLite crée le fichier de base, jamais le dossier qui le contient. Or `.data`
  * est exclu du dépôt : sur un serveur fraîchement cloné il est absent, et la
- * connexion échoue en SQLITE_CANTOPEN — une erreur qui ne dit pas qu'il ne
- * manque qu'un répertoire. L'échec de création reste toléré : il ne doit pas
- * emporter toute l'application au démarrage.
+ * connexion échoue en SQLITE_CANTOPEN, une erreur qui ne dit pas qu'il ne
+ * manque qu'un répertoire.
+ *
+ * Le dossier créé est celui de la base réellement utilisée, jamais celui
+ * déduit du répertoire d'exécution. Une première version créait le second même
+ * quand `DATABASE_URI` désignait le premier : lancé depuis un dossier de
+ * travers, le serveur y semait une base vide, et le site s'affichait sans
+ * aucun contenu sans que rien ne le signale.
+ *
+ * L'échec de création reste toléré : il ne doit pas emporter toute
+ * l'application au démarrage.
  */
-try {
-  fs.mkdirSync(dataDir, { recursive: true });
-} catch {
-  // Chemin inaccessible : la connexion échouera plus loin, avec son message.
+if (databaseUrl.startsWith("file:")) {
+  try {
+    fs.mkdirSync(path.dirname(databaseUrl.slice("file:".length)), {
+      recursive: true,
+    });
+  } catch {
+    // Chemin inaccessible : la connexion échouera plus loin, avec son message.
+  }
 }
-
-const localDb = `file:${path.join(dataDir, "site.db").replace(/\\/g, "/")}`;
 
 /**
  * Configuration Payload.
@@ -83,7 +97,7 @@ export default buildConfig({
   collections: [Projects, Services, Testimonials, Faq, Posts, Logos, Media, Users],
 
   db: sqliteAdapter({
-    client: { url: process.env.DATABASE_URI || localDb },
+    client: { url: databaseUrl },
   }),
 
   editor: lexicalEditor(),
