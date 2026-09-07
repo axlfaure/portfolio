@@ -18,36 +18,87 @@ import { execFileSync } from "node:child_process";
  * Usage : `npm run sync`
  */
 
+/**
+ * Forme des dossiers produits par la sauvegarde : `2026-09-07-21h45`.
+ *
+ * Le filtre n'est pas une précaution de trop. Une version précédente prenait
+ * simplement le dernier dossier par ordre alphabétique, et les dossiers de
+ * service rangés à côté, dont le nom commence par une lettre, passaient après
+ * les dates. Le script visait alors le mauvais contenu.
+ */
+const HORODATAGE = /^\d{4}-\d{2}-\d{2}-\d{2}h\d{2}$/;
+
+const A_INSTALLER = [".data", "media"];
+
 console.log("1/2  Récupération du contenu en ligne\n");
 execFileSync("node", ["scripts/backup.mjs"], { stdio: "inherit" });
 
-const latest = fs.readdirSync("backups").sort().pop();
-const source = path.join("backups", latest);
+const dates = fs
+  .readdirSync("backups")
+  .filter((nom) => HORODATAGE.test(nom))
+  .sort();
 
+if (dates.length === 0) {
+  console.error("\nAucune sauvegarde horodatée trouvée dans backups/.");
+  process.exit(1);
+}
+
+const source = path.join("backups", dates[dates.length - 1]);
 console.log(`\n2/2  Installation depuis ${source}`);
 
 /*
- * L'état local part dans une copie datée avant d'être remplacé. Il ne vaut
- * pas grand-chose, mais l'écraser sans filet pour un simple confort serait un
- * mauvais réflexe à installer dans un script.
+ * L'état local part dans une copie datée avant d'être remplacé. Son nom ne
+ * dérive pas de celui de la sauvegarde : c'est ce qui empilait les suffixes
+ * « remplacé » les uns sur les autres à chaque passage.
  */
-const previous = path.join("backups", `${latest}-remplacé`);
-fs.mkdirSync(previous, { recursive: true });
-for (const item of [".data", "media"]) {
+const horodatage = new Date()
+  .toISOString()
+  .slice(0, 16)
+  .replace("T", "-")
+  .replace(":", "h");
+
+const precedent = path.join("backups", `avant-sync-${horodatage}`);
+fs.mkdirSync(precedent, { recursive: true });
+for (const item of A_INSTALLER) {
   if (fs.existsSync(item)) {
-    fs.cpSync(item, path.join(previous, item), { recursive: true });
+    fs.cpSync(item, path.join(precedent, item), { recursive: true });
   }
 }
 
-for (const item of [".data", "media"]) {
-  const from = path.join(source, item);
-  if (!fs.existsSync(from)) continue;
-  fs.rmSync(item, { recursive: true, force: true });
-  fs.cpSync(from, item, { recursive: true });
+/*
+ * Le fichier de base est verrouillé tant qu'un serveur le tient ouvert, et
+ * Windows refuse alors de le remplacer. Le message doit dire quoi faire :
+ * une trace d'erreur brute laisse croire à une corruption alors qu'il n'y a
+ * rien de cassé.
+ */
+try {
+  for (const item of A_INSTALLER) {
+    const depuis = path.join(source, item);
+    if (!fs.existsSync(depuis)) continue;
+    fs.rmSync(item, { recursive: true, force: true });
+    fs.cpSync(depuis, item, { recursive: true });
+  }
+} catch (error) {
+  const verrou = error.code === "EPERM" || error.code === "EBUSY";
+  console.error("");
+  console.error(
+    verrou
+      ? "Impossible de remplacer le contenu local : un programme tient les fichiers ouverts."
+      : `Échec de l'installation : ${error.message}`,
+  );
+  if (verrou) {
+    console.error("");
+    console.error("C'est presque toujours le serveur de développement.");
+    console.error("Arrêtez-le, puis relancez `npm run sync`.");
+    console.error("");
+    console.error(`Rien n'est perdu : le contenu du serveur attend dans ${source},`);
+    console.error(`et l'état local a été copié dans ${precedent}.`);
+  }
+  process.exit(1);
 }
 
 console.log("");
 console.log("Contenu local aligné sur le serveur.");
-console.log(`L'état précédent est conservé dans ${previous}`);
+console.log(`L'état précédent est conservé dans ${precedent}`);
 console.log("");
 console.log("La compilation peut maintenant partir : npm run build");
