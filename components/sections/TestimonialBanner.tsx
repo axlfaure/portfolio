@@ -25,7 +25,7 @@ export async function TestimonialBanner() {
       >
         <Stars rating={featured.rating} size={16} />
 
-        <blockquote className="mt-6 max-w-[42rem] text-[clamp(1.25rem,3vw,1.85rem)] font-semibold leading-[1.28] tracking-[-0.025em] text-ink text-balance">
+        <blockquote className="mt-6 max-w-[54rem] text-[clamp(1.25rem,3vw,1.85rem)] font-semibold leading-[1.28] tracking-[-0.025em] text-ink text-balance">
           « {featured.quote} »
         </blockquote>
 

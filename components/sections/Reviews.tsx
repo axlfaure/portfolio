@@ -7,7 +7,7 @@ import { getTestimonials } from "@/lib/content";
 
 function Card({ testimonial }: { testimonial: Testimonial }) {
   return (
-    <figure className="flex h-full w-[21rem] flex-col rounded-card border border-line bg-surface p-6">
+    <figure className="flex h-full w-[20rem] flex-col rounded-card border border-line bg-surface p-6 sm:w-[26rem] lg:w-[30rem]">
       <Stars rating={testimonial.rating} />
       <blockquote className="mt-4 flex-1 text-[0.95rem] leading-relaxed text-ink-2">
         « {testimonial.quote} »
