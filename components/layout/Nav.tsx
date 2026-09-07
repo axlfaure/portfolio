@@ -33,7 +33,7 @@ export async function Nav() {
           <div className="hidden nav:block">
             <CtaButton variant="compact" />
           </div>
-          <MobileMenu services={services} />
+          <MobileMenu />
         </div>
       </div>
     </StickyHeader>

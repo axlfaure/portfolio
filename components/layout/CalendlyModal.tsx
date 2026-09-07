@@ -56,16 +56,25 @@ export function CalendlyModal() {
 
     /*
      * L'apparition est jouée au cadre suivant : peinte d'abord dans son état
-     * de départ, elle a quelque chose à parcourir. Sans ce délai, la
+     * de départ, elle a quelque chose à parcourir. Sans ce report, la
      * transition démarre déjà terminée.
+     *
+     * Le doublon n'est pas une précaution de trop. Le navigateur suspend
+     * `requestAnimationFrame` sur une page qui n'est pas peinte, et la modale
+     * resterait alors montée, capturant le focus, mais transparente. Le
+     * minuteur, lui, continue de tourner : il affiche sans animation plutôt
+     * que de ne rien afficher.
      */
-    const frame = requestAnimationFrame(() => setShown(true));
+    const demarrer = () => setShown(true);
+    const frame = requestAnimationFrame(demarrer);
+    const secours = window.setTimeout(demarrer, 60);
     closeRef.current?.focus();
 
     return () => {
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
       cancelAnimationFrame(frame);
+      window.clearTimeout(secours);
     };
   }, [open, close]);
 
