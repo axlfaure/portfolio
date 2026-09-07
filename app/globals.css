@@ -837,3 +837,26 @@ html.lenis body {
     animation: none !important;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Cartes projet empilées.
+
+   La position collante dépend du palier. Au-dessus de 56rem l'en-tête est
+   permanent : les cartes se calent sous lui. En dessous il s'escamote au
+   défilement, et une carte qui garderait ses 5,5rem de retrait laisserait un
+   vide au sommet de l'écran, comme si la barre était encore là.
+
+   `--stack-i` porte le décalage d'empilement, une carte après l'autre, pour que
+   la tranche de celles du dessous reste visible.
+   -------------------------------------------------------------------------- */
+
+.stack-card {
+  position: sticky;
+  top: var(--stack-i);
+}
+
+@media (min-width: 56rem) {
+  .stack-card {
+    top: calc(5.5rem + var(--stack-i));
+  }
+}

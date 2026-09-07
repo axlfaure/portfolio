@@ -43,8 +43,13 @@ export async function Projects() {
           }
         />
 
-        {/* Stacking cards : sticky pur, tops incrémentaux. */}
-        <div className="mt-14">
+        {/* Stacking cards : sticky pur, tops incrémentaux.
+
+            `data-stack-zone` est lu par l'en-tête : tant que cette zone occupe
+            l'écran, il reste escamoté sur mobile. Sans cela il réapparaîtrait
+            au moindre geste vers le haut et recouvrirait le sommet de la carte
+            collée, qui est justement l'endroit où se lit le titre. */}
+        <div className="mt-14" data-stack-zone>
           {featuredProjects.map((project, i) => {
             const vouch = testimonials.find(
               (t) => t.slug === project.testimonial,
@@ -54,11 +59,14 @@ export async function Projects() {
               <div
                 key={project.slug}
                 data-reveal
-                className="sticky"
-                style={{
-                  top: `${5.5 + i}rem`,
-                  marginBottom: i < featuredProjects.length - 1 ? "1.75rem" : 0,
-                }}
+                className="stack-card"
+                style={
+                  {
+                    "--stack-i": `${i}rem`,
+                    marginBottom:
+                      i < featuredProjects.length - 1 ? "1.75rem" : 0,
+                  } as React.CSSProperties
+                }
               >
                 <Link
                   href={`/projets/${project.slug}`}
@@ -75,7 +83,6 @@ export async function Projects() {
                         <ProjectBento
                           panels={project.panels}
                           alt={`${project.client}, ${project.title}`}
-                          sizes="(min-width: 56rem) 18rem, 46vw"
                         />
                       ) : (
                         <Media

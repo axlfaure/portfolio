@@ -16,6 +16,16 @@ const nextConfig: NextConfig = {
    * `node .next/standalone/server.js`.
    */
 
+  images: {
+    /**
+     * Next n'accepte que les qualités déclarées ici, et n'en autorise que 75
+     * par défaut. Les visuels de projet sont des maquettes : elles portent du
+     * texte fin et des aplats, deux choses que la compression à 75 abîme
+     * visiblement. 90 leur est réservé, le reste du site garde 75.
+     */
+    qualities: [75, 90],
+  },
+
   experimental: {
     /**
      * Réduit la mémoire maximale utilisée par webpack pendant la compilation,
