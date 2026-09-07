@@ -68,8 +68,20 @@ export async function Projects() {
                   } as React.CSSProperties
                 }
               >
+                {/*
+                 * `draggable={false}` n'est pas un détail de confort. Un lien
+                 * est déplaçable par défaut : maintenir le bouton sur n'importe
+                 * lequel de ses enfants déclenche un glisser-déposer du lien,
+                 * qui préempte le geste. Le comparatif avant/après y perdait sa
+                 * poignée — elle bougeait d'un pixel puis se figeait.
+                 *
+                 * Le garde-fou ne pouvait pas vivre dans le comparatif :
+                 * l'évènement vise le lien, qui en est l'ancêtre, et ne le
+                 * traverse donc jamais.
+                 */}
                 <Link
                   href={`/projets/${project.slug}`}
+                  draggable={false}
                   className="group block overflow-hidden rounded-project border border-line bg-surface shadow-e1 transition-shadow duration-200 ease-site hover:shadow-e2"
                 >
                   <div className="flex flex-col gap-6 p-5 md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] md:items-stretch md:gap-8 md:p-7">
