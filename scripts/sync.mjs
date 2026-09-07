@@ -98,7 +98,19 @@ try {
 }
 
 console.log("");
-console.log("Contenu local aligné sur le serveur.");
-console.log(`L'état précédent est conservé dans ${precedent}`);
+console.log(`Contenu local aligné sur le serveur (état précédent : ${precedent}).`);
+
+/*
+ * La base qui vient d'arriver porte le schéma du serveur, donc celui d'avant
+ * le déploiement en cours. Compiler dessus échoue dès que le code a gagné un
+ * champ : le build réclame une colonne que cette base n'a pas encore.
+ *
+ * La mise à niveau est donc enchaînée ici, et non laissée à la mémoire de
+ * celui qui déploie. C'est exactement la même commande que sur le serveur.
+ */
+console.log("");
+console.log("3/3  Mise à niveau du schéma local\n");
+execFileSync("node", ["scripts/db-sync.mjs"], { stdio: "inherit" });
+
 console.log("");
 console.log("La compilation peut maintenant partir : npm run build");

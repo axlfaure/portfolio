@@ -41,16 +41,52 @@ function fichierDeBase() {
 
 const base = fichierDeBase();
 
-/** Retire un index, pour que la tentative suivante puisse le recréer. */
-function supprimerIndex(nom) {
+/** Exécute une réparation sur la base, puis referme. */
+function reparer(sql) {
   if (!base || !fs.existsSync(base)) return false;
   const db = new DatabaseSync(base);
   try {
-    db.exec(`DROP INDEX IF EXISTS ${nom}`);
+    db.exec(sql);
     return true;
   } finally {
     db.close();
   }
+}
+
+/**
+ * Reconnaît les deux façons dont la mise à jour de schéma de Payload
+ * s'interrompt, et renvoie la réparation correspondante.
+ *
+ * Aucune des deux ne touche aux données. La première supprime un index, qui
+ * n'est qu'un chemin d'accès et sera recréé dans la foulée. La seconde ajoute
+ * une colonne vide à une table que la mise à jour s'apprête de toute façon à
+ * reconstruire.
+ */
+function diagnostiquer(sortie) {
+  const index = sortie.match(/index (\w+) already exists/);
+  if (index) {
+    return {
+      motif: `index « ${index[1]} » en conflit`,
+      sql: `DROP INDEX IF EXISTS ${index[1]}`,
+    };
+  }
+
+  /*
+   * Reconstruction de table : Payload crée `__new_table`, y recopie l'ancienne,
+   * et la copie réclame une colonne que l'ancienne n'a pas encore. On l'ajoute,
+   * vide, pour que la recopie aboutisse.
+   */
+  const colonne = sortie.match(/no such column: (\w+)/);
+  const table = sortie.match(/FROM `(\w+)`/);
+  if (colonne && table) {
+    const type = colonne[1].endsWith("_id") ? "integer" : "text";
+    return {
+      motif: `colonne « ${colonne[1]} » absente de ${table[1]}`,
+      sql: `ALTER TABLE ${table[1]} ADD COLUMN ${colonne[1]} ${type}`,
+    };
+  }
+
+  return null;
 }
 
 for (let tentative = 1; tentative <= TENTATIVES_MAX; tentative += 1) {
@@ -69,17 +105,16 @@ for (let tentative = 1; tentative <= TENTATIVES_MAX; tentative += 1) {
     process.exit(0);
   }
 
-  const conflit = sortie.match(/index (\w+) already exists/);
-  if (!conflit) {
+  const remede = diagnostiquer(sortie);
+  if (!remede) {
     process.stderr.write(run.stderr ?? "");
-    console.error("\nÉchec, et ce n'est pas un conflit d'index connu.");
+    console.error("\nÉchec, et ce n'est aucun des blocages connus.");
     process.exit(run.status ?? 1);
   }
 
-  const nom = conflit[1];
-  console.log(`Index « ${nom} » en conflit, suppression puis nouvelle tentative.`);
+  console.log(`${remede.motif}, réparation puis nouvelle tentative.`);
 
-  if (!supprimerIndex(nom)) {
+  if (!reparer(remede.sql)) {
     console.error(`Base introuvable : ${base ?? "chemin non résolu"}`);
     process.exit(1);
   }
