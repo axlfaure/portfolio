@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
+import { connect } from "./remote.mjs";
 
 /**
  * Récupération du contenu du serveur.
@@ -23,28 +24,7 @@ import { execFileSync } from "node:child_process";
  * Usage : `npm run backup`
  */
 
-try {
-  process.loadEnvFile(".env.deploy");
-} catch {
-  // Absent : les variables peuvent aussi venir du shell.
-}
-
-const target = process.env.DEPLOY_SSH;
-const remoteDir = process.env.DEPLOY_PATH;
-
-if (!target || !remoteDir) {
-  console.error("Configuration absente.");
-  console.error("");
-  console.error("Copiez .env.deploy.example en .env.deploy et renseignez :");
-  console.error("  DEPLOY_SSH   identifiant de connexion, sous la forme utilisateur@serveur");
-  console.error("  DEPLOY_PATH  chemin absolu du site sur le serveur");
-  process.exit(1);
-}
-
-if (remoteDir.includes("'") || !remoteDir.startsWith("/") || remoteDir.length < 4) {
-  console.error(`DEPLOY_PATH invalide : ${remoteDir}`);
-  process.exit(1);
-}
+const server = connect();
 
 const stamp = new Date()
   .toISOString()
@@ -62,7 +42,7 @@ fs.mkdirSync(dir, { recursive: true });
  */
 const collect = [
   "set -e",
-  `cd '${remoteDir}'`,
+  `cd '${server.dir}'`,
   "test -f .data/site.db",
   "if [ -d media ]; then tar -czf - .data/site.db media; else tar -czf - .data/site.db; fi",
 ].join("\n");
@@ -70,7 +50,7 @@ const collect = [
 console.log(`Destination : ${dir}`);
 console.log("Le mot de passe SSH est demandé une fois.\n");
 
-const archive = execFileSync("ssh", [target, collect], {
+const archive = server.run(collect, {
   stdio: ["inherit", "pipe", "inherit"],
   maxBuffer: 512 * 1024 * 1024,
 });

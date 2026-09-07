@@ -79,6 +79,10 @@ Copier `.env.deploy.example` en `.env.deploy` et renseigner l'identifiant de
 connexion et le chemin du site. Les deux valeurs se lisent dans le Manager,
 rubrique SSH.
 
+Les scripts imposent l'IPv4. Le nom du serveur porte aussi une adresse IPv6,
+sur laquelle la connexion est coupée avant l'échange de clés, avec un message
+qui ne dit rien de la cause.
+
 Infomaniak n'accepte pas encore l'authentification par clé sur cet
 hébergement : le mot de passe est demandé à chaque connexion, et `ssh-keygen`
 ne sert donc à rien pour l'instant. Les scripts sont écrits en conséquence, une

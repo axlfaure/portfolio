@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import { execFileSync } from "node:child_process";
+import { connect } from "./remote.mjs";
 
 /**
  * Envoi du site compilé sur le serveur.
@@ -24,34 +25,7 @@ import { execFileSync } from "node:child_process";
  * Configuration : `.env.deploy`, à créer d'après `.env.deploy.example`.
  */
 
-try {
-  process.loadEnvFile(".env.deploy");
-} catch {
-  // Absent : les variables peuvent aussi venir du shell.
-}
-
-const target = process.env.DEPLOY_SSH;
-const remoteDir = process.env.DEPLOY_PATH;
-
-if (!target || !remoteDir) {
-  console.error("Configuration absente.");
-  console.error("");
-  console.error("Copiez .env.deploy.example en .env.deploy et renseignez :");
-  console.error("  DEPLOY_SSH   identifiant de connexion, sous la forme utilisateur@serveur");
-  console.error("  DEPLOY_PATH  chemin absolu du site sur le serveur");
-  process.exit(1);
-}
-
-/*
- * Le chemin distant est inséré dans une commande shell, et cette commande
- * efface un dossier. Une apostrophe le romprait, et un chemin vide ou réduit
- * à la racine ferait porter l'effacement ailleurs que sur le site.
- */
-if (remoteDir.includes("'") || !remoteDir.startsWith("/") || remoteDir.length < 4) {
-  console.error(`DEPLOY_PATH invalide : ${remoteDir}`);
-  console.error("Attendu : un chemin absolu, sans apostrophe.");
-  process.exit(1);
-}
+const server = connect();
 
 if (!fs.existsSync(".next")) {
   console.error("Aucun build trouvé. Lancez `npm run build` d'abord.");
@@ -74,7 +48,7 @@ const size = fs.statSync(archive).size;
  */
 const install = [
   "set -e",
-  `cd '${remoteDir}'`,
+  `cd '${server.dir}'`,
   "test -f package.json",
   "rm -rf .deploy-tmp",
   "mkdir -p .deploy-tmp",
@@ -89,11 +63,7 @@ const install = [
 console.log(`\n2/2  Transfert et installation (${(size / 1024 / 1024).toFixed(1)} Mo)`);
 console.log("     Le mot de passe SSH est demandé une fois.\n");
 
-/*
- * L'archive part par l'entrée standard. Le mot de passe, lui, est lu par ssh
- * sur le terminal et non sur cette entrée : les deux ne se gênent pas.
- */
-execFileSync("ssh", [target, install], {
+server.run(install, {
   input: fs.readFileSync(archive),
   stdio: ["pipe", "inherit", "inherit"],
 });
