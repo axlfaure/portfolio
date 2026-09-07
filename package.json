@@ -15,7 +15,8 @@
     "package": "node scripts/package-deploy.mjs",
     "deploy": "node scripts/deploy.mjs",
     "backup": "node scripts/backup.mjs",
-    "rollback": "node scripts/rollback.mjs"
+    "rollback": "node scripts/rollback.mjs",
+    "sync": "node scripts/sync.mjs"
   },
   "dependencies": {
     "@payloadcms/db-sqlite": "^3.88.0",

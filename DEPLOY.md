@@ -24,7 +24,7 @@ toujours sans qu'on puisse la relire ni la comparer.
 | | Qui | Comment | Effet |
 |---|---|---|---|
 | **Contenu** : textes, images, projets, tarifs | Axel seul | `portfolio.axelfaure.fr/admin` | Immédiat |
-| **Code** : design, sections, comportements | Développement puis déploiement | `npm run deploy` | Après redémarrage |
+| **Code** : design, sections, comportements | Développement puis déploiement | `npm run sync` puis `build` et `deploy` | Après redémarrage |
 
 Le contenu ne passe jamais par git. La base (`.data/site.db`) et les fichiers
 téléversés (`media/`) vivent sur le disque du serveur et sont exclus du dépôt.
@@ -37,12 +37,21 @@ régénère les pages concernées sans rebuild.
 ## Déployer une modification de code
 
 ```bash
+npm run sync
 npm run build
 npm run deploy
 ```
 
 Puis **Redémarrer** l'application depuis le Manager Infomaniak. C'est ce clic
 qui met réellement le site à jour.
+
+L'ordre compte, et `sync` n'est pas facultatif. Les pages sont pré-rendues en
+HTML au moment du build, à partir de la base présente sur la machine qui
+compile. Compiler depuis une base locale périmée puis déployer repousserait cet
+ancien contenu par-dessus celui rédigé dans l'administration : la base du
+serveur resterait intacte, mais les pages servies montreraient l'état d'avant,
+jusqu'à la prochaine revalidation. `npm run sync` ramène le contenu en ligne
+avant de compiler, ce qui referme le problème.
 
 `npm run deploy` prépare l'archive, la transfère et l'installe, en une seule
 connexion et donc une seule saisie du mot de passe.
@@ -69,9 +78,9 @@ Ramène la base et les fichiers téléversés dans `backups/<horodatage>/`. À
 lancer après chaque session de rédaction : c'est la seule copie du contenu
 saisi en ligne.
 
-La commande sert aussi à travailler en local sur le contenu réel, en recopiant
-la sauvegarde par-dessus `.data/` et `media/`. Le script affiche les deux
-commandes à la fin.
+Pour installer cette copie par-dessus le contenu local, il y a `npm run sync`,
+qui fait les deux en une fois. C'est aussi ce qu'il faut lancer avant toute
+compilation destinée à la mise en ligne.
 
 ## Première configuration
 
