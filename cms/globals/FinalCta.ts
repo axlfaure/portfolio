@@ -13,7 +13,7 @@ export const FinalCta: GlobalConfig = {
   label: "Appel final",
   access: { read: () => true },
   admin: {
-    group: "Page d'accueil",
+    group: "Textes de l'accueil",
     description: "La carte de prise de contact, reprise en bas de toutes les pages.",
   },
   hooks: revalidateGlobal([HOME, "/projets", "/services", "/blog"]),

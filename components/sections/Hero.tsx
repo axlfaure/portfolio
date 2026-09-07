@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Counter } from "@/components/ui/Counter";
+import { cn } from "@/lib/cn";
 import { CtaButton } from "@/components/ui/CtaButton";
 import { Avatar } from "@/components/ui/Media";
 import { Stars } from "@/components/ui/Stars";
@@ -26,7 +27,7 @@ export async function Hero() {
       <HeroBackground />
 
       <div className="mx-auto flex w-full max-w-[84rem] flex-col items-center px-[var(--gutter)] pb-[clamp(3.5rem,8vw,5.5rem)] pt-[calc(5rem+clamp(2.5rem,6vw,4.5rem))] text-center">
-        <SocialProof preuve={hero?.socialProof} />
+        <SocialProof preuve={hero?.socialProof} visages={hero?.faces} />
 
         {/* Chaque ligne entre séparément, et son accent se souligne d'un
             trait tracé. Les retards s'échelonnent depuis le code : ce sont des
@@ -41,7 +42,11 @@ export async function Hero() {
                 { "--line-delay": `${200 + i * 110}ms` } as React.CSSProperties
               }
             >
-              <span>
+              {/* L'équilibrage porte sur la ligne, pas sur le titre entier :
+                  chaque ligne est un bloc, et `text-balance` posé sur le `h1`
+                  ne traverse pas ses enfants. Sans lui, « complexe. » se
+                  retrouvait seul sur une ligne au format téléphone. */}
+              <span className="text-balance">
                 {ligne.before ? `${ligne.before} ` : null}
                 <em
                   className="accent hl hl--draw"
@@ -126,16 +131,19 @@ export async function Hero() {
 /** Visages clients, notation et volume accompagné, au-dessus du titre. */
 function SocialProof({
   preuve,
+  visages,
 }: {
   preuve?: HeroSection["socialProof"];
+  visages?: string[];
 }) {
+  const faces = visages?.length ? visages : [...clientFaces];
   return (
     <Link
       href="#avis"
       className="group flex flex-wrap items-center justify-center gap-x-5 gap-y-3"
     >
       <span className="flex items-center">
-        {clientFaces.map((src, i) => (
+        {faces.map((src, i) => (
           <span
             key={src}
             data-hero-step="1"
@@ -146,7 +154,10 @@ function SocialProof({
                 "--enter-dur": "520ms",
               } as React.CSSProperties
             }
-            className="face-in relative -ml-2.5 first:ml-0"
+            className={cn(
+              "face-in relative -ml-2.5 first:ml-0",
+              i >= 4 && "hidden sm:inline-block",
+            )}
           >
             <span className="face">
               <Avatar
@@ -170,7 +181,7 @@ function SocialProof({
           data-hero-step="1"
           style={
             {
-              "--enter-delay": `${60 + clientFaces.length * 45}ms`,
+              "--enter-delay": `${60 + faces.length * 45}ms`,
               "--enter-y": "-12px",
               "--enter-dur": "520ms",
             } as React.CSSProperties
@@ -179,7 +190,7 @@ function SocialProof({
         >
           <span className="face">
             <span className="grid h-10 w-10 place-items-center rounded-full border border-line bg-surface text-[0.72rem] font-bold text-ink">
-              +30
+              {preuve?.badge || "+30"}
             </span>
           </span>
         </span>

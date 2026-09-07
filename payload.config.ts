@@ -93,14 +93,6 @@ export default buildConfig({
     theme: "light",
 
     components: {
-      /*
-       * Pictogrammes de la barre latérale, posés en feuille de style plutôt
-       * qu'en remplaçant la navigation : celle-ci porte les groupes, l'état
-       * actif, le repli mobile et la déconnexion, autant de code qu'il faudrait
-       * réécrire pour n'ajouter qu'une image devant chaque libellé.
-       */
-      beforeNav: ["@/cms/components/NavIcons#NavIcons"],
-
       graphics: {
         Icon: "@/cms/components/Brand#Icon",
         Logo: "@/cms/components/Brand#Logo",

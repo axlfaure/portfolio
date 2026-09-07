@@ -17,7 +17,7 @@ export const Logos: CollectionConfig = {
   admin: {
     useAsTitle: "name",
     defaultColumns: ["image", "name", "order"],
-    group: "Accueil",
+    group: "Contenu",
     description: "Bandeau défilant du haut de page.",
   },
   hooks: revalidate(() => [HOME]),

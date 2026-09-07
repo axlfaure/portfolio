@@ -24,6 +24,15 @@ export const site = {
 export const availability = {
   slots: 3,
   label: "3 places disponibles",
+  /**
+   * Ligne sous le bouton principal.
+   *
+   * Une invitation plutôt qu'un état : « 3 places disponibles » décrit une
+   * situation que le visiteur n'a pas demandée, et qui devient fausse dès
+   * qu'on oublie de la mettre à jour. « Voir les disponibilités » dit ce que
+   * le clic fait, et reste vrai.
+   */
+  cta: "Voir les disponibilités",
 } as const;
 
 /**

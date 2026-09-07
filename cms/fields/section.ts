@@ -92,7 +92,7 @@ export function sectionGlobal({
     slug,
     label,
     access: { read: () => true },
-    admin: { group: "Page d'accueil", description },
+    admin: { group: "Textes de l'accueil", description },
     hooks: revalidateGlobal([HOME]),
     fields: [...enTeteFields({ lead }), ...extra],
   };

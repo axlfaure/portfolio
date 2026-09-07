@@ -51,7 +51,7 @@ export function CtaButton({ variant = "full", avatar, className }: Props) {
         </span>
         <span className="mt-1 flex items-center gap-1.5 text-[0.85rem] text-muted">
           <Dot />
-          {availability.label}
+          {availability.cta}
         </span>
       </span>
     </button>

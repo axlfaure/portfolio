@@ -17,7 +17,7 @@ export const Hero: GlobalConfig = {
   label: "Hero",
   access: { read: () => true },
   admin: {
-    group: "Page d'accueil",
+    group: "Textes de l'accueil",
     description: "Le premier écran : titre, accroche, chiffres, boutons.",
   },
   hooks: revalidateGlobal([HOME]),
@@ -79,11 +79,34 @@ export const Hero: GlobalConfig = {
       ],
     },
     {
+      name: "faces",
+      type: "array",
+      label: "Visages clients",
+      maxRows: 8,
+      labels: { singular: "Visage", plural: "Visages" },
+      admin: {
+        description:
+          "Les portraits en pastilles au-dessus du titre. Cadrage serré sur le visage, en carré : ils sont affichés à 40 px et se chevauchent. Les quatre premiers seulement sont visibles sur téléphone.",
+      },
+      fields: [
+        { name: "image", type: "upload", relationTo: "media", required: true, label: "Portrait" },
+      ],
+    },
+    {
       name: "socialProof",
       type: "group",
       label: "Preuve sociale",
-      admin: { description: "La ligne sous les visages, au-dessus du titre." },
+      admin: { description: "La pastille et la ligne qui suivent les visages." },
       fields: [
+        {
+          name: "badge",
+          type: "text",
+          label: "Pastille de fin",
+          admin: {
+            description:
+              "Le petit rond qui ferme la rangée de visages. Trois caractères au plus.",
+          },
+        },
         {
           type: "row",
           fields: [

@@ -4,11 +4,24 @@ import { Stars } from "@/components/ui/Stars";
 import { Ticker } from "@/components/ui/Ticker";
 import type { Testimonial } from "@/lib/content";
 import { AccentTitle } from "@/components/ui/AccentTitle";
+import { ReviewsCarousel } from "@/components/ui/ReviewsCarousel";
+import { cn } from "@/lib/cn";
 import { getReviewsSection, getTestimonials } from "@/lib/content";
 
-function Card({ testimonial }: { testimonial: Testimonial }) {
+function Card({
+  testimonial,
+  className,
+}: {
+  testimonial: Testimonial;
+  className: string;
+}) {
   return (
-    <figure className="flex h-full w-[20rem] flex-col rounded-card border border-line bg-surface p-6 sm:w-[26rem] lg:w-[30rem]">
+    <figure
+      className={cn(
+        "flex flex-col rounded-card border border-line bg-surface p-6",
+        className,
+      )}
+    >
       <Stars rating={testimonial.rating} />
       <blockquote className="mt-4 flex-1 text-[0.95rem] leading-relaxed text-ink-2">
         « {testimonial.quote} »
@@ -50,12 +63,26 @@ export async function Reviews() {
         />
       </div>
 
-      <div className="mt-12 flex flex-col gap-5">
+      {/* Sous 48rem, un carrousel : deux bandes qui glissent en sens inverse
+          dans une fenêtre de 300 px ne se lisent ni l'une ni l'autre. */}
+      <div className="container-site mt-12 md:hidden">
+        <ReviewsCarousel
+          items={testimonials.map((t) => (
+            <Card key={t.slug} testimonial={t} className="w-full" />
+          ))}
+        />
+      </div>
+
+      <div className="mt-12 hidden flex-col gap-5 md:flex">
         <Ticker
           duration={55}
           gap={1.25}
           items={testimonials.map((t) => (
-            <Card key={t.slug} testimonial={t} />
+            <Card
+              key={t.slug}
+              testimonial={t}
+              className="h-full w-[26rem] lg:w-[30rem]"
+            />
           ))}
         />
         <Ticker
@@ -63,7 +90,11 @@ export async function Reviews() {
           gap={1.25}
           reverse
           items={second.map((t) => (
-            <Card key={t.slug} testimonial={t} />
+            <Card
+              key={t.slug}
+              testimonial={t}
+              className="h-full w-[26rem] lg:w-[30rem]"
+            />
           ))}
         />
       </div>

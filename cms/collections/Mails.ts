@@ -21,7 +21,7 @@ export const Mails: CollectionConfig = {
   admin: {
     useAsTitle: "subject",
     defaultColumns: ["order", "from", "subject", "time"],
-    group: "Accueil",
+    group: "Contenu",
     description:
       "Les messages qui défilent dans la section « Le contexte », du plus ancien au plus récent.",
   },

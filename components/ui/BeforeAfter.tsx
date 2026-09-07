@@ -47,7 +47,25 @@ export function BeforeAfter({
   const frameRef = useRef<HTMLDivElement>(null);
 
   return (
-    <figure className={cn("group/ba", className)}>
+    /*
+     * Le comparatif vit dans une carte qui est elle-même un lien. Sans ces
+     * trois barrages, le navigateur démarre un glisser-déposer du lien au
+     * premier pixel — la poignée se fige aussitôt — et le relâchement ouvre la
+     * fiche projet au lieu de terminer la comparaison.
+     *
+     * Le clic est donc consommé ici. On perd l'accès à la fiche depuis le
+     * visuel, ce qui est le bon arbitrage : c'est une commande, pas une
+     * illustration. Le titre et le bouton de la carte y mènent toujours.
+     */
+    <figure
+      className={cn("group/ba", className)}
+      onDragStart={(e) => e.preventDefault()}
+      onPointerDown={(e) => e.stopPropagation()}
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      }}
+    >
       <div
         ref={frameRef}
         className="relative select-none overflow-hidden rounded-project border border-line bg-sunk"
@@ -58,6 +76,8 @@ export function BeforeAfter({
           src={after.src}
           alt={after.alt}
           fill
+          draggable={false}
+          quality={90}
           sizes={sizes}
           className="object-cover"
           priority={false}
@@ -72,6 +92,8 @@ export function BeforeAfter({
             src={before.src}
             alt={before.alt}
             fill
+            draggable={false}
+            quality={90}
             sizes={sizes}
             className="object-cover"
           />
@@ -132,6 +154,12 @@ export function BeforeAfter({
           value={pos}
           onChange={(e) => setPos(Number(e.target.value))}
           aria-valuetext={`${Math.round(pos)} % de la version « ${before.label} » visible`}
+          /*
+           * `pan-y` laisse le défilement vertical de la page traverser le
+           * comparatif, et réserve le geste horizontal à la poignée. `none`
+           * emprisonnerait le doigt sur le widget.
+           */
+          style={{ touchAction: "pan-y" }}
           className="absolute inset-0 h-full w-full cursor-ew-resize appearance-none bg-transparent opacity-0"
         />
       </div>

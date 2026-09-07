@@ -16,7 +16,7 @@ export const About: GlobalConfig = {
   label: "À propos",
   access: { read: () => true },
   admin: {
-    group: "Accueil",
+    group: "Textes de l'accueil",
     description: "Le bloc portrait de la page d'accueil.",
   },
   hooks: revalidateGlobal([HOME]),

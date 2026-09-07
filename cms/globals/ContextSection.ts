@@ -17,7 +17,7 @@ export const ContextSection: GlobalConfig = {
   label: "Constat",
   access: { read: () => true },
   admin: {
-    group: "Page d'accueil",
+    group: "Textes de l'accueil",
     description: "Le constat, à gauche de la boîte de réception.",
   },
   hooks: revalidateGlobal([HOME]),

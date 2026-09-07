@@ -59,7 +59,11 @@ const SECTIONS: { slug: string; data: Record<string, unknown> }[] = [
       lead: "Studio créatif spécialisé tech & industrie, basé à Grenoble. Je développe la communication des structures innovantes en créant des visuels cohérents et adaptés à leur écosystème.",
       linkLabel: "Voir les réalisations",
       linkHref: "/projets",
-      socialProof: { strong: "100%", rest: "de clients satisfaits" },
+      socialProof: {
+        badge: "+30",
+        strong: "100%",
+        rest: "de clients satisfaits",
+      },
       stats: [
         { value: "70+", label: "projets livrés" },
         { value: "30+", label: "structures accompagnées" },

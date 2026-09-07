@@ -536,7 +536,9 @@ export type HeroSection = {
   lead: string;
   linkLabel: string;
   linkHref: string;
-  socialProof: { strong: string; rest: string };
+  /** Portraits en pastilles au-dessus du titre. */
+  faces: string[];
+  socialProof: { badge: string; strong: string; rest: string };
   stats: { value: string; label: string }[];
 };
 
@@ -553,7 +555,11 @@ export const getHero = cache(async (): Promise<HeroSection | null> => {
     lead: doc.lead,
     linkLabel: doc.linkLabel,
     linkHref: doc.linkHref,
+    faces: urls(
+      (doc.faces ?? []).map((f) => ({ image: f.image ?? null })),
+    ),
     socialProof: {
+      badge: doc.socialProof?.badge ?? "",
       strong: doc.socialProof?.strong ?? "",
       rest: doc.socialProof?.rest ?? "",
     },

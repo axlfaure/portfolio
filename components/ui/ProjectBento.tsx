@@ -20,25 +20,38 @@ import { hasAsset } from "./Media";
  * une cellule sur deux colonnes environ 1,07 (presque carré), et la cellule
  * pleine largeur environ 2,7 (bandeau, pour une double page).
  */
+/*
+ * Les classes sont écrites en entier, jamais composées : Tailwind lit le code
+ * source pour savoir quelles règles produire, et ne verrait pas une classe
+ * assemblée à l'exécution.
+ *
+ * Sous 48rem, le bento se réduit à son premier visuel, sur toute la largeur.
+ * À quatre cellules dans une carte de 297 px, la plus étroite tombe à 113 px :
+ * une maquette de brochure y est illisible quelle que soit sa définition. Le
+ * bento est une composition d'écran large, pas une grille universelle.
+ */
 const LAYOUTS: Record<number, string[]> = {
   1: ["col-span-5"],
-  2: ["col-span-2", "col-span-3"],
-  3: ["col-span-3", "col-span-2", "col-span-5"],
-  4: ["col-span-2", "col-span-3", "col-span-3", "col-span-2"],
+  2: ["col-span-5 md:col-span-2", "hidden md:block md:col-span-3"],
+  3: [
+    "col-span-5 md:col-span-3",
+    "hidden md:block md:col-span-2",
+    "hidden md:block md:col-span-5",
+  ],
+  4: [
+    "col-span-5 md:col-span-2",
+    "hidden md:block md:col-span-3",
+    "hidden md:block md:col-span-3",
+    "hidden md:block md:col-span-2",
+  ],
 };
 
-/**
- * Part de la largeur du bento occupée par une cellule, gouttières comprises.
- *
- * C'est le cœur de la netteté. `sizes` sert au navigateur à choisir dans le
- * jeu de sources : une valeur trop basse et il retient une image trop petite,
- * qu'il étire ensuite sans rien dire. Une seule valeur pour toutes les
- * cellules ne peut pas convenir, puisqu'elles vont du simple au double.
- */
-const PARTS: Record<string, number> = {
-  "col-span-5": 1,
-  "col-span-3": 0.6,
-  "col-span-2": 0.4,
+/** Part de la largeur du bento, une fois passé le palier des 48rem. */
+const PARTS_LARGES: Record<number, number[]> = {
+  1: [1],
+  2: [0.4, 0.6],
+  3: [0.6, 0.4, 1],
+  4: [0.4, 0.6, 0.6, 0.4],
 };
 
 /**
@@ -49,17 +62,43 @@ const PARTS: Record<string, number> = {
  * 288 px, et le navigateur servait alors une image de 384 px dans une cellule
  * qui en réclamait 1016 sur un écran retina.
  */
+/**
+ * Marge pour le recadrage.
+ *
+ * `sizes` décrit la largeur de la case, mais `object-cover` agrandit l'image
+ * jusqu'à la remplir avant de la rogner. Une source en 16/9 posée dans une case
+ * presque carrée doit être agrandie de près de 90 % : le navigateur, lui,
+ * n'aura choisi qu'une image à la largeur de la case, et c'est cet
+ * agrandissement qui se voit.
+ *
+ * Le facteur couvre le pire cas réaliste, une source panoramique dans la case
+ * la plus étroite. Il coûte des octets, et c'est un arbitrage assumé : ces
+ * visuels sont le produit, pas la décoration.
+ */
+const MARGE_RECADRAGE = 2;
+
 const CONTENEUR = [
   { condition: "(min-width: 56rem)", largeur: "32rem" },
   { condition: "(min-width: 48rem)", largeur: "46vw" },
   { condition: null, largeur: "80vw" },
 ];
 
-/** Construit le `sizes` d'une cellule à partir de sa part du bento. */
+/**
+ * Construit le `sizes` d'une cellule.
+ *
+ * C'est le cœur de la netteté : `sizes` sert au navigateur à choisir dans le
+ * jeu de sources, et une valeur trop basse lui fait retenir une image trop
+ * petite, qu'il étire ensuite sans rien dire.
+ *
+ * La part ne vaut que pour les paliers où le bento est déployé. Sous 48rem il
+ * n'y a plus qu'une cellule, qui occupe toute la largeur.
+ */
 function sizesPour(part: number): string {
   return CONTENEUR.map(({ condition, largeur }) => {
-    const valeur = part === 1 ? largeur : `calc(${largeur} * ${part})`;
-    return condition ? `${condition} ${valeur}` : valeur;
+    const p = (condition ? part : 1) * MARGE_RECADRAGE;
+    return condition
+      ? `${condition} calc(${largeur} * ${p})`
+      : `calc(${largeur} * ${p})`;
   }).join(", ");
 }
 
@@ -83,7 +122,7 @@ export function ProjectBento({
     <div
       className={cn(
         "grid aspect-[4/3] w-full grid-cols-5 gap-2.5",
-        shown.length > 2 ? "grid-rows-2" : "grid-rows-1",
+        shown.length > 2 ? "grid-rows-1 md:grid-rows-2" : "grid-rows-1",
         className,
       )}
       role="img"
@@ -104,7 +143,7 @@ export function ProjectBento({
             alt=""
             fill
             quality={90}
-            sizes={sizesPour(PARTS[spans[i]] ?? 1)}
+            sizes={sizesPour((PARTS_LARGES[shown.length] ?? PARTS_LARGES[4])[i] ?? 1)}
             className="object-cover"
           />
         </div>
