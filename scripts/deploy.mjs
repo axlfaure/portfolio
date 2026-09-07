@@ -8,9 +8,14 @@ import { execFileSync } from "node:child_process";
  * que d'un gigaoctet de mémoire, où Next et l'administration Payload ne
  * tiennent pas. On compile donc ici, et le serveur ne fait plus que servir.
  *
- * Le transfert passe par `scp` et non par le dépôt. Une archive compilée est
- * un binaire : git en conserve chaque version pour toujours, sans qu'on puisse
- * la relire ni la comparer. Quatre méga-octets par modification, définitifs.
+ * Le transfert passe par ssh et non par le dépôt. Une archive compilée est un
+ * binaire : git en conserve chaque version pour toujours, sans qu'on puisse la
+ * relire ni la comparer. Quatre méga-octets par modification, définitifs.
+ *
+ * L'archive est poussée dans l'entrée standard de la commande distante plutôt
+ * que déposée par `scp` puis dépliée par une seconde connexion. Infomaniak
+ * n'accepte pas encore l'authentification par clé : chaque connexion réclame
+ * le mot de passe, et il n'y a aucune raison de le demander deux fois.
  *
  * L'ancien build est conservé sur place sous `.next.old`, ce qui permet de
  * revenir en arrière sans rien retélécharger.
@@ -53,18 +58,11 @@ if (!fs.existsSync(".next")) {
   process.exit(1);
 }
 
-/** Étape visible, pour situer un échec sans avoir à relire le script. */
-function step(label, command, args) {
-  console.log(`\n${label}`);
-  execFileSync(command, args, { stdio: "inherit" });
-}
+console.log("1/2  Préparation de l'archive");
+execFileSync("node", ["scripts/package-deploy.mjs"], { stdio: "inherit" });
 
-step("1/3  Préparation de l'archive", "node", ["scripts/package-deploy.mjs"]);
-
-step("2/3  Transfert", "scp", [
-  "deploy/next-build.tar.gz",
-  `${target}:${remoteDir}/`,
-]);
+const archive = "deploy/next-build.tar.gz";
+const size = fs.statSync(archive).size;
 
 /*
  * Le nouveau build est d'abord déplié à côté, et l'ancien n'est écarté qu'une
@@ -80,15 +78,25 @@ const install = [
   "test -f package.json",
   "rm -rf .deploy-tmp",
   "mkdir -p .deploy-tmp",
-  "tar -xzf next-build.tar.gz -C .deploy-tmp",
+  "tar -xzf - -C .deploy-tmp",
   "test -d .deploy-tmp/.next",
   "if [ -d .next ]; then rm -rf .next.old; mv .next .next.old; fi",
   "mv .deploy-tmp/.next .next",
-  "rm -rf .deploy-tmp next-build.tar.gz",
-  "echo \"BUILD_ID installé : $(cat .next/BUILD_ID)\"",
+  "rm -rf .deploy-tmp",
+  'echo "BUILD_ID installé : $(cat .next/BUILD_ID)"',
 ].join("\n");
 
-step("3/3  Installation sur le serveur", "ssh", [target, install]);
+console.log(`\n2/2  Transfert et installation (${(size / 1024 / 1024).toFixed(1)} Mo)`);
+console.log("     Le mot de passe SSH est demandé une fois.\n");
+
+/*
+ * L'archive part par l'entrée standard. Le mot de passe, lui, est lu par ssh
+ * sur le terminal et non sur cette entrée : les deux ne se gênent pas.
+ */
+execFileSync("ssh", [target, install], {
+  input: fs.readFileSync(archive),
+  stdio: ["pipe", "inherit", "inherit"],
+});
 
 console.log("");
 console.log("Transfert terminé.");

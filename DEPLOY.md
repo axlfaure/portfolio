@@ -15,9 +15,9 @@ développement, et le serveur ne fait plus que servir.
 **Node charge son code au démarrage.** Remplacer les fichiers pendant que
 l'application tourne ne change rien tant qu'elle n'a pas redémarré.
 
-Le dépôt sert à versionner le code. Le build compilé, lui, voyage par `scp` :
-c'est un binaire, et git en conserverait chaque version pour toujours sans
-qu'on puisse la relire ni la comparer.
+Le dépôt sert à versionner le code. Le build compilé, lui, voyage par ssh,
+hors du dépôt : c'est un binaire, et git en conserverait chaque version pour
+toujours sans qu'on puisse la relire ni la comparer.
 
 ## Deux circuits séparés
 
@@ -44,7 +44,8 @@ npm run deploy
 Puis **Redémarrer** l'application depuis le Manager Infomaniak. C'est ce clic
 qui met réellement le site à jour.
 
-`npm run deploy` prépare l'archive, la transfère, et l'installe sur le serveur.
+`npm run deploy` prépare l'archive, la transfère et l'installe, en une seule
+connexion et donc une seule saisie du mot de passe.
 L'ancien build y est conservé sous `.next.old`, et la nouvelle version n'est
 mise en place qu'une fois l'extraction réussie : un transfert interrompu ne
 peut pas laisser le site sans rien à servir.
@@ -78,13 +79,11 @@ Copier `.env.deploy.example` en `.env.deploy` et renseigner l'identifiant de
 connexion et le chemin du site. Les deux valeurs se lisent dans le Manager,
 rubrique SSH.
 
-Sans clé SSH, chaque commande demande le mot de passe deux fois. Pour ne plus
-l'avoir :
-
-```bash
-ssh-keygen -t ed25519
-ssh-copy-id UTILISATEUR@SERVEUR
-```
+Infomaniak n'accepte pas encore l'authentification par clé sur cet
+hébergement : le mot de passe est demandé à chaque connexion, et `ssh-keygen`
+ne sert donc à rien pour l'instant. Les scripts sont écrits en conséquence, une
+seule connexion chacun, donc une seule saisie. Le jour où la clé arrivera, il
+suffira de la déposer, rien à changer ici.
 
 ## Sur le serveur
 

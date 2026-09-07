@@ -13,6 +13,10 @@ import { execFileSync } from "node:child_process";
  * la fois : la sauvegarde, et un poste de développement qui reflète le site
  * réel quand il faut retoucher un contenu précis.
  *
+ * Le serveur assemble l'archive et l'envoie par la sortie standard, en une
+ * seule connexion. Infomaniak n'accepte pas encore l'authentification par
+ * clé : chaque connexion réclame le mot de passe, autant n'en ouvrir qu'une.
+ *
  * Le sens inverse n'existe pas volontairement : remonter une base locale
  * écraserait le vrai contenu par une copie périmée.
  *
@@ -29,7 +33,16 @@ const target = process.env.DEPLOY_SSH;
 const remoteDir = process.env.DEPLOY_PATH;
 
 if (!target || !remoteDir) {
-  console.error("Configuration absente. Voir .env.deploy.example.");
+  console.error("Configuration absente.");
+  console.error("");
+  console.error("Copiez .env.deploy.example en .env.deploy et renseignez :");
+  console.error("  DEPLOY_SSH   identifiant de connexion, sous la forme utilisateur@serveur");
+  console.error("  DEPLOY_PATH  chemin absolu du site sur le serveur");
+  process.exit(1);
+}
+
+if (remoteDir.includes("'") || !remoteDir.startsWith("/") || remoteDir.length < 4) {
+  console.error(`DEPLOY_PATH invalide : ${remoteDir}`);
   process.exit(1);
 }
 
@@ -42,15 +55,30 @@ const stamp = new Date()
 const dir = path.join("backups", stamp);
 fs.mkdirSync(dir, { recursive: true });
 
-console.log(`Destination : ${dir}`);
+/*
+ * `media` peut ne pas exister encore sur une installation neuve. `tar` s'y
+ * arrêterait et ne renverrait rien du tout, base comprise : on ne lui donne
+ * donc que ce qui est réellement présent.
+ */
+const collect = [
+  "set -e",
+  `cd '${remoteDir}'`,
+  "test -f .data/site.db",
+  "if [ -d media ]; then tar -czf - .data/site.db media; else tar -czf - .data/site.db; fi",
+].join("\n");
 
-console.log("\n1/2  Base de données");
-execFileSync("scp", [`${target}:${remoteDir}/.data/site.db`, path.join(dir, "site.db")], {
-  stdio: "inherit",
+console.log(`Destination : ${dir}`);
+console.log("Le mot de passe SSH est demandé une fois.\n");
+
+const archive = execFileSync("ssh", [target, collect], {
+  stdio: ["inherit", "pipe", "inherit"],
+  maxBuffer: 512 * 1024 * 1024,
 });
 
-console.log("\n2/2  Fichiers téléversés");
-execFileSync("scp", ["-r", `${target}:${remoteDir}/media`, dir], { stdio: "inherit" });
+const tarball = path.join(dir, "contenu.tar.gz");
+fs.writeFileSync(tarball, archive);
+execFileSync("tar", ["-xzf", "contenu.tar.gz"], { cwd: dir });
+fs.rmSync(tarball);
 
 /** Poids réel de la copie, seule preuve qu'elle n'est pas vide. */
 let bytes = 0;
@@ -70,5 +98,5 @@ console.log("");
 console.log(`Sauvegarde terminée : ${files} fichiers, ${(bytes / 1024 / 1024).toFixed(1)} Mo`);
 console.log("");
 console.log("Pour travailler en local sur ce contenu :");
-console.log(`  cp ${path.join(dir, "site.db")} .data/site.db`);
+console.log(`  cp ${path.join(dir, ".data", "site.db")} .data/site.db`);
 console.log(`  cp -r ${path.join(dir, "media")}/. media/`);
