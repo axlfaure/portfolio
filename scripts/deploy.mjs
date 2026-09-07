@@ -13,16 +13,15 @@ import { connect } from "./remote.mjs";
  * binaire : git en conserve chaque version pour toujours, sans qu'on puisse la
  * relire ni la comparer. Quatre méga-octets par modification, définitifs.
  *
- * L'archive est poussée dans l'entrée standard de la commande distante plutôt
- * que déposée par `scp` puis dépliée par une seconde connexion. Infomaniak
- * n'accepte pas encore l'authentification par clé : chaque connexion réclame
- * le mot de passe, et il n'y a aucune raison de le demander deux fois.
+ * Deux connexions, donc deux saisies du mot de passe : une pour déposer
+ * l'archive, une pour l'installer. Les réunir en poussant l'archive dans
+ * l'entrée standard de la seconde a été essayé et abandonné, ssh ne sachant
+ * plus lire le mot de passe sous Windows quand cette entrée est redirigée.
  *
  * L'ancien build est conservé sur place sous `.next.old`, ce qui permet de
  * revenir en arrière sans rien retélécharger.
  *
- * Usage : `npm run deploy`
- * Configuration : `.env.deploy`, à créer d'après `.env.deploy.example`.
+ * Usage : `npm run deploy`, après `npm run sync` et `npm run build`.
  */
 
 const server = connect();
@@ -32,11 +31,14 @@ if (!fs.existsSync(".next")) {
   process.exit(1);
 }
 
-console.log("1/2  Préparation de l'archive");
+console.log("1/3  Préparation de l'archive");
 execFileSync("node", ["scripts/package-deploy.mjs"], { stdio: "inherit" });
 
 const archive = "deploy/next-build.tar.gz";
 const size = fs.statSync(archive).size;
+
+console.log(`\n2/3  Transfert (${(size / 1024 / 1024).toFixed(1)} Mo)`);
+server.upload(archive, "next-build.tar.gz");
 
 /*
  * Le nouveau build est d'abord déplié à côté, et l'ancien n'est écarté qu'une
@@ -52,27 +54,16 @@ const install = [
   "test -f package.json",
   "rm -rf .deploy-tmp",
   "mkdir -p .deploy-tmp",
-  "tar -xzf - -C .deploy-tmp",
+  "tar -xzf next-build.tar.gz -C .deploy-tmp",
   "test -d .deploy-tmp/.next",
   "if [ -d .next ]; then rm -rf .next.old; mv .next .next.old; fi",
   "mv .deploy-tmp/.next .next",
-  "rm -rf .deploy-tmp",
+  "rm -rf .deploy-tmp next-build.tar.gz",
   'echo "BUILD_ID installé : $(cat .next/BUILD_ID)"',
 ].join("\n");
 
-console.log(`\n2/2  Transfert et installation (${(size / 1024 / 1024).toFixed(1)} Mo)`);
-console.log("     Le mot de passe SSH est demandé une fois.\n");
-
-/*
- * L'archive est lue directement depuis le fichier, sans passer par la mémoire
- * de Node : un tampon de cette taille en ressort tronqué.
- */
-const input = fs.openSync(archive, "r");
-try {
-  server.run(install, { stdio: [input, "inherit", "inherit"] });
-} finally {
-  fs.closeSync(input);
-}
+console.log("\n3/3  Installation sur le serveur");
+server.run(install);
 
 console.log("");
 console.log("Transfert terminé.");

@@ -53,8 +53,10 @@ serveur resterait intacte, mais les pages servies montreraient l'état d'avant,
 jusqu'à la prochaine revalidation. `npm run sync` ramène le contenu en ligne
 avant de compiler, ce qui referme le problème.
 
-`npm run deploy` prépare l'archive, la transfère et l'installe, en une seule
-connexion et donc une seule saisie du mot de passe.
+`npm run deploy` prépare l'archive, la transfère et l'installe. Le mot de
+passe est demandé deux fois : ssh ne sait plus le lire sous Windows dès que
+son entrée standard est redirigée, ce qui interdit de faire passer l'archive
+par la même connexion que la commande d'installation.
 L'ancien build y est conservé sous `.next.old`, et la nouvelle version n'est
 mise en place qu'une fois l'extraction réussie : un transfert interrompu ne
 peut pas laisser le site sans rien à servir.
@@ -94,8 +96,8 @@ qui ne dit rien de la cause.
 
 Infomaniak n'accepte pas encore l'authentification par clé sur cet
 hébergement : le mot de passe est demandé à chaque connexion, et `ssh-keygen`
-ne sert donc à rien pour l'instant. Les scripts sont écrits en conséquence, une
-seule connexion chacun, donc une seule saisie. Le jour où la clé arrivera, il
+ne sert donc à rien pour l'instant. Les scripts ouvrent donc le
+minimum de connexions : une pour la sauvegarde, deux pour le déploiement. Le jour où la clé arrivera, il
 suffira de la déposer, rien à changer ici.
 
 ## Sur le serveur

@@ -1,11 +1,11 @@
 import { execFileSync } from "node:child_process";
 
 /**
- * Accès au serveur, partagé par `deploy`, `backup` et `rollback`.
+ * Accès au serveur, partagé par `deploy`, `backup`, `sync` et `rollback`.
  *
- * Les trois commandes ont besoin des mêmes choses : la configuration, sa
- * validation, et une façon d'exécuter un script sur place. Les répéter dans
- * chaque fichier ferait diverger les garde-fous à la première retouche.
+ * Les commandes ont besoin des mêmes choses : la configuration, sa validation,
+ * et une façon d'agir sur place. Les répéter dans chaque fichier ferait
+ * diverger les garde-fous à la première retouche.
  */
 
 /*
@@ -57,15 +57,30 @@ export function connect() {
     /**
      * Exécute une suite de commandes sur le serveur.
      *
-     * `options` permet de brancher les flux : une archive poussée dans
-     * l'entrée standard pour le déploiement, une archive lue sur la sortie
-     * standard pour la sauvegarde. Le mot de passe, lui, est lu par ssh sur le
-     * terminal et non sur ces flux : les deux ne se gênent pas.
+     * `options` permet de détourner la sortie, ce dont la sauvegarde a besoin
+     * pour recevoir une archive. L'entrée, elle, doit rester celle du terminal :
+     * sous Windows, ssh ne parvient plus à lire le mot de passe dès qu'elle est
+     * redirigée. L'invite s'affiche, la saisie se perd, et la commande échoue
+     * sans le moindre message.
      */
     run(script, options = {}) {
       return execFileSync("ssh", [...SSH_OPTIONS, target, script], {
         stdio: "inherit",
         ...options,
+      });
+    },
+
+    /**
+     * Dépose un fichier à la racine du site.
+     *
+     * Une connexion distincte de `run`, donc une saisie de mot de passe de
+     * plus. C'est le prix de la limitation ci-dessus : faire passer l'archive
+     * par l'entrée standard de `run` économiserait cette saisie, mais empêche
+     * justement de la fournir.
+     */
+    upload(file, name) {
+      execFileSync("scp", [...SSH_OPTIONS, file, `${target}:${dir}/${name}`], {
+        stdio: "inherit",
       });
     },
   };
