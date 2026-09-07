@@ -12,7 +12,10 @@
     "payload": "payload",
     "audit": "tsx cms/audit.ts",
     "build:turbo": "next build",
-    "package": "node scripts/package-deploy.mjs"
+    "package": "node scripts/package-deploy.mjs",
+    "deploy": "node scripts/deploy.mjs",
+    "backup": "node scripts/backup.mjs",
+    "rollback": "node scripts/rollback.mjs"
   },
   "dependencies": {
     "@payloadcms/db-sqlite": "^3.88.0",
