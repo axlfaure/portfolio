@@ -96,9 +96,9 @@ qui ne dit rien de la cause.
 
 Infomaniak n'accepte pas encore l'authentification par clé sur cet
 hébergement : le mot de passe est demandé à chaque connexion, et `ssh-keygen`
-ne sert donc à rien pour l'instant. Les scripts ouvrent donc le
-minimum de connexions : une pour la sauvegarde, deux pour le déploiement. Le jour où la clé arrivera, il
-suffira de la déposer, rien à changer ici.
+ne sert donc à rien pour l'instant. Les scripts ouvrent en conséquence le
+minimum de connexions : une pour la sauvegarde, deux pour le déploiement. Le
+jour où la clé arrivera, il suffira de la déposer, rien à changer ici.
 
 ## Sur le serveur
 
