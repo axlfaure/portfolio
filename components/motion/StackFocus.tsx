@@ -50,7 +50,15 @@ export function StackFocus() {
       demande = 0;
       const course = window.innerHeight * COURSE;
 
-      for (const carte of cartes) {
+      for (const [rang, carte] of cartes.entries()) {
+        /*
+         * La première ne s'efface jamais. C'est elle qu'on voit en arrivant sur
+         * la section, et la voir voilée donnerait l'impression d'une page qui
+         * n'a pas fini de charger. Les suivantes, elles, montent par-dessus un
+         * contenu déjà installé : leur retrait se lit comme une profondeur.
+         */
+        if (rang === 0) continue;
+
         /*
          * La position d'arrêt est le `top` que la carte tient une fois collée.
          * Elle est portée par la feuille de style et varie selon la largeur,
