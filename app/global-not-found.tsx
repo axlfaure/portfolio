@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
+import {
+  Instrument_Serif,
+  JetBrains_Mono,
+  Plus_Jakarta_Sans,
+} from "next/font/google";
 import Link from "next/link";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { ErrorScreen } from "@/components/sections/ErrorScreen";
+import { GhostButton } from "@/components/ui/GhostButton";
 import "./globals.css";
 
 /**
@@ -12,14 +18,32 @@ import "./globals.css";
  * et l'un pour l'administration, Next n'a pas de mise en page racine où poser
  * un 404 commun. C'est le cas que `globalNotFound` est fait pour couvrir.
  *
- * Le fichier rend le document entier, mise en page comprise, et ne partage
- * donc rien avec le reste du site : ni en-tête, ni pied de page, ni le reste
- * des polices. On s'en tient à l'essentiel, et surtout à une sortie.
+ * Le fichier rend le document entier et ne partage donc rien avec le reste du
+ * site : ni en-tête, ni pied de page, ni polices. Les trois familles sont
+ * rechargées ici parce que la composition en dépend — la chasse fixe porte le
+ * grand nombre, l'italique porte l'accent. Une page d'erreur nue sur un site
+ * de graphiste est un contresens, et celle-ci ne se voit presque jamais : le
+ * poids se justifie.
  */
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  weight: ["400", "600", "700"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-jakarta",
+  display: "swap",
+});
+
+const jetbrains = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-jetbrains",
+  display: "swap",
+});
+
+const instrument = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-instrument",
   display: "swap",
 });
 
@@ -30,28 +54,43 @@ export const metadata: Metadata = {
 
 export default function GlobalNotFound() {
   return (
-    <html lang="fr" className={jakarta.variable}>
+    /* `data-js` conditionne les animations du site. Il n'y a pas une ligne de
+       JavaScript ici, mais le trait tracé sous l'accent est une animation CSS
+       pure : l'attribut suffit à la déclencher. */
+    <html
+      lang="fr"
+      data-js="1"
+      className={`${jakarta.variable} ${jetbrains.variable} ${instrument.variable}`}
+    >
       <body>
-        <div className="container-site section">
-          <p className="eyebrow">Erreur 404</p>
-
-          <h1 className="h2 mt-5 max-w-[18ch]">
-            Cette adresse ne mène nulle part.
-          </h1>
-
-          <p className="lead mt-5 max-w-[46ch]">
-            Le lien est peut-être ancien, ou l&apos;adresse mal recopiée.
-          </p>
-
-          <p className="mt-10">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 rounded-full border border-line-2 px-5 py-2.5 text-[0.9rem] font-semibold text-ink-2 transition-colors duration-200 hover:border-ink hover:text-ink"
-            >
-              Retour à l&apos;accueil <span aria-hidden="true">→</span>
-            </Link>
-          </p>
-        </div>
+        <ErrorScreen
+          code="404"
+          animerAccent={false}
+          plein
+          eyebrow="Erreur 404"
+          titleStart="Cette adresse ne mène"
+          titleAccent="nulle part."
+          lead="Le lien est peut-être ancien, ou l'adresse mal recopiée. Rien de perdu : tout le site tient en trois pages."
+          actions={
+            <>
+              <GhostButton href="/">Retour à l&apos;accueil</GhostButton>
+              <GhostButton href="/projets">Voir les réalisations</GhostButton>
+              <GhostButton href="/services">Voir les services</GhostButton>
+            </>
+          }
+          footnote={
+            <>
+              Vous cherchiez quelque chose de précis ?{" "}
+              <Link
+                href="/#contact"
+                className="font-semibold text-ink underline underline-offset-4 transition-colors duration-200 hover:text-accent"
+              >
+                Dites-le moi
+              </Link>
+              , je vous enverrai le bon lien.
+            </>
+          }
+        />
       </body>
     </html>
   );

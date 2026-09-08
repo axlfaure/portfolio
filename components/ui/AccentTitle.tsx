@@ -1,3 +1,5 @@
+import { typo, typoOpt } from "@/lib/typo";
+
 /**
  * Titre de section, dont une partie passe en italique accentué.
  *
@@ -19,11 +21,18 @@ export function AccentTitle({
   accent: string;
   end?: string;
 }) {
+  /*
+   * Le texte passe par les règles typographiques françaises avant d'être
+   * rendu : un titre de section se relit sur trois largeurs d'écran, et c'est
+   * toujours là qu'un « à » finit seul en bout de ligne.
+   */
+  const fin = typoOpt(end);
+
   return (
     <>
-      {start}{" "}
-      <em className="accent hl hl--scroll">{accent}</em>
-      {end ? ` ${end}` : null}
+      {typo(start)}{" "}
+      <em className="accent hl hl--scroll">{typo(accent)}</em>
+      {fin ? ` ${fin}` : null}
     </>
   );
 }

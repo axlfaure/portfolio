@@ -4,6 +4,7 @@ import { Counter } from "@/components/ui/Counter";
 import { cn } from "@/lib/cn";
 import { CtaButton } from "@/components/ui/CtaButton";
 import { Avatar } from "@/components/ui/Media";
+import { typo } from "@/lib/typo";
 import { Stars } from "@/components/ui/Stars";
 import { Ticker } from "@/components/ui/Ticker";
 import { heroStats } from "@/lib/data";
@@ -47,7 +48,7 @@ export async function Hero() {
                   ne traverse pas ses enfants. Sans lui, « complexe. » se
                   retrouvait seul sur une ligne au format téléphone. */}
               <span className="text-balance">
-                {ligne.before ? `${ligne.before} ` : null}
+                {ligne.before ? `${typo(ligne.before)} ` : null}
                 <em
                   className="accent hl hl--draw"
                   style={
@@ -56,9 +57,9 @@ export async function Hero() {
                     } as React.CSSProperties
                   }
                 >
-                  {ligne.accent}
+                  {typo(ligne.accent)}
                 </em>
-                {ligne.after ? ` ${ligne.after}` : null}
+                {ligne.after ? ` ${typo(ligne.after)}` : null}
               </span>
             </span>
           ))}

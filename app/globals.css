@@ -646,6 +646,38 @@ html.lenis body {
   transform: none;
 }
 
+/* ---- Dépliage des questions ----
+
+   Un `<details>` s'ouvre d'un coup : la réponse apparaît, et tout ce qui la
+   suit saute d'un bloc. C'est la rupture la plus visible du site, sur la FAQ
+   de l'accueil comme sur celle des pages service.
+
+   `interpolate-size` autorise la transition vers `auto`, ce qu'aucune
+   hauteur en dur ne remplace : les réponses vont de deux lignes à huit, et les
+   figer casserait la mise en page. `content-visibility` accompagne le geste
+   avec `allow-discrete`, sans quoi le contenu disparaîtrait dès la première
+   image de la fermeture.
+
+   Les navigateurs qui ignorent `::details-content` retrouvent l'ouverture
+   sèche d'aujourd'hui : rien ne se casse, le geste manque, c'est tout. */
+@media (prefers-reduced-motion: no-preference) {
+  :root {
+    interpolate-size: allow-keywords;
+  }
+
+  [data-js] details::details-content {
+    block-size: 0;
+    overflow: hidden;
+    transition:
+      block-size 380ms var(--ease-expo),
+      content-visibility 380ms allow-discrete;
+  }
+
+  [data-js] details[open]::details-content {
+    block-size: auto;
+  }
+}
+
 /* ---- Transition de page ---- */
 @keyframes page-fade {
   from {

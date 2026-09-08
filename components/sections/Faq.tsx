@@ -2,6 +2,7 @@ import { Mdx } from "@/components/mdx/Mdx";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { AccentTitle } from "@/components/ui/AccentTitle";
 import { getFaq, getFaqSection } from "@/lib/content";
+import { typo } from "@/lib/typo";
 
 export async function Faq() {
   const faq = await getFaq();
@@ -34,7 +35,7 @@ export async function Faq() {
             >
               <summary className="flex cursor-pointer list-none items-start gap-4 px-6 py-5 text-left transition-colors duration-200 hover:bg-paper">
                 <span className="flex-1 text-[0.975rem] font-semibold leading-snug text-ink">
-                  {item.question}
+                  {typo(item.question)}
                 </span>
                 <svg
                   width="16"

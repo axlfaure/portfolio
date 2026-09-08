@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
+import { typo } from "@/lib/typo";
 
 type Props = {
   eyebrow: string;
@@ -43,8 +44,12 @@ export function SectionHeader({
         </span>
       </Titre>
 
+      {/* Le chapô n'est une chaîne que la plupart du temps : certains appels
+          y glissent du balisage, qu'on laisse alors passer intact. */}
       {lead && (
-        <p className={cn("lead mt-5", dark && "text-white/65")}>{lead}</p>
+        <p className={cn("lead mt-5", dark && "text-white/65")}>
+          {typeof lead === "string" ? typo(lead) : lead}
+        </p>
       )}
     </div>
   );

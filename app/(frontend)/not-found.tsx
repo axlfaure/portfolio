@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ErrorScreen } from "@/components/sections/ErrorScreen";
 import { GhostButton } from "@/components/ui/GhostButton";
 
 /**
@@ -14,34 +15,31 @@ import { GhostButton } from "@/components/ui/GhostButton";
  */
 export default function NotFound() {
   return (
-    <div className="container-site section">
-      <p className="eyebrow">Erreur 404</p>
-
-      <h1 className="h2 mt-5 max-w-[18ch]">
-        Cette page n&apos;existe plus, ou n&apos;a jamais existé.
-      </h1>
-
-      <p className="lead mt-5 max-w-[46ch]">
-        Le lien est peut-être ancien, ou l&apos;adresse mal recopiée. Voici les
-        chemins les plus courts vers ce que vous cherchiez.
-      </p>
-
-      <div className="mt-10 flex flex-wrap gap-3">
-        <GhostButton href="/">Retour à l&apos;accueil</GhostButton>
-        <GhostButton href="/projets">Voir les réalisations</GhostButton>
-        <GhostButton href="/services">Voir les services</GhostButton>
-      </div>
-
-      <p className="mt-10 text-[0.9rem] text-muted">
-        Vous cherchiez quelque chose de précis ?{" "}
-        <Link
-          href="/#contact"
-          className="font-semibold text-ink underline underline-offset-4"
-        >
-          Dites-le moi
-        </Link>
-        , je vous enverrai le bon lien.
-      </p>
-    </div>
+    <ErrorScreen
+      code="404"
+      eyebrow="Erreur 404"
+      titleStart="Cette page n'a pas su"
+      titleAccent="se faire comprendre."
+      lead="Le lien est peut-être ancien, ou l'adresse mal recopiée. Voici les chemins les plus courts vers ce que vous cherchiez."
+      actions={
+        <>
+          <GhostButton href="/">Retour à l&apos;accueil</GhostButton>
+          <GhostButton href="/projets">Voir les réalisations</GhostButton>
+          <GhostButton href="/services">Voir les services</GhostButton>
+        </>
+      }
+      footnote={
+        <>
+          Vous cherchiez quelque chose de précis ?{" "}
+          <Link
+            href="/#contact"
+            className="font-semibold text-ink underline underline-offset-4 transition-colors duration-200 hover:text-accent"
+          >
+            Dites-le moi
+          </Link>
+          , je vous enverrai le bon lien.
+        </>
+      }
+    />
   );
 }

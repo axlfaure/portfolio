@@ -62,6 +62,14 @@ export function Media({
           fill
           sizes={sizes}
           priority={priority}
+          /*
+           * 90 et non la valeur par défaut de 75. Ce sont les mêmes maquettes
+           * que celles des bentos : du texte fin et des aplats, deux choses
+           * que la compression à 75 abîme visiblement. La différence de poids
+           * se compte en dizaines de kilo-octets, la différence à l'œil se
+           * voit sur chaque capture d'écran de logiciel.
+           */
+          quality={90}
           className="object-cover"
         />
       ) : (
