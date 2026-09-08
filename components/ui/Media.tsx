@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { cn } from "@/lib/cn";
+import { estImage } from "@/lib/payload";
 
 /**
  * Y a-t-il un visuel à afficher ?
@@ -13,6 +14,18 @@ import { cn } from "@/lib/cn";
  */
 export function hasAsset(src?: string | null): boolean {
   return typeof src === "string" && src.length > 0;
+}
+
+/**
+ * Y a-t-il une image à afficher ?
+ *
+ * Distinct de `hasAsset` : la collection Media accepte aussi les vidéos, et
+ * une vidéo déposée dans un champ de visuel se retrouvait dans une balise
+ * image, qui n'affichait qu'un cadre vide sans rien signaler. L'emplacement en
+ * pointillés est un bien meilleur message — il dit qu'il manque quelque chose.
+ */
+function imageAffichable(src?: string | null): boolean {
+  return hasAsset(src) && estImage(src);
 }
 
 type MediaProps = {
@@ -43,7 +56,7 @@ export function Media({
   label = "Visuel à ajouter",
   ...rest
 }: MediaProps) {
-  const ready = hasAsset(src);
+  const ready = imageAffichable(src);
 
   return (
     <div

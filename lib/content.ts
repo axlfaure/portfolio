@@ -86,8 +86,18 @@ export type Testimonial = {
   avatar: string | null;
   /** Fond du bandeau de la page d'accueil, pour le témoignage mis en avant. */
   background: string | null;
+  /** Vidéo de fond du bandeau. Prend le pas sur l'image quand elle existe. */
+  backgroundVideo: string | null;
   rating: number;
   featured: boolean;
+  /**
+   * Vide pour une simple note client.
+   *
+   * Un client peut être rattaché à son projet sans avoir écrit de
+   * recommandation. Le site ne doit alors rien mettre entre guillemets à sa
+   * place : ses étoiles et son nom s'affichent sur la page projet, mais il
+   * n'entre pas dans le mur d'avis.
+   */
   quote: string;
 };
 
@@ -242,9 +252,13 @@ function toTestimonial(doc: TestimonialDoc): Testimonial {
     org: doc.org,
     avatar: url(doc.avatar),
     background: url(doc.background),
+    backgroundVideo: url(doc.backgroundVideo),
     rating: doc.rating,
     featured: Boolean(doc.featured),
-    quote: doc.quote,
+    // Coupé net : un champ vidé dans l'administration y laisse souvent une
+    // espace, qui est vraie pour JavaScript et vide pour un lecteur. Sans ce
+    // `trim`, la page projet affichait des guillemets refermés sur du rien.
+    quote: (doc.quote ?? "").trim(),
   };
 }
 
@@ -259,10 +273,22 @@ export const getTestimonial = cache(
     slug ? (await getTestimonials()).find((t) => t.slug === slug) : undefined,
 );
 
+/**
+ * Les avis qui portent une citation, seuls à pouvoir s'afficher en tant que
+ * tels. Les autres sont des notes : ils existent, ils sont rattachés à leur
+ * projet, mais le site n'a rien à citer d'eux.
+ */
+export const getQuotedTestimonials = cache(async (): Promise<Testimonial[]> => {
+  const all = await getTestimonials();
+  return all.filter((t) => t.quote.length > 0);
+});
+
 export const getFeaturedTestimonial = cache(
   async (): Promise<Testimonial | undefined> => {
-    const all = await getTestimonials();
-    return all.find((t) => t.featured) ?? all[0];
+    // Le bandeau met une citation en très grand : un avis qui n'en a pas ne
+    // peut pas y prétendre, même coché « mis en avant ».
+    const cites = await getQuotedTestimonials();
+    return cites.find((t) => t.featured) ?? cites[0];
   },
 );
 

@@ -10,8 +10,6 @@ type Props = {
   gap?: number;
   /** Défile vers le bas au lieu du haut. */
   reverse?: boolean;
-  /** Colonne purement décorative : son contenu est déjà lu ailleurs. */
-  decorative?: boolean;
   className?: string;
 };
 
@@ -24,16 +22,14 @@ type Props = {
  * qu'on vient chercher ici. Une carte d'avis prend la hauteur de sa citation,
  * qui va du simple au quadruple, et la colonne s'arrange du reste.
  *
- * Le second jeu est un doublon d'affichage. Quand la colonne n'est pas la
- * première, tout son contenu l'est : les mêmes avis y reviennent dans un autre
- * ordre, et personne n'a envie de les entendre trois fois.
+ * Le second jeu est un doublon d'affichage, masqué aux lecteurs d'écran : il
+ * n'existe que pour refermer la boucle sans couture.
  */
 export function TickerColumn({
   items,
   duration = 50,
   gap = 1.25,
   reverse = false,
-  decorative = false,
   className,
 }: Props) {
   return (
@@ -45,7 +41,6 @@ export function TickerColumn({
           "--ticker-gap": `${gap}rem`,
         } as React.CSSProperties
       }
-      {...(decorative ? { "aria-hidden": true, inert: true } : {})}
     >
       <div
         className={cn(

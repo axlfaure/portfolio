@@ -6,7 +6,7 @@ import type { Testimonial } from "@/lib/content";
 import { AccentTitle } from "@/components/ui/AccentTitle";
 import { ReviewsCarousel } from "@/components/ui/ReviewsCarousel";
 import { cn } from "@/lib/cn";
-import { getReviewsSection, getTestimonials } from "@/lib/content";
+import { getQuotedTestimonials, getReviewsSection } from "@/lib/content";
 
 function Card({
   testimonial,
@@ -67,17 +67,25 @@ function Card({
 }
 
 /**
- * Fait tourner la liste d'un cran par colonne.
+ * Répartit les avis entre les colonnes, une carte sur trois.
  *
- * Chaque colonne porte tous les avis, mais décalés. Les répartir aurait donné
- * deux cartes par colonne pour six témoignages, et une boucle si courte qu'on
- * l'aurait vue tourner. Ainsi la boucle dure six cartes, et deux colonnes
- * voisines ne montrent jamais le même avis à la même hauteur.
+ * Chaque colonne portait auparavant la liste entière, simplement décalée. Le
+ * même avis se trouvait donc dans les trois colonnes à la fois, et finissait
+ * par se croiser avec lui-même : deux exemplaires côte à côte, à quelques
+ * centimètres près. Un mur de neuf avis n'en montrait jamais que quelques-uns,
+ * répétés.
+ *
+ * En les distribuant, **un avis n'existe qu'à un seul endroit** : le cas ne
+ * peut plus se produire, quel qu'en soit le nombre. La contrepartie est une
+ * boucle plus courte par colonne — trois cartes pour neuf avis — mais une
+ * répétition dans le temps se remarque bien moins qu'un doublon dans l'espace.
+ *
+ * La distribution est alternée plutôt que par tranches : les avis longs et
+ * courts se répartissent ainsi entre les colonnes au lieu de s'accumuler dans
+ * la même, ce qui est exactement ce qui fait la maçonnerie.
  */
-function decaler<T>(liste: T[], de: number): T[] {
-  if (liste.length === 0) return liste;
-  const cran = (de * 2) % liste.length;
-  return [...liste.slice(cran), ...liste.slice(0, cran)];
+function repartir<T>(liste: T[], colonne: number, total: number): T[] {
+  return liste.filter((_, i) => i % total === colonne);
 }
 
 /**
@@ -119,27 +127,33 @@ const REGLAGES = [
 function Mur({ testimonials }: { testimonials: Testimonial[] }) {
   return (
     <div className="container-site hidden gap-5 md:grid md:h-[38rem] md:grid-cols-2 lg:h-[46rem] lg:grid-cols-3">
-      {REGLAGES.map((reglage, i) => (
-        <TickerColumn
-          key={reglage.duration}
-          duration={reglage.duration}
-          reverse={reglage.reverse}
-          gap={1.25}
-          // La première colonne porte la version lue par les lecteurs
-          // d'écran ; les suivantes reprennent les mêmes avis.
-          decorative={i > 0}
-          className={cn("h-full", i === 2 && "hidden lg:block")}
-          items={decaler(testimonials, i).map((t) => (
-            <Card key={t.slug} testimonial={t} className="w-full" compact />
-          ))}
-        />
-      ))}
+      {REGLAGES.map((reglage, i) => {
+        const part = repartir(testimonials, i, REGLAGES.length);
+        // Une colonne vide laisserait un trou dans la grille. Le cas se
+        // présente tant qu'il y a moins d'avis que de colonnes.
+        if (part.length === 0) return null;
+
+        return (
+          <TickerColumn
+            key={reglage.duration}
+            duration={reglage.duration}
+            reverse={reglage.reverse}
+            gap={1.25}
+            className={cn("h-full", i === 2 && "hidden lg:block")}
+            items={part.map((t) => (
+              <Card key={t.slug} testimonial={t} className="w-full" compact />
+            ))}
+          />
+        );
+      })}
     </div>
   );
 }
 
 export async function Reviews() {
-  const testimonials = await getTestimonials();
+  // Seuls les avis porteurs d'une citation : une note client sans texte n'a
+  // rien à faire dans un mur qui met des mots entre guillemets.
+  const testimonials = await getQuotedTestimonials();
   const tete = await getReviewsSection();
 
   return (

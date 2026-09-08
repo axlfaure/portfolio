@@ -36,9 +36,11 @@ export const Testimonials: CollectionConfig = {
     {
       name: "quote",
       type: "textarea",
-      required: true,
       label: "Citation",
-      admin: { description: "Deux ou trois phrases. Les guillemets sont ajoutés par le site." },
+      admin: {
+        description:
+          "Deux ou trois phrases. Les guillemets sont ajoutés par le site. Laisser vide pour une simple note : le client reste rattaché à son projet, avec ses étoiles, mais n'apparaît pas dans le mur d'avis. Écrire une citation l'y fait entrer aussitôt.",
+      },
     },
     {
       name: "background",
@@ -48,6 +50,17 @@ export const Testimonials: CollectionConfig = {
       admin: {
         description:
           "Ne sert que pour le témoignage mis en avant. Affichée très en transparence et en niveaux de gris derrière la citation : choisir une image ample, sans détail à lire. Sans image, le bandeau reprend la couverture du projet lié.",
+        condition: (data) => Boolean(data?.featured),
+      },
+    },
+    {
+      name: "backgroundVideo",
+      type: "upload",
+      relationTo: "media",
+      label: "Vidéo de fond du bandeau",
+      admin: {
+        description:
+          "Prend le pas sur l'image, qui lui sert alors d'affiche pendant le chargement et de repli si le visiteur a demandé moins d'animations. Muette et rejouée en boucle : une courte séquence de matière, sans sujet ni coupe franche. Deux mégaoctets suffisent, elle est affichée à 13 % d'opacité.",
         condition: (data) => Boolean(data?.featured),
       },
     },

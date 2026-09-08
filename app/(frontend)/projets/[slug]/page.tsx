@@ -153,9 +153,13 @@ export default async function ProjetPage({ params }: Params) {
             className="mt-[clamp(3rem,6vw,4.5rem)] rounded-card border border-line bg-surface p-8"
           >
             <Stars rating={testimonial.rating} />
-            <blockquote className="mt-5 max-w-[42rem] text-[1.1rem] font-semibold leading-snug text-ink">
-              « {testimonial.quote} »
-            </blockquote>
+            {/* Un client peut n'avoir laissé qu'une note. On affiche alors ses
+                étoiles et son nom, sans rien inventer entre guillemets. */}
+            {testimonial.quote ? (
+              <blockquote className="mt-5 max-w-[42rem] text-[1.1rem] font-semibold leading-snug text-ink">
+                « {testimonial.quote} »
+              </blockquote>
+            ) : null}
             <figcaption className="mt-6 flex items-center gap-3 border-t border-line pt-5">
               <Avatar src={testimonial.avatar} alt="" size={40} initials="··" />
               <span>

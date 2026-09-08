@@ -2,7 +2,16 @@ import Image from "next/image";
 import { Avatar } from "@/components/ui/Media";
 import { Stars } from "@/components/ui/Stars";
 import { getFeaturedTestimonial, getProjects } from "@/lib/content";
+import { estImage, estVideo } from "@/lib/payload";
 import { typo } from "@/lib/typo";
+
+/**
+ * Dégradé de masque du fond : il le fait naître et mourir dans la couleur de
+ * la section plutôt que de le couper net sur les bords. Partagé par l'image et
+ * la vidéo, qui doivent se superposer exactement.
+ */
+const VOILE =
+  "linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent)";
 
 /** Respiration pleine largeur. Contenu issu du témoignage marqué `featured`. */
 export async function TestimonialBanner() {
@@ -23,7 +32,16 @@ export async function TestimonialBanner() {
   const projet = (await getProjects()).find(
     (p) => p.testimonial === featured.slug,
   );
-  const fond = featured.background ?? projet?.cover ?? projet?.panels[0] ?? null;
+  /*
+   * Chaque candidat est filtré par sa nature, pas seulement par sa présence.
+   * Une vidéo déposée dans un champ d'image traversait sinon toute la chaîne
+   * pour finir dans une balise `img`, qui n'affichait rien.
+   */
+  const candidats = [featured.background, projet?.cover, projet?.panels[0]];
+  const fond = candidats.find(estImage) ?? null;
+  const video = estVideo(featured.backgroundVideo)
+    ? featured.backgroundVideo
+    : null;
 
   return (
     <section className="relative isolate overflow-hidden bg-sunk">
@@ -42,11 +60,35 @@ export async function TestimonialBanner() {
             fill
             sizes="100vw"
             className="object-cover opacity-[0.13] [filter:grayscale(1)]"
-            style={{
-              maskImage:
-                "linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent)",
-            }}
+            style={{ maskImage: VOILE }}
           />
+        )}
+
+        {/*
+         * La vidéo se pose par-dessus l'image, qui reste dessous.
+         *
+         * Deux services d'un seul geste : l'image tient lieu d'affiche le
+         * temps que la vidéo arrive, et elle reprend seule la main sous
+         * « réduire les animations », la classe `motion-reduce:hidden`
+         * escamotant la vidéo sans qu'une ligne de JavaScript soit nécessaire.
+         *
+         * Muette, en lecture intégrée et en boucle : c'est l'exception que
+         * iOS et Android autorisent à démarrer sans geste de l'utilisateur.
+         */}
+        {video && (
+          <video
+            className="absolute inset-0 h-full w-full object-cover opacity-[0.13] [filter:grayscale(1)] motion-reduce:hidden"
+            style={{ maskImage: VOILE }}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            poster={fond ?? undefined}
+            tabIndex={-1}
+          >
+            <source src={video} />
+          </video>
         )}
 
         {/* Les deux halos clairs passent au-dessus du visuel : ils dégagent le
