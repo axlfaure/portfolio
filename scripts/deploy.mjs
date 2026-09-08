@@ -18,8 +18,13 @@ import { connect } from "./remote.mjs";
  * l'entrée standard de la seconde a été essayé et abandonné, ssh ne sachant
  * plus lire le mot de passe sous Windows quand cette entrée est redirigée.
  *
- * L'ancien build est conservé sur place sous `.next.old`, ce qui permet de
- * revenir en arrière sans rien retélécharger.
+ * L'archive emporte `.next` et `public`. Ce second dossier n'est pas dans le
+ * build : `next start` le sert depuis le disque, et il n'arrivait donc sur le
+ * serveur que par `git pull`. Une vidéo ajoutée au hero est partie sans ses
+ * fichiers, et le site est retombé sur son fond de secours en silence.
+ *
+ * Les anciens sont conservés sur place sous `.next.old` et `public.old`, ce
+ * qui permet de revenir en arrière sans rien retélécharger.
  *
  * Usage : `npm run deploy`, après `npm run sync` et `npm run build`.
  */
@@ -56,10 +61,14 @@ const install = [
   "mkdir -p .deploy-tmp",
   "tar -xzf next-build.tar.gz -C .deploy-tmp",
   "test -d .deploy-tmp/.next",
+  "test -d .deploy-tmp/public",
   "if [ -d .next ]; then rm -rf .next.old; mv .next .next.old; fi",
   "mv .deploy-tmp/.next .next",
+  "if [ -d public ]; then rm -rf public.old; mv public public.old; fi",
+  "mv .deploy-tmp/public public",
   "rm -rf .deploy-tmp next-build.tar.gz",
   'echo "BUILD_ID installé : $(cat .next/BUILD_ID)"',
+  'echo "Fichiers statiques : $(find public -type f | wc -l) fichiers"',
 ].join("\n");
 
 console.log("\n3/3  Installation sur le serveur");
