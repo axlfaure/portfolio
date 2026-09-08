@@ -16,6 +16,21 @@ import { DatabaseSync } from "node:sqlite";
  * et s'arrête sur « index déjà existant ». Rien n'est perdu, mais le schéma
  * reste à moitié appliqué, et l'administration tombe sur les tables absentes.
  *
+ * Le sous-processus tourne en `NODE_ENV=development`, et c'est indispensable.
+ * L'adaptateur SQLite de Payload garde ce test en dur, dans son fichier de
+ * connexion :
+ *
+ *     if (process.env.NODE_ENV !== 'production' && … ) await pushDevSchema(…)
+ *
+ * Sur le serveur, où la variable vaut `production`, la mise à jour était donc
+ * purement et simplement sautée. La commande rendait la main sans rien dire,
+ * et l'administration tombait ensuite sur une colonne inexistante. Déclarer
+ * `push: true` dans la configuration n'y change rien : le test sur
+ * l'environnement passe avant.
+ *
+ * La bascule ne concerne que ce sous-processus, le temps de la mise à jour.
+ * Le serveur qui sert le site n'est pas touché.
+ *
  * La réparation est sûre : un index n'est qu'un chemin d'accès, le supprimer
  * ne touche à aucune donnée, et la tentative suivante le recrée aussitôt. On
  * ne supprime que l'index nommé dans l'erreur, jamais plus large.
@@ -40,6 +55,14 @@ function fichierDeBase() {
 }
 
 const base = fichierDeBase();
+
+if (process.env.NODE_ENV === "production") {
+  console.log(
+    "NODE_ENV vaut « production » : la mise à jour du schéma est forcée en",
+  );
+  console.log("mode développement pour ce sous-processus, sans quoi Payload la");
+  console.log("sauterait en silence.\n");
+}
 
 /** Exécute une réparation sur la base, puis referme. */
 function reparer(sql) {
@@ -93,6 +116,7 @@ for (let tentative = 1; tentative <= TENTATIVES_MAX; tentative += 1) {
   const run = spawnSync("npx", ["tsx", "cms/seed-sections.ts"], {
     encoding: "utf8",
     shell: process.platform === "win32",
+    env: { ...process.env, NODE_ENV: "development" },
   });
 
   const sortie = `${run.stdout ?? ""}${run.stderr ?? ""}`;

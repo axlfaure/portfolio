@@ -50,31 +50,24 @@ export async function TestimonialBanner() {
         )}
 
         {/* Les deux halos clairs passent au-dessus du visuel : ils dégagent le
-            fond là où se pose le texte. Ils ont suivi la citation vers la
-            droite, sans quoi ils éclairaient une zone vide et laissaient
-            l'image concurrencer la lecture. */}
+            fond là où se pose le texte, désormais sur toute la largeur. */}
         <span
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(52% 62% at 64% 26%, rgba(255,255,255,.85), transparent 68%)," +
-              "radial-gradient(54% 66% at 84% 78%, rgba(255,255,255,.72), transparent 70%)",
+              "radial-gradient(58% 64% at 30% 26%, rgba(255,255,255,.85), transparent 70%)," +
+              "radial-gradient(58% 66% at 72% 78%, rgba(255,255,255,.72), transparent 72%)",
           }}
         />
       </span>
 
-      {/*
-       * Le bloc se range à droite du conteneur, et tout s'aligne à son bord
-       * gauche : la citation se lit alors comme un paragraphe, en drapeau,
-       * plutôt que comme une inscription centrée.
-       *
-       * Sur écran étroit il reprend toute la largeur : décaler un bloc à
-       * droite dans une colonne de 330 px ne décale rien du tout.
-       */}
-      <div className="container-site flex justify-end py-[clamp(3.5rem,8vw,6rem)]">
+      {/* Toute la largeur du conteneur, et tout aligné sur son bord gauche :
+          la citation se lit comme un paragraphe, en drapeau, plutôt que comme
+          une inscription centrée. */}
+      <div className="container-site py-[clamp(3.5rem,8vw,6rem)]">
         <figure
           data-reveal
-          className="flex w-full flex-col items-start text-left md:w-[68%] lg:w-[60%]"
+          className="flex w-full flex-col items-start text-left"
         >
           <Stars rating={featured.rating} size={16} />
 

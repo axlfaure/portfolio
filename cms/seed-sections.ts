@@ -231,6 +231,43 @@ async function main() {
       : "sections d'accueil : déjà renseignées, rien à faire",
   );
 
+  // --- Vérification -------------------------------------------------------
+  //
+  // Le seul fait que ce script rende la main ne prouvait rien : quand la mise
+  // à jour du schéma était sautée, il se terminait sans erreur et laissait une
+  // administration qui plantait sur une colonne absente. On interroge donc
+  // chaque collection et chaque global une fois, ce qui est exactement ce que
+  // fait l'administration à l'ouverture d'une page. Une table ou une colonne
+  // manquante se signale ici, avec son nom, au lieu d'être découverte en
+  // ligne.
+  const casses = [];
+
+  for (const collection of payload.config.collections ?? []) {
+    try {
+      await payload.find({ collection: collection.slug as never, limit: 1, depth: 0 });
+    } catch (error) {
+      casses.push(`collection « ${collection.slug} » : ${(error as Error).message.split("\n")[0]}`);
+    }
+  }
+
+  for (const global of payload.config.globals ?? []) {
+    try {
+      await payload.findGlobal({ slug: global.slug as never, depth: 0 });
+    } catch (error) {
+      casses.push(`global « ${global.slug} » : ${(error as Error).message.split("\n")[0]}`);
+    }
+  }
+
+  if (casses.length > 0) {
+    console.error("\nLe schéma ne répond pas au code :");
+    for (const ligne of casses) console.error(`  - ${ligne}`);
+    process.exit(1);
+  }
+
+  console.log(
+    `vérification : ${(payload.config.collections ?? []).length} collections et ${(payload.config.globals ?? []).length} globaux lisibles`,
+  );
+
   console.log("\nLe portrait reste celui du dossier public tant qu'aucun");
   console.log("fichier n'est déposé dans le champ « Portrait ».");
   process.exit(0);
