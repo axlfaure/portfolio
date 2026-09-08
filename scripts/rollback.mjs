@@ -10,10 +10,10 @@ import { connect } from "./remote.mjs";
  * L'échange est réciproque : le build fautif prend la place de `.next.old`, ce
  * qui permet de repartir en avant si le problème venait d'ailleurs.
  *
- * `public` suit le même chemin depuis que le déploiement l'emporte : revenir
- * au build précédent sans ses fichiers statiques rendrait un site dont le code
- * et les images ne datent pas du même jour. La bascule reste facultative, les
- * serveurs déployés avant ce changement n'ayant pas de `public.old`.
+ * Seul `.next` est concerné : les fichiers statiques et les sources viennent
+ * du dépôt, et un retour en arrière côté build ne les touche pas. Si la
+ * version fautive tenait à une source, c'est un `git checkout` qu'il faut,
+ * pas cette commande.
  *
  * Usage : `npm run rollback`
  */
@@ -29,7 +29,6 @@ const swap = [
   "mv .next .next.swap",
   "mv .next.old .next",
   "mv .next.swap .next.old",
-  "if [ -d public.old ]; then rm -rf public.swap; mv public public.swap; mv public.old public; mv public.swap public.old; fi",
   'echo "BUILD_ID rétabli : $(cat .next/BUILD_ID)"',
 ].join("\n");
 

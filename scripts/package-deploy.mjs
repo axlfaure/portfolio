@@ -17,14 +17,17 @@ import path from "node:path";
  *
  * Ce qui reste est exactement ce que `next start` attend.
  *
- * `public` voyage avec le build, et pas seulement par le dépôt.
+ * L'archive ne contient que le build.
  *
- * `next start` sert ce dossier depuis le disque du serveur au moment de la
- * requête : il ne fait pas partie de `.next` et n'arrivait donc que par
- * `git pull`. Une vidéo ajoutée au hero est partie en ligne sans ses
- * fichiers, et le site est retombé sur son fond de secours sans rien
- * signaler. Un déploiement doit emporter tout ce que le site sert, sans
- * dépendre d'une commande qu'on peut oublier.
+ * `public` y a voyagé le temps d'une version, après qu'une vidéo est partie
+ * en ligne sans ses fichiers. C'était le mauvais levier : ce dossier est
+ * versionné, il appartient au dépôt, et le déposer par-dessus la copie de
+ * travail créait des fichiers que git ne suivait pas encore. Le `git pull`
+ * suivant refusait alors de les écraser et s'arrêtait.
+ *
+ * C'est `scripts/deploy.mjs` qui règle le vrai problème : il lance
+ * lui-même le `git pull` sur le serveur avant d'installer le build. Une
+ * seule commande, et plus rien à se rappeler.
  *
  * Usage : `npm run package`
  */
@@ -32,8 +35,6 @@ import path from "node:path";
 const root = process.cwd();
 const source = path.join(root, ".next");
 const target = path.join(root, "deploy", ".next");
-const publicSource = path.join(root, "public");
-const publicTarget = path.join(root, "deploy", "public");
 const SKIP = new Set(["cache", "standalone", "dev"]);
 
 if (!fs.existsSync(source)) {
@@ -41,14 +42,8 @@ if (!fs.existsSync(source)) {
   process.exit(1);
 }
 
-if (!fs.existsSync(publicSource)) {
-  console.error("Dossier public introuvable : le site serait livré sans ses images.");
-  process.exit(1);
-}
-
 fs.rmSync(path.join(root, "deploy"), { recursive: true, force: true });
 fs.mkdirSync(target, { recursive: true });
-fs.cpSync(publicSource, publicTarget, { recursive: true });
 
 let files = 0;
 let bytes = 0;
@@ -73,7 +68,6 @@ function measure(dir) {
 }
 
 measure(target);
-measure(publicTarget);
 
 /*
  * Une archive plutôt que 516 fichiers : un seul transfert, aucun risque
@@ -81,12 +75,12 @@ measure(publicTarget);
  * fichier sur une liaison SFTP.
  */
 const { execFileSync } = await import("node:child_process");
-execFileSync("tar", ["-czf", "next-build.tar.gz", ".next", "public"], {
+execFileSync("tar", ["-czf", "next-build.tar.gz", ".next"], {
   cwd: path.join(root, "deploy"),
 });
 const archive = fs.statSync(path.join(root, "deploy", "next-build.tar.gz")).size;
 
-console.log(`Dossier prêt : deploy/.next et deploy/public`);
+console.log(`Dossier prêt : deploy/.next`);
 console.log(`${files} fichiers, ${(bytes / 1024 / 1024).toFixed(1)} Mo`);
 console.log("");
 console.log(

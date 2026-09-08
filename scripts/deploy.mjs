@@ -18,13 +18,23 @@ import { connect } from "./remote.mjs";
  * l'entrée standard de la seconde a été essayé et abandonné, ssh ne sachant
  * plus lire le mot de passe sous Windows quand cette entrée est redirigée.
  *
- * L'archive emporte `.next` et `public`. Ce second dossier n'est pas dans le
- * build : `next start` le sert depuis le disque, et il n'arrivait donc sur le
- * serveur que par `git pull`. Une vidéo ajoutée au hero est partie sans ses
- * fichiers, et le site est retombé sur son fond de secours en silence.
+ * Le déploiement met aussi le dépôt du serveur à jour, avant d'installer le
+ * build.
  *
- * Les anciens sont conservés sur place sous `.next.old` et `public.old`, ce
- * qui permet de revenir en arrière sans rien retélécharger.
+ * Tout ce que le site sert n'est pas dans `.next` : `public` est lu sur le
+ * disque à chaque requête, et les scripts d'administration s'exécutent depuis
+ * les sources. Ces fichiers-là appartiennent au dépôt. Les faire voyager dans
+ * l'archive a été essayé et abandonné : déposés par-dessus la copie de
+ * travail, ils devenaient des fichiers que git ne suivait pas, et le
+ * `git pull` suivant refusait de les écraser.
+ *
+ * Le `git pull` passe donc en premier, et il passe ici plutôt que dans une
+ * consigne : une commande qu'on peut oublier finit toujours par être oubliée.
+ * S'il échoue, rien n'est installé et le site continue de servir la version
+ * en place.
+ *
+ * L'ancien build est conservé sur place sous `.next.old`, ce qui permet de
+ * revenir en arrière sans rien retélécharger.
  *
  * Usage : `npm run deploy`, après `npm run sync` et `npm run build`.
  */
@@ -57,18 +67,22 @@ const install = [
   "set -e",
   `cd '${server.dir}'`,
   "test -f package.json",
+  // Les sources d'abord : le build qui suit a été compilé à partir d'elles.
+  'echo "--- Mise à jour des sources ---"',
+  "git pull --ff-only",
   "rm -rf .deploy-tmp",
   "mkdir -p .deploy-tmp",
   "tar -xzf next-build.tar.gz -C .deploy-tmp",
   "test -d .deploy-tmp/.next",
-  "test -d .deploy-tmp/public",
   "if [ -d .next ]; then rm -rf .next.old; mv .next .next.old; fi",
   "mv .deploy-tmp/.next .next",
-  "if [ -d public ]; then rm -rf public.old; mv public public.old; fi",
-  "mv .deploy-tmp/public public",
   "rm -rf .deploy-tmp next-build.tar.gz",
+  'echo ""',
   'echo "BUILD_ID installé : $(cat .next/BUILD_ID)"',
-  'echo "Fichiers statiques : $(find public -type f | wc -l) fichiers"',
+  // Un changement dans cms/ veut presque toujours dire une colonne ou une
+  // table nouvelle. Mieux vaut le dire ici que de le découvrir dans
+  // l'administration.
+  `if ! git diff --quiet HEAD@{1} HEAD -- cms 2>/dev/null; then echo ""; echo "ATTENTION : le dossier cms a changé, lancez 'npm run db:sync' avant de redémarrer."; fi`,
 ].join("\n");
 
 console.log("\n3/3  Installation sur le serveur");
