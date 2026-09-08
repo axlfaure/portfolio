@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Avatar } from "@/components/ui/Media";
 import { Stars } from "@/components/ui/Stars";
 import { getFeaturedTestimonial, getProjects } from "@/lib/content";
+import { typo } from "@/lib/typo";
 
 /** Respiration pleine largeur. Contenu issu du témoignage marqué `featured`. */
 export async function TestimonialBanner() {
@@ -9,17 +10,20 @@ export async function TestimonialBanner() {
   if (!featured) return null;
 
   /*
-   * Le visuel de fond vient du projet, pas du témoignage : c'est le projet qui
-   * cite son client, la relation n'existe que dans ce sens. On la remonte ici
-   * plutôt que d'ajouter un champ à remplir deux fois.
+   * Le fond se choisit dans le témoignage, et retombe sur le projet à défaut.
    *
-   * La couverture d'abord, la première cellule du bento à défaut : un projet
-   * peut n'avoir que l'une ou que l'autre.
+   * L'image du projet convient rarement telle quelle : une couverture est
+   * cadrée pour une vignette, pas pour une bande pleine largeur derrière du
+   * texte. Le champ dédié permet d'en poser une pensée pour cet emplacement,
+   * sans perdre le repli automatique quand il est vide.
+   *
+   * Côté projet, la couverture d'abord, la première cellule du bento
+   * ensuite : un projet peut n'avoir que l'une ou que l'autre.
    */
   const projet = (await getProjects()).find(
     (p) => p.testimonial === featured.slug,
   );
-  const fond = projet?.cover ?? projet?.panels[0] ?? null;
+  const fond = featured.background ?? projet?.cover ?? projet?.panels[0] ?? null;
 
   return (
     <section className="relative isolate overflow-hidden bg-sunk">
@@ -45,40 +49,71 @@ export async function TestimonialBanner() {
           />
         )}
 
-        {/* Les deux halos clairs passent au-dessus du visuel : ils rouvrent le
-            centre, là où tombe la citation. */}
+        {/* Les deux halos clairs passent au-dessus du visuel : ils dégagent le
+            fond là où se pose le texte. Ils ont suivi la citation vers la
+            droite, sans quoi ils éclairaient une zone vide et laissaient
+            l'image concurrencer la lecture. */}
         <span
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(46% 58% at 24% 22%, rgba(255,255,255,.85), transparent 68%)," +
-              "radial-gradient(50% 62% at 78% 76%, rgba(255,255,255,.7), transparent 70%)",
+              "radial-gradient(52% 62% at 64% 26%, rgba(255,255,255,.85), transparent 68%)," +
+              "radial-gradient(54% 66% at 84% 78%, rgba(255,255,255,.72), transparent 70%)",
           }}
         />
       </span>
 
-      <figure
-        data-reveal
-        className="container-site flex flex-col items-center py-[clamp(3.5rem,8vw,6rem)] text-center"
-      >
-        <Stars rating={featured.rating} size={16} />
+      {/*
+       * Le bloc se range à droite du conteneur, et tout s'aligne à son bord
+       * gauche : la citation se lit alors comme un paragraphe, en drapeau,
+       * plutôt que comme une inscription centrée.
+       *
+       * Sur écran étroit il reprend toute la largeur : décaler un bloc à
+       * droite dans une colonne de 330 px ne décale rien du tout.
+       */}
+      <div className="container-site flex justify-end py-[clamp(3.5rem,8vw,6rem)]">
+        <figure
+          data-reveal
+          className="flex w-full flex-col items-start text-left md:w-[68%] lg:w-[60%]"
+        >
+          <Stars rating={featured.rating} size={16} />
 
-        <blockquote className="mt-6 max-w-[54rem] text-[clamp(1.25rem,3vw,1.85rem)] font-semibold leading-[1.28] tracking-[-0.025em] text-ink text-balance">
-          « {featured.quote} »
-        </blockquote>
+          {/*
+           * Ni largeur maximale ni `text-balance` : le texte occupe toute la
+           * colonne et ses lignes se coupent où la mesure l'impose.
+           *
+           * `text-pretty` le remplace et ne fait pas la même chose : là où
+           * `balance` égalise toutes les lignes, celui-ci se contente
+           * d'empêcher qu'un mot seul termine le paragraphe. Le drapeau est
+           * conservé, la ligne orpheline évitée. À retirer d'un mot si tu
+           * préfères la coupe strictement naturelle.
+           *
+           * Les guillemets sont passés dans la chaîne plutôt que posés dans
+           * le balisage : les règles typographiques ne voient que du texte, et
+           * c'est ainsi que le chevron fermant reste collé au dernier mot. Il
+           * tombait sinon seul sur sa ligne, dix-sept pixels de large.
+           *
+           * La taille monte de 1,1 à 1,4 rem entre le téléphone et 1280 px,
+           * puis se fige : au-delà, une citation qui continue de grossir
+           * repasserait devant le titre de section qui la précède.
+           */}
+          <blockquote className="mt-6 w-full text-pretty text-[clamp(1.1rem,0.9rem+0.65vw,1.4rem)] font-semibold leading-[1.5] tracking-[-0.012em] text-ink">
+            {typo(`« ${featured.quote} »`)}
+          </blockquote>
 
-        <figcaption className="mt-8 flex items-center gap-3">
-          <Avatar src={featured.avatar} alt="" size={44} initials="··" />
-          <span className="text-left">
-            <span className="block text-[0.9rem] font-bold text-ink">
-              {featured.name}
+          <figcaption className="mt-8 flex items-center gap-3">
+            <Avatar src={featured.avatar} alt="" size={44} initials="··" />
+            <span className="text-left">
+              <span className="block text-[0.9rem] font-bold text-ink">
+                {featured.name}
+              </span>
+              <span className="block text-[0.85rem] text-muted">
+                {featured.role} · {featured.org}
+              </span>
             </span>
-            <span className="block text-[0.85rem] text-muted">
-              {featured.role} · {featured.org}
-            </span>
-          </span>
-        </figcaption>
-      </figure>
+          </figcaption>
+        </figure>
+      </div>
     </section>
   );
 }

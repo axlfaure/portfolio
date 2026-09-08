@@ -84,6 +84,8 @@ export type Testimonial = {
   role: string;
   org: string;
   avatar: string | null;
+  /** Fond du bandeau de la page d'accueil, pour le témoignage mis en avant. */
+  background: string | null;
   rating: number;
   featured: boolean;
   quote: string;
@@ -239,6 +241,7 @@ function toTestimonial(doc: TestimonialDoc): Testimonial {
     role: doc.role,
     org: doc.org,
     avatar: url(doc.avatar),
+    background: url(doc.background),
     rating: doc.rating,
     featured: Boolean(doc.featured),
     quote: doc.quote,

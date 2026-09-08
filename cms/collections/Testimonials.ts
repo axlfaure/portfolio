@@ -41,6 +41,17 @@ export const Testimonials: CollectionConfig = {
       admin: { description: "Deux ou trois phrases. Les guillemets sont ajoutés par le site." },
     },
     {
+      name: "background",
+      type: "upload",
+      relationTo: "media",
+      label: "Image de fond du bandeau",
+      admin: {
+        description:
+          "Ne sert que pour le témoignage mis en avant. Affichée très en transparence et en niveaux de gris derrière la citation : choisir une image ample, sans détail à lire. Sans image, le bandeau reprend la couverture du projet lié.",
+        condition: (data) => Boolean(data?.featured),
+      },
+    },
+    {
       name: "featured",
       type: "checkbox",
       label: "Mettre en avant",
