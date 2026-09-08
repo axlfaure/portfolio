@@ -15,8 +15,9 @@ import { site } from "@/lib/site";
  * portée de clic dans l'administration inviterait à la retoucher sans relire
  * le reste.
  *
- * Les valeurs entre crochets sont celles qu'il reste à renseigner : elles se
- * voient à l'écran, précisément pour qu'on ne les oublie pas.
+ * L'article sur la médiation de la consommation a été retiré : les
+ * prestations s'adressent à des professionnels, et cette obligation ne pèse
+ * que sur ceux qui contractent avec des consommateurs.
  */
 export const metadata: Metadata = {
   title: "Mentions légales",
@@ -29,14 +30,24 @@ export const metadata: Metadata = {
 /** Date de la dernière révision, affichée en bas de page. */
 const DERNIERE_MISE_A_JOUR = "8 septembre 2026";
 
-/** Ce qui reste à compléter. Rendu visible pour ne pas rester en attente. */
-function ARemplir({ children }: { children: string }) {
-  return (
-    <span className="rounded-[4px] bg-[color-mix(in_srgb,var(--color-accent)_10%,transparent)] px-1.5 py-0.5 font-mono text-[0.85em] text-accent">
-      [{children}]
-    </span>
-  );
-}
+/**
+ * Identification de l'éditeur.
+ *
+ * L'adresse de contact indiquée ici n'est pas celle qu'affiche le reste du
+ * site. C'est délibéré et provisoire : `contact@axelfaure.fr` suppose le
+ * domaine définitif en service, or le site vit encore sur un sous-domaine.
+ * Une mention légale doit donner un moyen de contact qui fonctionne
+ * aujourd'hui, pas celui qui fonctionnera. À rebasculer le jour du
+ * changement de domaine.
+ */
+const EDITEUR = {
+  formeJuridique: "Entreprise individuelle, régime de la micro-entreprise",
+  siege: "42 quai de France, 38000 Grenoble",
+  siret: "953 301 157 00038",
+  tva: "Non applicable, article 293 B du code général des impôts",
+  telephone: "06 48 78 39 70",
+  courriel: "axelfaure64@gmail.com",
+} as const;
 
 function Section({
   numero,
@@ -106,28 +117,20 @@ export default function MentionsLegalesPage() {
           <dl className="mt-6 rounded-card border border-line bg-surface px-6 py-2">
             <Ligne intitule="Éditeur">{site.name}</Ligne>
             <Ligne intitule="Forme juridique">
-              <ARemplir>
-                statut exact : entreprise individuelle, micro-entreprise, EURL,
-                SASU…
-              </ARemplir>
+              {EDITEUR.formeJuridique}
             </Ligne>
-            <Ligne intitule="Siège">
-              <ARemplir>adresse postale complète</ARemplir>
-            </Ligne>
+            <Ligne intitule="Siège">{EDITEUR.siege}</Ligne>
             <Ligne intitule="SIRET">
-              <ARemplir>numéro SIRET à 14 chiffres</ARemplir>
+              <span className="num tabular-nums">{EDITEUR.siret}</span>
             </Ligne>
-            <Ligne intitule="TVA intracommunautaire">
-              <ARemplir>
-                numéro de TVA, ou « non applicable, article 293 B du CGI » si
-                vous relevez de la franchise en base
-              </ARemplir>
-            </Ligne>
+            <Ligne intitule="TVA">{EDITEUR.tva}</Ligne>
             <Ligne intitule="Courriel">
-              <a href={`mailto:${site.email}`}>{site.email}</a>
+              <a href={`mailto:${EDITEUR.courriel}`}>{EDITEUR.courriel}</a>
             </Ligne>
             <Ligne intitule="Téléphone">
-              <ARemplir>numéro, ou retirer cette ligne</ARemplir>
+              <a href={`tel:+33${EDITEUR.telephone.replace(/\D/g, "").slice(1)}`}>
+                {EDITEUR.telephone}
+              </a>
             </Ligne>
             <Ligne intitule="Directeur de la publication">{site.name}</Ligne>
           </dl>
@@ -170,7 +173,7 @@ export default function MentionsLegalesPage() {
           <p>
             Si vous êtes titulaire de droits sur un élément publié ici et que sa
             présence vous pose difficulté, écrivez à{" "}
-            <a href={`mailto:${site.email}`}>{site.email}</a> : il sera retiré
+            <a href={`mailto:${EDITEUR.courriel}`}>{EDITEUR.courriel}</a> : il sera retiré
             sans délai.
           </p>
         </Section>
@@ -178,7 +181,7 @@ export default function MentionsLegalesPage() {
         <Section numero="04" titre="Données personnelles">
           <p>
             <strong>Responsable de traitement :</strong> {site.name},
-            joignable à <a href={`mailto:${site.email}`}>{site.email}</a>.
+            joignable à <a href={`mailto:${EDITEUR.courriel}`}>{EDITEUR.courriel}</a>.
           </p>
           <p>
             <strong>Ce qui est collecté.</strong> Le site ne comporte aucun
@@ -196,16 +199,14 @@ export default function MentionsLegalesPage() {
             traitées par Calendly puis transmises à {site.name}. Elles ne
             servent qu&apos;à organiser et préparer l&apos;entretien, et ne sont
             jamais cédées. Base légale : votre demande, en vue de mesures
-            précontractuelles. Conservation :{" "}
-            <ARemplir>durée retenue, par exemple trois ans</ARemplir> à compter
-            du dernier échange.
+            précontractuelles. Conservation : trois ans à compter du dernier échange.
           </p>
           <p>
             <strong>Vos droits.</strong> Vous disposez d&apos;un droit
             d&apos;accès, de rectification, d&apos;effacement, de limitation et
             d&apos;opposition sur les données vous concernant. Il s&apos;exerce
             par simple courriel à{" "}
-            <a href={`mailto:${site.email}`}>{site.email}</a>. Si la réponse
+            <a href={`mailto:${EDITEUR.courriel}`}>{EDITEUR.courriel}</a>. Si la réponse
             apportée ne vous satisfait pas, vous pouvez saisir la{" "}
             <a
               href="https://www.cnil.fr/fr/plaintes"
@@ -249,22 +250,7 @@ export default function MentionsLegalesPage() {
           </p>
         </Section>
 
-        <Section numero="07" titre="Médiation de la consommation">
-          <p>
-            Les prestations proposées s&apos;adressent à des professionnels.
-            Dans l&apos;hypothèse d&apos;un contrat conclu avec un
-            consommateur, celui-ci peut recourir gratuitement à un médiateur de
-            la consommation :{" "}
-            <ARemplir>
-              nom et adresse du médiateur auprès duquel vous adhérez, ou
-              supprimer cette section si vous ne contractez jamais avec des
-              particuliers
-            </ARemplir>
-            .
-          </p>
-        </Section>
-
-        <Section numero="08" titre="Droit applicable">
+        <Section numero="07" titre="Droit applicable">
           <p>
             Les présentes mentions sont soumises au droit français. À défaut de
             règlement amiable, tout litige relatif à leur interprétation ou à
@@ -280,7 +266,7 @@ export default function MentionsLegalesPage() {
         Dernière mise à jour : {DERNIERE_MISE_A_JOUR}. Une question sur cette
         page ?{" "}
         <Link
-          href={`mailto:${site.email}`}
+          href={`mailto:${EDITEUR.courriel}`}
           className="font-semibold text-ink underline underline-offset-4 transition-colors duration-200 hover:text-accent"
         >
           Écrivez-moi
