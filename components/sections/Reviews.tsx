@@ -105,29 +105,21 @@ const REGLAGES = [
  * citation. Sur six avis qui vont de 143 à 585 signes, c'est ce qui fait la
  * maçonnerie.
  *
- * Le nombre de colonnes n'est pas un détail d'affichage : il commande la
- * hauteur des cartes. Mesuré à 1200 px, en version resserrée, une même
- * citation tient sur 237 à 475 px à trois colonnes, et sur bien moins à deux,
- * la ligne étant plus longue. Plus les colonnes sont étroites, plus le mur
- * est haut.
+ * Trois colonnes, et le choix n'est pas qu'esthétique : le nombre de colonnes
+ * commande la hauteur des cartes, à rebours de l'intuition. Mesuré à 1200 px,
+ * une même citation tient sur 242 à 415 px de haut sur deux colonnes, 267 à
+ * 588 sur trois, 337 à 806 sur quatre. Plus les colonnes sont étroites, plus
+ * la ligne est courte, et plus le mur est haut.
+ *
+ * À trois colonnes, la plus longue citation dépassait donc la fenêtre du mur
+ * et on ne voyait jamais qu'une carte. D'où la variante resserrée de `Card` :
+ * elle ramène le maximum à 475 px, et deux cartes tiennent enfin. C'est le
+ * minimum pour qu'un mur ressemble à un mur.
  */
-function Mur({
-  testimonials,
-  colonnes,
-}: {
-  testimonials: Testimonial[];
-  colonnes: 2 | 3;
-}) {
+function Mur({ testimonials }: { testimonials: Testimonial[] }) {
   return (
-    <div
-      className={cn(
-        "container-site hidden gap-5 md:grid",
-        colonnes === 3
-          ? "md:h-[38rem] md:grid-cols-2 lg:h-[46rem] lg:grid-cols-3"
-          : "md:h-[34rem] md:grid-cols-2 lg:h-[40rem]",
-      )}
-    >
-      {REGLAGES.slice(0, colonnes).map((reglage, i) => (
+    <div className="container-site hidden gap-5 md:grid md:h-[38rem] md:grid-cols-2 lg:h-[46rem] lg:grid-cols-3">
+      {REGLAGES.map((reglage, i) => (
         <TickerColumn
           key={reglage.duration}
           duration={reglage.duration}
@@ -175,23 +167,8 @@ export async function Reviews() {
         />
       </div>
 
-      {/* ------------------------------------------------------------------
-          COMPARAISON TEMPORAIRE — deux versions du mur, à trancher.
-          Une fois le choix fait, garder un seul <Mur>, supprimer l'autre
-          ainsi que les deux étiquettes ci-dessous.
-          ------------------------------------------------------------------ */}
-      <div className="container-site mt-16 lg:mt-24">
-        <p className="eyebrow text-accent">Version A — trois colonnes</p>
-      </div>
-      <div className="mt-6">
-        <Mur testimonials={testimonials} colonnes={3} />
-      </div>
-
-      <div className="container-site mt-20">
-        <p className="eyebrow text-accent">Version B — deux colonnes</p>
-      </div>
-      <div className="mt-6">
-        <Mur testimonials={testimonials} colonnes={2} />
+      <div className="mt-16 lg:mt-24">
+        <Mur testimonials={testimonials} />
       </div>
     </section>
   );
