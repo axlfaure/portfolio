@@ -215,28 +215,37 @@ export function MobileMenu() {
         aria-controls="menu-mobile"
         aria-label="Ouvrir le menu"
         onClick={open}
-        className="grid h-11 w-11 place-items-center rounded-full border border-line bg-surface shadow-e1 transition-transform duration-200 ease-site active:scale-95 motion-reduce:transition-none"
+        className="grid h-11 w-11 place-items-center rounded-full border border-line bg-surface text-ink shadow-e1 transition-transform duration-200 ease-site active:scale-95 motion-reduce:transition-none"
       >
         {/*
-         * Trois barres, et non deux.
+         * Le pictogramme « menu » de Lucide, repris à l'identique : trois
+         * lignes de 4 à 20, aux ordonnées 6, 12 et 18.
          *
-         * Deux se lisent comme un signe amputé : l'œil connaît le pictogramme
-         * à trois traits et cherche celui qui manque. La sobriété se joue sur
-         * l'épaisseur du trait et la largeur du signe, pas sur le nombre de
-         * barres, qui est ici une convention.
+         * Il était jusqu'ici composé de trois <span> de 1,5 px. Sur un écran
+         * dont le rapport de pixels n'est pas entier, une bordure d'un pixel
+         * et demi tombe entre deux pixels physiques : le navigateur la répartit
+         * comme il peut, et les trois barres ressortent d'épaisseurs et de
+         * gris différents. Un trait SVG à bouts ronds, lui, est rendu par le
+         * même moteur que le reste des icônes du site et reste net.
          *
-         * La barre du milieu est un peu plus courte : c'est le seul écart
-         * qu'on s'autorise, assez net pour qu'on le lise comme voulu, assez
-         * discret pour ne pas faire signature.
+         * Même gabarit que le bouton de fermeture et que les icônes de
+         * service : cadre de 24, tracé à 18, trait de 1,6, bouts ronds.
          */}
-        <span
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
           aria-hidden="true"
-          className="flex h-[12px] w-[18px] flex-col justify-between"
         >
-          <span className="block h-[1.5px] w-full rounded-full bg-ink" />
-          <span className="block h-[1.5px] w-[13px] rounded-full bg-ink" />
-          <span className="block h-[1.5px] w-full rounded-full bg-ink" />
-        </span>
+          <path d="M4 6h16" />
+          <path d="M4 12h16" />
+          <path d="M4 18h16" />
+        </svg>
       </button>
 
       {/* Le portail n'est monté qu'après un geste de l'utilisateur : `document`
