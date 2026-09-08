@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { cn } from "@/lib/cn";
-import { estImage } from "@/lib/payload";
+import { estImage } from "@/lib/fichiers";
 
 /**
  * Y a-t-il un visuel à afficher ?

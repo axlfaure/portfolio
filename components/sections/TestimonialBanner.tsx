@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Avatar } from "@/components/ui/Media";
 import { Stars } from "@/components/ui/Stars";
 import { getFeaturedTestimonial } from "@/lib/content";
-import { estImage, estVideo } from "@/lib/payload";
+import { estImage, estVideo } from "@/lib/fichiers";
 import { typo } from "@/lib/typo";
 
 /**

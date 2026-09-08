@@ -21,26 +21,6 @@ export function url(value: number | Media | null | undefined): string | null {
   return value.url ?? null;
 }
 
-/*
- * La collection Media accepte les images comme les vidéos, et rien n'empêche
- * de déposer un `.webm` dans un champ qui attend une photo. C'est arrivé : un
- * fichier vidéo est parti dans une balise image, qui n'a affiché qu'un cadre
- * vide. L'extension suffit à trancher, Payload conservant celle du fichier
- * d'origine.
- */
-const IMAGES = /\.(jpe?g|png|webp|avif|gif|svg)$/i;
-const VIDEOS = /\.(mp4|webm|mov|m4v)$/i;
-
-/** Le fichier est-il une image affichable ? */
-export function estImage(src: string | null | undefined): src is string {
-  return typeof src === "string" && IMAGES.test(src.split("?")[0]);
-}
-
-/** Le fichier est-il une vidéo lisible ? */
-export function estVideo(src: string | null | undefined): src is string {
-  return typeof src === "string" && VIDEOS.test(src.split("?")[0]);
-}
-
 /** Même chose pour une liste de visuels, en écartant les entrées vides. */
 export function urls(
   rows: { image: number | Media | null }[] | null | undefined,
