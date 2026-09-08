@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Avatar } from "@/components/ui/Media";
 import { Stars } from "@/components/ui/Stars";
-import { getFeaturedTestimonial, getProjects } from "@/lib/content";
+import { getFeaturedTestimonial } from "@/lib/content";
 import { estImage, estVideo } from "@/lib/payload";
 import { typo } from "@/lib/typo";
 
@@ -19,26 +19,20 @@ export async function TestimonialBanner() {
   if (!featured) return null;
 
   /*
-   * Le fond se choisit dans le témoignage, et retombe sur le projet à défaut.
+   * Le fond est un choix, jamais un repli.
    *
-   * L'image du projet convient rarement telle quelle : une couverture est
-   * cadrée pour une vignette, pas pour une bande pleine largeur derrière du
-   * texte. Le champ dédié permet d'en poser une pensée pour cet emplacement,
-   * sans perdre le repli automatique quand il est vide.
+   * Il retombait auparavant sur la couverture du projet lié quand le champ
+   * était vide. L'intention était bonne — ne jamais laisser la bande nue —
+   * mais une couverture est cadrée pour une vignette, pas pour une bande
+   * pleine largeur derrière du texte, et le résultat s'imposait sans avoir
+   * été voulu. Rien n'est désormais affiché qui n'ait été déposé pour cet
+   * emplacement.
    *
-   * Côté projet, la couverture d'abord, la première cellule du bento
-   * ensuite : un projet peut n'avoir que l'une ou que l'autre.
+   * Les deux champs sont filtrés par la nature du fichier, pas seulement par
+   * sa présence : une vidéo déposée dans le champ d'image finissait sinon
+   * dans une balise `img`, qui n'affichait qu'un cadre vide.
    */
-  const projet = (await getProjects()).find(
-    (p) => p.testimonial === featured.slug,
-  );
-  /*
-   * Chaque candidat est filtré par sa nature, pas seulement par sa présence.
-   * Une vidéo déposée dans un champ d'image traversait sinon toute la chaîne
-   * pour finir dans une balise `img`, qui n'affichait rien.
-   */
-  const candidats = [featured.background, projet?.cover, projet?.panels[0]];
-  const fond = candidats.find(estImage) ?? null;
+  const fond = estImage(featured.background) ? featured.background : null;
   const video = estVideo(featured.backgroundVideo)
     ? featured.backgroundVideo
     : null;
