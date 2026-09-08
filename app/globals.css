@@ -300,6 +300,43 @@
   animation-direction: reverse;
 }
 
+/* ---- Colonnes défilantes verticales (avis) ----
+
+   Le pendant vertical du ticker. La translation porte sur Y, et rien ne
+   contraint la hauteur des cartes : c'est ce qui donne l'effet de maçonnerie,
+   chaque avis prenant la hauteur de sa citation. */
+@keyframes ticker-scroll-y {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(0, calc(-50% - var(--ticker-gap, 0px) / 2), 0);
+  }
+}
+
+.ticker-col {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(180deg, transparent, #000 12%, #000 88%, transparent);
+}
+
+.ticker-col-track {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ticker-gap, 0px);
+  will-change: transform;
+  animation: ticker-scroll-y var(--ticker-duration, 50s) linear infinite;
+}
+
+.ticker-col-track--reverse {
+  animation-direction: reverse;
+}
+
+.ticker-col:hover .ticker-col-track,
+.ticker-col:focus-within .ticker-col-track {
+  animation-play-state: paused;
+}
+
 .ticker:hover .ticker-track,
 .ticker:focus-within .ticker-track {
   animation-play-state: paused;
@@ -379,9 +416,20 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ticker-track {
+  .ticker-track,
+  .ticker-col-track {
     animation: none !important;
     transform: none !important;
+  }
+
+  /* Sans défilement, la colonne devient une pile qu'on parcourt au doigt :
+     la masquer par un dégradé donnerait des avis coupés en haut et en bas
+     sans moyen de les atteindre. */
+  .ticker-col {
+    overflow: visible;
+    -webkit-mask-image: none;
+    mask-image: none;
+    height: auto !important;
   }
   .ticker {
     overflow-x: auto;
