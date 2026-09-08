@@ -83,6 +83,10 @@ const install = [
   // table nouvelle. Mieux vaut le dire ici que de le découvrir dans
   // l'administration.
   `if ! git diff --quiet HEAD@{1} HEAD -- cms 2>/dev/null; then echo ""; echo "ATTENTION : le dossier cms a changé, lancez 'npm run db:sync' avant de redémarrer."; fi`,
+  // Les fichiers téléversés ne sont ni dans le dépôt ni dans le build : ils
+  // n'existent que sur ce disque. Un dossier vide passe inaperçu jusqu'à ce
+  // qu'on regarde une page projet, alors autant le dire ici.
+  `if [ "$(find media -type f 2>/dev/null | wc -l)" -eq 0 ]; then echo ""; echo "ALERTE : le dossier media est vide. Les visuels du CMS ont disparu du serveur."; echo "Restauration : npm run media:restore"; fi`,
 ].join("\n");
 
 console.log("\n3/3  Installation sur le serveur");
