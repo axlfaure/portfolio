@@ -95,7 +95,7 @@ export async function Projects() {
                         retombe sur le visuel principal s'il lui manque ses
                         fichiers. Une carte sans image serait un trou dans la
                         pile. */}
-                    <div className="order-1 md:order-2">
+                    <div className="order-1 md:order-2" data-visuel>
                       {project.cardMode === "video" && project.video ? (
                         <ProjectVideo
                           src={project.video}
@@ -137,17 +137,17 @@ export async function Projects() {
 
                     {/* Deux blocs, l'espace libre entre les deux : le bas de
                         colonne reste ancré même quand l'accroche est courte. */}
-                    <div className="order-2 flex flex-col justify-between gap-9 md:order-1 md:py-2">
+                    <div className="order-2 flex flex-col justify-between gap-6 md:order-1 md:gap-9 md:py-2">
                       <div>
                         <p className="eyebrow">{project.client}</p>
                         <h3 className="h3 mt-4">{project.title}</h3>
                         {project.teaser ? (
-                          <p className="prose-p mt-3 text-[0.95rem]">
+                          <p className="prose-p mt-3 line-clamp-3 text-[0.95rem] md:line-clamp-none">
                             {project.teaser}
                           </p>
                         ) : null}
 
-                        <ul className="mt-6 flex flex-wrap gap-2">
+                        <ul className="mt-6 hidden flex-wrap gap-2 md:flex">
                           {project.disciplines.map((d) => (
                             <li
                               key={d}
@@ -160,7 +160,7 @@ export async function Projects() {
                       </div>
 
                       {/* Bas de colonne : qui valide le projet, puis où aller. */}
-                      <div className="border-t border-line pt-6">
+                      <div className="border-t border-line pt-5 md:pt-6">
                         {vouch ? (
                           <figure className="flex items-center gap-3">
                             <Avatar
@@ -186,7 +186,7 @@ export async function Projects() {
                           </figure>
                         ) : null}
 
-                        <span className="mt-6 inline-flex items-center gap-2 text-[0.9rem] font-semibold text-ink">
+                        <span className="mt-5 inline-flex items-center gap-2 text-[0.9rem] font-semibold text-ink md:mt-6">
                           Voir le projet
                           <ArrowDiag size={16} className="arrow-diag" />
                         </span>

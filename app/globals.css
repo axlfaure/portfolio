@@ -904,6 +904,56 @@ html.lenis body {
   top: var(--stack-i);
 }
 
+/* Sur écran étroit, une carte plus haute que la fenêtre est un piège : collée
+   en haut, son bas ne redescend jamais dans le champ, et c'est là que se
+   trouvent l'avis et le lien vers le projet. La barre d'adresse de Safari
+   achève de les cacher.
+
+   L'unité est `svh` et non `vh` ni `dvh`. `vh` ignore la barre du navigateur
+   et promet une place qui n'existe pas. `dvh` la suit, mais change donc de
+   valeur pendant qu'on fait défiler : redimensionner une carte collée en
+   plein geste est précisément ce qui déréglait le carrousel des avis. `svh`
+   est la fenêtre dans son état le plus petit, barre affichée : ce qui tient
+   dedans tient toujours.
+
+   Seul le visuel cède. Le texte, l'avis et le bouton gardent leur taille :
+   ce sont eux qu'on est venu lire.
+
+   Le plafond s'arrête à 48rem, où la carte passe en deux colonnes et retombe
+   d'elle-même sous les 500 px. Au-delà, le mécanisme de compression ne
+   fonctionnerait plus — le visuel devient une cellule de grille, que
+   `flex-shrink` ne touche pas — et le plafond ne ferait que rogner. */
+@media (max-width: 47.999rem) {
+  .stack-card > a {
+    display: flex;
+    max-height: calc(100svh - var(--stack-i) - 0.75rem);
+  }
+
+  .stack-card > a > * {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .stack-card [data-visuel] {
+    flex: 0 1 auto;
+    min-height: 0;
+  }
+
+  /* Le bloc de texte, lui, ne cède rien. Sans cette ligne flexbox le
+     comprime aussi, et son contenu déborde par le bas : l'avis et le lien
+     sortaient du cadre, puis se faisaient rogner. */
+  .stack-card [data-visuel] + * {
+    flex-shrink: 0;
+  }
+
+  /* Les quatre modes d'affichage posent tous un cadre en 4/3. Le plafond le
+     rogne par le bas ; les images étant en `object-cover`, elles se recadrent
+     au lieu de se déformer. */
+  .stack-card [data-visuel] > * {
+    max-height: 100%;
+  }
+}
+
 @media (min-width: 56rem) {
   .stack-card {
     top: calc(5.5rem + var(--stack-i));
