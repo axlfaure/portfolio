@@ -215,11 +215,27 @@ export function MobileMenu() {
         aria-controls="menu-mobile"
         aria-label="Ouvrir le menu"
         onClick={open}
-        className="grid h-11 w-11 place-items-center rounded-full border border-line bg-surface shadow-e1"
+        className="grid h-11 w-11 place-items-center rounded-full border border-line bg-surface shadow-e1 transition-transform duration-200 ease-site active:scale-95 motion-reduce:transition-none"
       >
-        <span aria-hidden="true" className="relative block h-[9px] w-[18px]">
-          <span className="absolute left-0 top-0 block h-[1.5px] w-full rounded-full bg-ink" />
-          <span className="absolute bottom-0 left-0 block h-[1.5px] w-full rounded-full bg-ink" />
+        {/*
+         * Trois barres, et non deux.
+         *
+         * Deux se lisent comme un signe amputé : l'œil connaît le pictogramme
+         * à trois traits et cherche celui qui manque. La sobriété se joue sur
+         * l'épaisseur du trait et la largeur du signe, pas sur le nombre de
+         * barres, qui est ici une convention.
+         *
+         * La barre du milieu est un peu plus courte : c'est le seul écart
+         * qu'on s'autorise, assez net pour qu'on le lise comme voulu, assez
+         * discret pour ne pas faire signature.
+         */}
+        <span
+          aria-hidden="true"
+          className="flex h-[12px] w-[18px] flex-col justify-between"
+        >
+          <span className="block h-[1.5px] w-full rounded-full bg-ink" />
+          <span className="block h-[1.5px] w-[13px] rounded-full bg-ink" />
+          <span className="block h-[1.5px] w-full rounded-full bg-ink" />
         </span>
       </button>
 

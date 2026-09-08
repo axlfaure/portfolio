@@ -15,7 +15,10 @@ export function Logo() {
         width={483}
         height={362}
         priority
-        className="h-8 w-auto"
+        /* 28 px et non 32 : le monogramme tenait la même hauteur que le
+           bouton du menu à côté de lui, et deux marques de force égale dans
+           une barre en donnent une de trop. */
+        className="h-7 w-auto"
       />
     );
   }
