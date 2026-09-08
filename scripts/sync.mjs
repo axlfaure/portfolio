@@ -30,20 +30,41 @@ const HORODATAGE = /^\d{4}-\d{2}-\d{2}-\d{2}h\d{2}$/;
 
 const A_INSTALLER = [".data", "media"];
 
+/**
+ * Sauvegardes déjà présentes avant de commencer.
+ *
+ * On ne se contente plus de prendre la plus récente une fois la sauvegarde
+ * faite : si celle-ci échoue — mot de passe refusé, connexion coupée,
+ * commande interrompue — la plus récente est alors celle d'avant, et le
+ * script installe tranquillement un contenu périmé en annonçant que tout va
+ * bien. C'est arrivé, et le contenu du jour a paru s'être volatilisé.
+ *
+ * On exige donc un dossier **nouveau**. À défaut, on s'arrête.
+ */
+const connues = new Set(
+  fs.existsSync("backups")
+    ? fs.readdirSync("backups").filter((nom) => HORODATAGE.test(nom))
+    : [],
+);
+
 console.log("1/2  Récupération du contenu en ligne\n");
 execFileSync("node", ["scripts/backup.mjs"], { stdio: "inherit" });
 
-const dates = fs
+const nouvelles = fs
   .readdirSync("backups")
-  .filter((nom) => HORODATAGE.test(nom))
+  .filter((nom) => HORODATAGE.test(nom) && !connues.has(nom))
   .sort();
 
-if (dates.length === 0) {
-  console.error("\nAucune sauvegarde horodatée trouvée dans backups/.");
+if (nouvelles.length === 0) {
+  console.error("");
+  console.error("La sauvegarde n'a produit aucun dossier : rien n'a été récupéré.");
+  console.error("");
+  console.error("Le contenu local n'a pas été touché. Relancez « npm run sync »,");
+  console.error("ou « npm run backup » seul pour voir ce qui bloque.");
   process.exit(1);
 }
 
-const source = path.join("backups", dates[dates.length - 1]);
+const source = path.join("backups", nouvelles[nouvelles.length - 1]);
 console.log(`\n2/2  Installation depuis ${source}`);
 
 /*
