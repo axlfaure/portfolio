@@ -904,6 +904,22 @@ html.lenis body {
   top: var(--stack-i);
 }
 
+/* Le voile n'existe qu'avec JavaScript : sans lui, la variable n'est jamais
+   posée et les cartes restent toutes en pleine lumière, ce qui est le bon
+   comportement par défaut. La transition ne sert qu'à lisser les à-coups du
+   défilement, pas à porter le mouvement : celui-ci suit la position. */
+.stack-voile {
+  opacity: var(--stack-voile, 0);
+  transition: opacity 120ms linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stack-voile {
+    opacity: 0;
+    transition: none;
+  }
+}
+
 /* Sur écran étroit, une carte plus haute que la fenêtre est un piège : collée
    en haut, son bas ne redescend jamais dans le champ, et c'est là que se
    trouvent l'avis et le lien vers le projet. La barre d'adresse de Safari

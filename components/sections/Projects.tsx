@@ -82,8 +82,17 @@ export async function Projects() {
                 <Link
                   href={`/projets/${project.slug}`}
                   draggable={false}
-                  className="group block overflow-hidden rounded-project border border-line bg-surface shadow-e1 transition-shadow duration-200 ease-site hover:shadow-e2"
+                  className="group relative block overflow-hidden rounded-project border border-line bg-surface shadow-e1 transition-shadow duration-200 ease-site hover:shadow-e2"
                 >
+                  {/* Voile de mise en retrait, levé par StackFocus au fur et à
+                      mesure que la carte gagne sa place. Il est posé sur la
+                      carte plutôt qu'appliqué à son opacité : les cartes se
+                      chevauchent, et une carte translucide laisserait voir
+                      celle du dessous. */}
+                  <span
+                    aria-hidden="true"
+                    className="stack-voile pointer-events-none absolute inset-0 z-10 bg-paper"
+                  />
                   <div className="flex flex-col gap-6 p-5 md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] md:items-stretch md:gap-8 md:p-7">
                     {/* Pas de `h-full` sur le visuel : la colonne est étirée
                         par le texte, et entre 768 et 1100 px son cadre devient
