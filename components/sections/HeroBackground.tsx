@@ -45,14 +45,17 @@ function loadYouTubeApi(): Promise<void> {
  * Fond du hero : une seule source, interchangeable via `heroBackground.mode`
  * dans lib/site.ts.
  *
- * - "youtube" : test temporaire. Le lecteur est **construit par l'API**, pas
- *   attaché à une iframe existante : c'est la seule façon d'obtenir à la fois
- *   `controls: 0` respecté (sinon le lecteur affiche ses boutons au centre)
- *   et une relance fiable en fin de vidéo (`loop` seul s'arrête après une passe).
- * - "local"   : cible de production, /public/hero/chrome.mp4 + .webm.
+ * - "local"   : le mode de production. Une balise `<video>` muette et en
+ *   lecture intégrée démarre seule sur tous les navigateurs, téléphones
+ *   compris, et ne coûte qu'un fichier servi depuis le site.
+ * - "youtube" : conservé pour un essai rapide. Le lecteur est **construit par
+ *   l'API**, pas attaché à une iframe existante : c'est la seule façon
+ *   d'obtenir à la fois `controls: 0` respecté et une relance fiable en fin
+ *   de vidéo. Il ne démarre pas seul sur téléphone, d'où le seuil de largeur
+ *   qui lui reste attaché.
  *
- * Un fallback en dégradés CSS animés prend le relais sur mobile, sous
- * `prefers-reduced-motion`, et si la source est absente.
+ * Un fallback en dégradés CSS animés prend le relais sous
+ * `prefers-reduced-motion` et si la source est absente.
  */
 export function HeroBackground() {
   const [canPlay, setCanPlay] = useState(false);
@@ -60,10 +63,22 @@ export function HeroBackground() {
   const [ytReady, setYtReady] = useState(false);
   const mountRef = useRef<HTMLDivElement>(null);
 
+  /*
+   * `large` sert deux fois : il conditionne YouTube, qui ne démarre pas seul
+   * sur téléphone, et il choisit la définition du fichier local. Une seule
+   * requête média pour les deux, plutôt que deux qui pourraient diverger.
+   */
+  const [large, setLarge] = useState(true);
+
   useEffect(() => {
     const wide = window.matchMedia("(min-width: 48rem)");
     const calm = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const sync = () => setCanPlay(wide.matches && !calm.matches);
+    const sync = () => {
+      setLarge(wide.matches);
+      // Le fichier local n'a pas besoin d'un grand écran ; l'iframe YouTube,
+      // si. Seul le réglage « réduire les animations » arrête les deux.
+      setCanPlay(!calm.matches && (heroBackground.mode === "local" || wide.matches));
+    };
     sync();
     wide.addEventListener("change", sync);
     calm.addEventListener("change", sync);
@@ -155,6 +170,10 @@ export function HeroBackground() {
             </div>
           ) : (
             <video
+              /* La clé force le remontage au franchissement du seuil : changer
+                 les `<source>` d'une vidéo déjà montée ne relance rien, le
+                 navigateur garde la piste qu'il a chargée. */
+              key={large ? "large" : "etroit"}
               className="h-full w-full object-cover"
               autoPlay
               muted
@@ -165,8 +184,14 @@ export function HeroBackground() {
               tabIndex={-1}
               onError={() => setFailed(true)}
             >
-              <source src={heroBackground.local.webm} type="video/webm" />
-              <source src={heroBackground.local.mp4} type="video/mp4" />
+              <source
+                src={large ? heroBackground.local.webm : heroBackground.local.mobileWebm}
+                type="video/webm"
+              />
+              <source
+                src={large ? heroBackground.local.mp4 : heroBackground.local.mobileMp4}
+                type="video/mp4"
+              />
             </video>
           )}
         </div>

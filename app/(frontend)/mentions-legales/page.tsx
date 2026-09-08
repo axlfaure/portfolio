@@ -226,20 +226,17 @@ export default function MentionsLegalesPage() {
             le site lui-même : leur affichage n&apos;entraîne aucune requête
             vers un serveur tiers.
           </p>
-          <p>Deux services extérieurs interviennent, et seulement eux :</p>
-          <ul className="ml-5 list-disc space-y-2 marker:text-line-2">
-            <li>
-              <strong>YouTube</strong>, pour la vidéo d&apos;arrière-plan de la
-              page d&apos;accueil. Le lecteur est chargé depuis le domaine sans
-              cookie de Google, qui ne dépose pas de traceur tant que la vidéo
-              n&apos;est pas lue.
-            </li>
-            <li>
-              <strong>Calendly</strong>, pour la prise de rendez-vous. Le module
-              ne se charge qu&apos;au clic sur le bouton, et dépose alors ses
-              propres cookies, nécessaires à son fonctionnement.
-            </li>
-          </ul>
+          <p>
+            La vidéo d&apos;arrière-plan de la page d&apos;accueil est servie
+            depuis ce site, et non par une plateforme extérieure : la consulter
+            n&apos;adresse aucune requête à un tiers.
+          </p>
+          <p>
+            Un seul service extérieur intervient. <strong>Calendly</strong>,
+            pour la prise de rendez-vous : le module ne se charge qu&apos;au
+            clic sur le bouton, et dépose alors ses propres cookies,
+            nécessaires à son fonctionnement.
+          </p>
         </Section>
 
         <Section numero="06" titre="Liens vers d'autres sites">

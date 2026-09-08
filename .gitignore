@@ -53,5 +53,10 @@ next-env.d.ts
 # copies du contenu du serveur, produites par npm run backup
 /backups
 
+# master du fond de hero, gardé pour pouvoir réencoder sans redemander
+# l'export. Quatre mégaoctets qui n'ont rien à faire sur le serveur : ce
+# sont les fichiers de public/hero qui sont servis.
+/assets/hero-source
+
 # le modèle de configuration de déploiement, lui, est versionné
 !.env.deploy.example

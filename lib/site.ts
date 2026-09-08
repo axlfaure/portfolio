@@ -37,15 +37,27 @@ export const availability = {
 
 /**
  * Fond vidéo du hero.
- * `mode` est l'unique constante à changer pour passer du test YouTube
- * au fichier local de production.
+ *
+ * `mode` est l'unique constante à changer pour repasser au test YouTube.
+ * Le fichier local n'est pas qu'une commodité : YouTube refuse de démarrer
+ * seul sur téléphone dès que le mode économie d'énergie est actif, alors
+ * qu'une balise `<video muted playsInline>` est précisément l'exception que
+ * iOS et Android autorisent. C'est ce qui permet au fond de vivre aussi sur
+ * un écran étroit.
+ *
+ * Deux définitions plutôt qu'une. Sur un écran de 375 px, le lecteur est
+ * agrandi à 1443 px de large pour couvrir la hauteur : une source de 1280 px
+ * y suffit largement, et divise le poids par deux sur le réseau où il coûte
+ * le plus cher.
  */
 export const heroBackground = {
-  mode: "youtube" as "youtube" | "local",
+  mode: "local" as "youtube" | "local",
   youtubeId: "wyxxPTFfdi8",
   local: {
     mp4: "/hero/chrome.mp4",
     webm: "/hero/chrome.webm",
+    mobileMp4: "/hero/chrome-mobile.mp4",
+    mobileWebm: "/hero/chrome-mobile.webm",
     poster: "/hero/chrome.jpg",
   },
 } as const;
