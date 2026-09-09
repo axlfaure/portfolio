@@ -156,7 +156,7 @@ const SECTIONS: { slug: string; data: Record<string, unknown> }[] = [
           priceUnit: "sur 12 mois d'engagement",
           trend: "20 % moins cher",
           trendUp: true,
-          ctaLabel: "Voir si Partner convient",
+          ctaLabel: "Devenir Partner",
           highlight: true,
           items: [
             { label: "Tout One shot" },
