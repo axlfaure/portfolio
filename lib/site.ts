@@ -9,7 +9,21 @@ export const site = {
   brand: "Axel Faure · studio",
   baseline: "Studio créatif tech & industrie",
   city: "Grenoble",
-  url: "https://axelfaure.fr",
+  /*
+   * L'adresse à laquelle le site est RÉELLEMENT servi, et rien d'autre.
+   *
+   * Elle ne sert pas qu'à l'affichage : elle fabrique les balises canoniques,
+   * le sitemap, le robots.txt, les données structurées et l'adresse absolue de
+   * la vignette de partage. Y mettre le domaine futur plutôt que le domaine
+   * courant a un coût immédiat : chaque page a annoncé à Google que sa version
+   * de référence se trouvait sur axelfaure.fr, où elle renvoie 404 puisque ce
+   * domaine sert encore l'ancien site, et LinkedIn est allé y chercher une
+   * vignette qui n'existait pas.
+   *
+   * À basculer sur "https://axelfaure.fr" le jour où ce domaine servira ce
+   * site, et pas avant.
+   */
+  url: "https://portfolio.axelfaure.fr",
   email: "contact@axelfaure.fr",
   calendlyUrl: "https://calendly.com/axelfaure64/30min",
   /** Portrait détouré, fond bleu conservé. */
