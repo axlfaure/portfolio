@@ -33,12 +33,12 @@ const DERNIERE_MISE_A_JOUR = "8 septembre 2026";
 /**
  * Identification de l'éditeur.
  *
- * L'adresse de contact indiquée ici n'est pas celle qu'affiche le reste du
- * site. C'est délibéré et provisoire : `contact@axelfaure.fr` suppose le
- * domaine définitif en service, or le site vit encore sur un sous-domaine.
- * Une mention légale doit donner un moyen de contact qui fonctionne
- * aujourd'hui, pas celui qui fonctionnera. À rebasculer le jour du
- * changement de domaine.
+ * L'adresse est écrite ici en clair plutôt que reprise de `site.email`, et
+ * elle doit le rester même quand les deux coïncident, comme aujourd'hui. Une
+ * mention légale engage juridiquement et doit donner un moyen de contact qui
+ * fonctionne au moment où on la lit : la faire suivre automatiquement une
+ * constante d'affichage, c'est accepter qu'elle devienne fausse le jour où
+ * l'on annonce une adresse avant que la boîte existe.
  */
 const EDITEUR = {
   formeJuridique: "Entreprise individuelle, régime de la micro-entreprise",

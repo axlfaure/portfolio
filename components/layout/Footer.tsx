@@ -6,7 +6,9 @@ import { site } from "@/lib/site";
  * et « FAQ » sont sortis de la barre pour lui garder cinq entrées, mais les
  * sections existent toujours et doivent rester atteignables et liables.
  */
-const columns = [
+type Lien = { href: string; label: string; externe?: boolean };
+
+const columns: { title: string; links: Lien[] }[] = [
   {
     title: "Le travail",
     links: [
@@ -28,6 +30,7 @@ const columns = [
     links: [
       { href: "/#contact", label: "Prendre rendez-vous" },
       { href: `mailto:${site.email}`, label: site.email },
+      { href: site.instagram, label: "Instagram", externe: true },
       { href: "/mentions-legales", label: "Mentions légales" },
     ],
   },
@@ -53,24 +56,36 @@ export function Footer() {
             <nav key={column.title} aria-label={column.title}>
               <p className="eyebrow">{column.title}</p>
               <ul className="mt-4 space-y-0.5">
-                {column.links.map((link) => (
-                  <li key={link.href}>
-                    <Link
-                      href={link.href}
-                      className="inline-block py-1.5 text-[0.9rem] text-muted transition-colors duration-200 hover:text-ink"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
+                {column.links.map((link) => {
+                  const classes =
+                    "inline-block py-1.5 text-[0.9rem] text-muted transition-colors duration-200 hover:text-ink";
+
+                  // Un lien sortant ne passe pas par le routeur : Link
+                  // préchargerait une route qui n'existe pas ici, et le
+                  // couple target/rel doit être posé à la main.
+                  return (
+                    <li key={link.href}>
+                      {link.externe ? (
+                        <a
+                          href={link.href}
+                          target="_blank"
+                          rel="noreferrer"
+                          className={classes}
+                        >
+                          {link.label}
+                        </a>
+                      ) : (
+                        <Link href={link.href} className={classes}>
+                          {link.label}
+                        </Link>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </nav>
           ))}
         </div>
-
-        <p className="eyebrow mt-[clamp(2.5rem,5vw,3.5rem)] border-t border-line pt-7">
-          {site.city} · Isère · Auvergne-Rhône-Alpes · Réponse sous 24 h
-        </p>
       </div>
     </footer>
   );

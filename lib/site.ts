@@ -24,7 +24,8 @@ export const site = {
    * site, et pas avant.
    */
   url: "https://portfolio.axelfaure.fr",
-  email: "contact@axelfaure.fr",
+  email: "axelfaure64@gmail.com",
+  instagram: "https://www.instagram.com/axelfauredesign",
   calendlyUrl: "https://calendly.com/axelfaure64/30min",
   /** Portrait détouré, fond bleu conservé. */
   portrait: "/axel.png",
@@ -36,15 +37,21 @@ export const site = {
 
 /** Nombre de créneaux affichés dans la pilule et le bouton principal. */
 export const availability = {
-  slots: 3,
-  label: "3 places disponibles",
+  /**
+   * Pastille au-dessus du dernier appel à l'action.
+   *
+   * « Disponible » et non un décompte de places. Un chiffre affiché sur une
+   * page statique se périme sans prévenir, et il se contredisait avec l'offre
+   * Circuit, qui annonce quatre places à l'année : un visiteur lisait deux
+   * comptes différents sur la même page.
+   */
+  label: "Disponible",
   /**
    * Ligne sous le bouton principal.
    *
-   * Une invitation plutôt qu'un état : « 3 places disponibles » décrit une
-   * situation que le visiteur n'a pas demandée, et qui devient fausse dès
-   * qu'on oublie de la mettre à jour. « Voir les disponibilités » dit ce que
-   * le clic fait, et reste vrai.
+   * Une invitation plutôt qu'un état : un décompte décrit une situation que le
+   * visiteur n'a pas demandée. « Voir les disponibilités » dit ce que le clic
+   * fait, et reste vrai.
    */
   cta: "Voir les disponibilités",
 } as const;
