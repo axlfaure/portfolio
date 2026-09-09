@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { CarteOg, TAILLE_OG, visuelEnBase64 } from "@/lib/og";
+import { CarteOg, POLICES_OG, TAILLE_OG, visuelEnBase64 } from "@/lib/og";
 import { getService } from "@/lib/content";
 
 /** Vignette de partage d'une page service. */
@@ -24,6 +24,6 @@ export default async function Image({
         visuel={await visuelEnBase64(service?.visual ?? service?.contextImage)}
       />
     ),
-    size,
+    { ...size, fonts: POLICES_OG },
   );
 }

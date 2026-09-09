@@ -1,26 +1,32 @@
 import { ImageResponse } from "next/og";
+import { MONOGRAMME_OG, POLICES_OG, TAILLE_OG } from "@/lib/og";
 import { site } from "@/lib/site";
 
 /**
- * Vignette de partage du site.
+ * Vignette de partage de la page d'accueil.
  *
- * Sans elle, une adresse collée dans LinkedIn, WhatsApp ou un mail sort en
- * bloc de texte gris : pour un portfolio de graphiste, c'est la première
- * image qu'on donne de son travail, et elle est absente.
+ * C'est la première image qu'un prospect voit du travail, avant même d'avoir
+ * ouvert la page : une adresse collée dans LinkedIn, WhatsApp ou un mail sort
+ * sinon en bloc de texte gris.
  *
- * L'image est dessinée en code plutôt que déposée en fichier pour qu'elle
- * suive la baseline et le nom du site sans qu'on ait à la réexporter. Elle se
- * remplace par un `opengraph-image.jpg` de 1200 × 630 posé dans ce dossier,
- * à condition de supprimer ce fichier : les deux se cumuleraient sinon.
+ * Elle ne passe pas par `CarteOg` : les pages intérieures annoncent un projet
+ * ou un article, celle-ci annonce quelqu'un. Elle porte donc le nom et la
+ * baseline, là où les autres portent un titre et un visuel.
  *
- * Pas de police de marque ici : `ImageResponse` ne lit que des fichiers de
- * police sur le disque, or les nôtres sont téléchargées au build par
- * `next/font`. La composition tient donc sur la mise en page seule.
+ * Elle se remplace par un `opengraph-image.jpg` de 1200 × 630 posé dans ce
+ * dossier, à condition de supprimer ce fichier : les deux se cumuleraient.
  */
 export const alt = `${site.name} — ${site.baseline}`;
-export const size = { width: 1200, height: 630 };
+export const size = TAILLE_OG;
 export const contentType = "image/png";
 
+const INK = "#16171A";
+const PAPIER = "#F3F3F4";
+const ACCENT = "#2F42D8";
+const GRIS = "#62656B";
+
+/* eslint-disable @next/next/no-img-element --
+   ImageResponse compose côté serveur avec Satori, où next/image n'a pas cours. */
 export default function OpengraphImage() {
   return new ImageResponse(
     <div
@@ -30,48 +36,85 @@ export default function OpengraphImage() {
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        background: "#F3F3F4",
-        color: "#16171A",
-        padding: "76px 84px",
+        background: PAPIER,
+        color: INK,
+        padding: "70px 84px",
+        fontFamily: "Jakarta",
+        position: "relative",
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          fontSize: 22,
-          letterSpacing: 4,
-          textTransform: "uppercase",
-          color: "#62656B",
-        }}
-      >
-        {site.city} · Isère
-      </div>
+      {/* Le monogramme en grand, débordant du cadre. Il occupe la moitié
+          droite que la version précédente laissait vide, sans jamais devenir
+          une image : à 5 % il fait une texture. Il est décalé assez à droite
+          pour ne pas passer sous la baseline, qui perdait en netteté. */}
+      {MONOGRAMME_OG && (
+        <img
+          src={MONOGRAMME_OG}
+          alt=""
+          width={900}
+          height={674}
+          style={{ position: "absolute", right: -285, top: -25, opacity: 0.055 }}
+        />
+      )}
 
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <div style={{ display: "flex", fontSize: 86, fontWeight: 700, letterSpacing: -3 }}>
-          {site.name}
-        </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 26 }}>
+        {MONOGRAMME_OG && (
+          <>
+            <img src={MONOGRAMME_OG} alt="" width={78} height={58} />
+            <div
+              style={{ display: "flex", width: 1, height: 36, background: "#D5D6D9" }}
+            />
+          </>
+        )}
         <div
           style={{
             display: "flex",
-            marginTop: 20,
-            fontSize: 40,
-            lineHeight: 1.3,
-            color: "#2E3035",
-            maxWidth: 820,
+            fontSize: 20,
+            letterSpacing: 4,
+            textTransform: "uppercase",
+            color: GRIS,
           }}
         >
-          {site.baseline}
+          {site.city} · Isère
         </div>
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-        <div style={{ display: "flex", width: 96, height: 4, background: "#2F42D8" }} />
-        <div style={{ display: "flex", fontSize: 24, color: "#62656B" }}>
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        <div style={{ display: "flex", fontSize: 92, letterSpacing: -3.5 }}>
+          {site.name}
+        </div>
+        {/* Même partition que les titres du site : le sans tient l'énoncé, la
+            serif italique porte le mot qui compte. L'alignement se fait sur la
+            ligne de pied et non sur le bas des boîtes, sinon les jambages de
+            l'italique remontent tout le second membre. */}
+        <div
+          style={{ display: "flex", alignItems: "baseline", gap: 18, marginTop: 14 }}
+        >
+          <div style={{ display: "flex", fontSize: 42, color: "#2E3035" }}>
+            Studio créatif
+          </div>
+          <div
+            style={{
+              display: "flex",
+              fontFamily: "Instrument",
+              fontStyle: "italic",
+              fontSize: 62,
+              color: ACCENT,
+              lineHeight: 1,
+            }}
+          >
+            tech &amp; industrie
+          </div>
+        </div>
+      </div>
+
+      <div style={{ display: "flex", alignItems: "center", gap: 22 }}>
+        <div style={{ display: "flex", width: 88, height: 3, background: INK }} />
+        <div style={{ display: "flex", fontSize: 23, color: GRIS }}>
           Branding · Salon &amp; print · Web · 3D &amp; motion
         </div>
       </div>
     </div>,
-    size,
+    { ...size, fonts: POLICES_OG },
   );
 }

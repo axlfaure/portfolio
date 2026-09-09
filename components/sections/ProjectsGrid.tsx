@@ -73,11 +73,6 @@ export function ProjectsGrid({
               )}
             >
               {name}
-              {name === ALL && (
-                <span className="ml-2 font-mono text-[0.75rem] opacity-60">
-                  {items.length}
-                </span>
-              )}
             </button>
           );
         })}

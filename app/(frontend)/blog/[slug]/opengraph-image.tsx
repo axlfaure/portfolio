@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { CarteOg, TAILLE_OG, visuelEnBase64 } from "@/lib/og";
+import { CarteOg, POLICES_OG, TAILLE_OG, visuelEnBase64 } from "@/lib/og";
 import { getPost } from "@/lib/content";
 
 /** Vignette de partage d'un article. */
@@ -23,6 +23,6 @@ export default async function Image({
         visuel={await visuelEnBase64(post?.cover)}
       />
     ),
-    size,
+    { ...size, fonts: POLICES_OG },
   );
 }

@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 import { site } from "./site";
@@ -22,6 +23,61 @@ import { site } from "./site";
  */
 
 export const TAILLE_OG = { width: 1200, height: 630 };
+
+/** Lecture au chargement du module, donc au build, jamais à la requête. */
+function lireOuNull(relatif: string) {
+  try {
+    return readFileSync(path.join(process.cwd(), relatif));
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Polices de marque des vignettes.
+ *
+ * `ImageResponse` ne sait lire que des fichiers de police posés sur le disque,
+ * et il ignore le WOFF2. Les deux TTF de `assets/polices` sont là pour lui
+ * seul : `next/font` télécharge les siens au build sans exposer de chemin.
+ *
+ * Si les fichiers manquent, on rend `undefined` et non un tableau vide :
+ * Satori refuse de composer sans aucune police et la vignette partirait en
+ * erreur, alors qu'`ImageResponse` sait très bien retomber sur la sienne. La
+ * carte sera moins jolie, elle ne sera pas absente. L'avertissement est là
+ * pour qu'une police disparue se voie au build, sans l'interrompre.
+ */
+const jakarta = lireOuNull("assets/polices/PlusJakartaSans-Bold.ttf");
+const instrument = lireOuNull("assets/polices/InstrumentSerif-Italic.ttf");
+
+const polices = [
+  jakarta && {
+    name: "Jakarta",
+    data: jakarta,
+    weight: 700 as const,
+    style: "normal" as const,
+  },
+  instrument && {
+    name: "Instrument",
+    data: instrument,
+    weight: 400 as const,
+    style: "italic" as const,
+  },
+].filter((police) => police !== null);
+
+if (polices.length < 2) {
+  console.warn(
+    "[og] polices de marque introuvables dans assets/polices, " +
+      "les vignettes de partage sortiront dans la police par défaut.",
+  );
+}
+
+export const POLICES_OG = polices.length > 0 ? polices : undefined;
+
+/** Monogramme incorporé, ou `null` si le fichier a disparu. */
+const logo = lireOuNull("public/logo.png");
+export const MONOGRAMME_OG = logo
+  ? `data:image/png;base64,${logo.toString("base64")}`
+  : null;
 
 /** Dossier des médias, tel que le configure la collection Media. */
 const dossierMedias = process.env.MEDIA_DIR
@@ -80,10 +136,10 @@ function echapper(texte: string) {
 /**
  * Composition commune des vignettes.
  *
- * Deux colonnes quand il y a un visuel, une seule sinon. Pas de police de
- * marque : `ImageResponse` ne lit que des fichiers présents sur le disque, or
- * les nôtres sont téléchargées au build par `next/font`. La composition tient
- * donc sur la mise en page, les contrastes et le filet d'accent.
+ * Deux colonnes quand il y a un visuel, une seule sinon. Le monogramme tient
+ * le haut de la colonne de texte, comme sur la vignette d'accueil : c'est ce
+ * qui fait qu'un lien de projet et un lien de page d'accueil se reconnaissent
+ * comme venant du même endroit dans un fil de discussion.
  */
 export function CarteOg({
   eyebrow,
@@ -104,6 +160,7 @@ export function CarteOg({
         display: "flex",
         background: "#F3F3F4",
         color: "#16171A",
+        fontFamily: "Jakarta",
       }}
     >
       <div
@@ -115,16 +172,28 @@ export function CarteOg({
           width: visuel ? 700 : 1200,
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            fontSize: 21,
-            letterSpacing: 4,
-            textTransform: "uppercase",
-            color: "#62656B",
-          }}
-        >
-          {eyebrow}
+        <div style={{ display: "flex", alignItems: "center", gap: 22 }}>
+          {MONOGRAMME_OG && (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element --
+                  Satori compose côté serveur, next/image n'y a pas cours. */}
+              <img src={MONOGRAMME_OG} alt="" width={62} height={46} />
+              <div
+                style={{ display: "flex", width: 1, height: 28, background: "#D5D6D9" }}
+              />
+            </>
+          )}
+          <div
+            style={{
+              display: "flex",
+              fontSize: 21,
+              letterSpacing: 4,
+              textTransform: "uppercase",
+              color: "#62656B",
+            }}
+          >
+            {eyebrow}
+          </div>
         </div>
 
         <div
