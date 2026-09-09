@@ -69,7 +69,7 @@ export async function Context() {
               <li key={strain.lead} className="flex gap-4">
                 <span
                   aria-hidden="true"
-                  className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-sunk text-ink-2"
+                  className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-accent-soft text-accent"
                 >
                   <FeatureIcon name={strain.icon} size={19} />
                 </span>

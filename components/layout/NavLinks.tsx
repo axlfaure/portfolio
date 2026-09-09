@@ -203,7 +203,7 @@ function ServicesMenu({
                       : "translate-y-1 opacity-0",
                   )}
                 >
-                  <span className="mt-px grid h-9 w-9 shrink-0 place-items-center rounded-[10px] border border-line bg-paper text-ink-2 transition-colors duration-200 group-hover/item:border-line-2 group-hover/item:bg-surface">
+                  <span className="mt-px grid h-9 w-9 shrink-0 place-items-center rounded-[10px] border border-accent-line bg-accent-soft text-accent transition-colors duration-200 group-hover/item:border-accent group-hover/item:bg-accent group-hover/item:text-white">
                     <ServiceIcon name={service.icon} />
                   </span>
 

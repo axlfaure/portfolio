@@ -35,7 +35,7 @@ export function ServiceCard({
           : "transition-colors duration-200 hover:bg-paper",
       )}
     >
-      <span className="grid h-10 w-10 place-items-center rounded-[11px] border border-line bg-paper text-ink-2 transition-colors duration-200 group-hover:border-line-2 group-hover:bg-surface">
+      <span className="grid h-10 w-10 place-items-center rounded-[11px] border border-accent-line bg-accent-soft text-accent transition-colors duration-200 group-hover:border-accent group-hover:bg-accent group-hover:text-white">
         <ServiceIcon name={service.icon} />
       </span>
 

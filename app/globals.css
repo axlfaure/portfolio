@@ -22,6 +22,11 @@
   --color-line: #e5e5e8;
   --color-line-2: #d6d7db;
   --color-accent: #2f42d8;
+  /* Voile pastel des tuiles d'icône et fond du filet qui les borde. Écrits en
+     dur plutôt qu'en color-mix : ce sont des couleurs de thème, et Tailwind
+     doit pouvoir en tirer bg-accent-soft sans passer par une fonction. */
+  --color-accent-soft: #eef0fd;
+  --color-accent-line: #dbdffa;
   --color-success: #12a05c;
   /* Bleu du trait tracé sous l'accent du titre. */
   --color-stroke: #7396ff;
@@ -127,7 +132,11 @@
     padding-block: var(--section-y);
   }
 
-  /* ---- Accent serif italique ---- */
+  /* ---- Accent serif italique ----
+     Sans couleur : la bascule se joue par le changement de caractère, du sans
+     au serif italique. Colorer le mot en plus a été essayé et abandonné, le
+     titre se coupait en deux moitiés qui ne se lisaient plus comme une phrase.
+     Le bleu passe derrière, dans la bande de surlignage. */
   .accent {
     font-family: var(--font-serif);
     font-style: italic;
@@ -210,12 +219,16 @@
     text-wrap: pretty;
   }
 
+  /* Le surtitre porte la couleur de marque. Il est minuscule, en capitales
+     espacées, et n'apparaît qu'une fois par section : c'est la place qui
+     supporte une couleur sans que la page devienne bavarde. Une surface
+     sombre le reprend avec un text-* de Tailwind. */
   .eyebrow {
     font-family: var(--font-mono);
     font-size: 0.68rem;
     letter-spacing: 0.15em;
     text-transform: uppercase;
-    color: var(--color-label);
+    color: var(--color-accent);
     line-height: 1;
   }
 

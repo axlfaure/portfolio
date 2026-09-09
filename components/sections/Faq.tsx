@@ -47,7 +47,7 @@ export async function Faq() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   aria-hidden="true"
-                  className="mt-0.5 shrink-0 text-label transition-transform duration-200 ease-site group-open:rotate-180"
+                  className="mt-0.5 shrink-0 text-label transition-[transform,color] duration-200 ease-site group-open:rotate-180 group-open:text-accent"
                 >
                   <path d="m6 9 6 6 6-6" />
                 </svg>

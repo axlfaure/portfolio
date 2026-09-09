@@ -63,6 +63,7 @@ export async function Offers() {
               offre={offre}
               rang={i}
               seule={offers.length === 1}
+              derniere={i === offers.length - 1}
             />
           ))}
         </div>
@@ -84,10 +85,12 @@ function Colonne({
   offre,
   rang,
   seule,
+  derniere,
 }: {
   offre: Offer;
   rang: number;
   seule: boolean;
+  derniere: boolean;
 }) {
   const sombre = offre.highlight;
   // Identifiant stable entre le serveur et le navigateur, tiré du nom de la
@@ -121,7 +124,7 @@ function Colonne({
           <span
             className={cn(
               "grid h-11 w-11 shrink-0 place-items-center rounded-[14px]",
-              sombre ? "bg-white/10 text-white" : "bg-paper text-ink-2",
+              sombre ? "bg-white/10 text-white" : "bg-accent-soft text-accent",
             )}
           >
             <FeatureIcon name={offre.icon} />
@@ -262,6 +265,7 @@ function Colonne({
                     texte={item.note}
                     id={`${identifiant}-${i}`}
                     sombre={sombre}
+                    versLaGauche={derniere}
                   />
                 )}
               </span>
@@ -307,10 +311,13 @@ function Precision({
   texte,
   id,
   sombre,
+  versLaGauche,
 }: {
   texte: string;
   id: string;
   sombre: boolean;
+  /** La dernière colonne ouvre sa bulle vers l'intérieur de la section. */
+  versLaGauche: boolean;
 }) {
   return (
     <span className="group/note">
@@ -319,8 +326,8 @@ function Precision({
         aria-label="Précision"
         aria-describedby={id}
         className={cn(
-          "relative ml-1.5 inline-grid h-[1.05rem] w-[1.05rem] translate-y-[0.12em]",
-          "place-items-center rounded-full text-[0.65rem] font-bold",
+          "relative ml-1.5 inline-grid h-[1.05rem] w-[1.05rem] align-middle",
+          "place-items-center rounded-full text-[0.65rem] font-bold leading-none",
           "transition-colors duration-200",
           "before:absolute before:-inset-3.5 before:content-['']",
           sombre
@@ -335,10 +342,18 @@ function Precision({
         role="tooltip"
         id={id}
         className={cn(
-          "pointer-events-none absolute inset-x-0 top-full z-10 mt-2 rounded-[10px] px-3 py-2",
+          "pointer-events-none absolute z-10 rounded-[10px] px-3 py-2",
           "text-[0.8rem] font-normal leading-snug shadow-e2",
           "opacity-0 transition-opacity duration-200",
           "group-hover/note:opacity-100 group-focus-within/note:opacity-100",
+          // Sous la ligne tant que les cartes sont empilées : à cette largeur,
+          // une bulle posée à côté sortirait de l'écran.
+          "inset-x-0 top-full mt-2",
+          // En colonnes, elle s'ouvre sur le côté, hors de la carte. La
+          // dernière colonne ouvre vers l'intérieur, sinon la bulle sortirait
+          // de la page et y ajouterait une barre de défilement horizontale.
+          "lg:inset-x-auto lg:top-1/2 lg:mt-0 lg:w-[13.5rem] lg:-translate-y-1/2",
+          versLaGauche ? "lg:right-full lg:mr-3" : "lg:left-full lg:ml-3",
           sombre ? "bg-white text-ink" : "bg-ink text-white",
         )}
       >

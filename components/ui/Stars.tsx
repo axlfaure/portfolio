@@ -20,7 +20,7 @@ export function Stars({
           strokeWidth="1.6"
           strokeLinejoin="round"
           aria-hidden="true"
-          className="text-ink"
+          className="text-accent"
         >
           <path d="M12 3.5 14.7 9l6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 9.9 9.3 9z" />
         </svg>

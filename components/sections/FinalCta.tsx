@@ -45,7 +45,10 @@ export async function FinalCta() {
             />
           </div>
 
-          <p className="eyebrow mt-10 border-t border-line pt-6">
+          {/* Cette ligne emprunte le style du surtitre mais n’en est pas un :
+              c’est une mention de pied. Elle reste grise, le bleu est réservé
+              à ce qui ouvre une section. */}
+          <p className="eyebrow mt-10 border-t border-line pt-6 text-label">
             {cta?.footnote ?? `${site.city} · Isère · Réponse sous 24 h`}
           </p>
         </div>
