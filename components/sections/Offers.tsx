@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { AccentTitle } from "@/components/ui/AccentTitle";
 import { CtaButton } from "@/components/ui/CtaButton";
 import { FeatureIcon } from "@/components/ui/FeatureIcon";
@@ -68,14 +69,35 @@ export async function Offers() {
           ))}
         </div>
 
-        {section.footnote && (
-          <p
-            data-reveal
-            className="mx-auto mt-12 max-w-[44rem] text-balance text-center text-[0.9rem] leading-relaxed text-muted"
+        <div
+          data-reveal
+          className="mt-12 flex flex-col items-center gap-5 text-center"
+        >
+          <Link
+            href="/offres"
+            className="group inline-flex items-center gap-2 text-[0.9rem] font-semibold text-ink underline decoration-line-2 decoration-1 underline-offset-[6px] transition-colors duration-200 hover:decoration-ink"
           >
-            {typo(section.footnote)}
-          </p>
-        )}
+            Voir le comparatif détaillé
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 16 16"
+              className="h-3.5 w-3.5 transition-transform duration-200 ease-site group-hover:translate-x-0.5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.75"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M3 8h10M9 4l4 4-4 4" />
+            </svg>
+          </Link>
+
+          {section.footnote && (
+            <p className="max-w-[44rem] text-balance text-[0.9rem] leading-relaxed text-muted">
+              {typo(section.footnote)}
+            </p>
+          )}
+        </div>
       </div>
     </section>
   );
