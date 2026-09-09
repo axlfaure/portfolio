@@ -5,17 +5,21 @@ import { HOME, revalidateGlobal } from "../hooks/revalidate";
 /**
  * Section « Trois façons de travailler ensemble ».
  *
- * Un comparatif, pas trois argumentaires. La différence n'est pas cosmétique :
- * une comparaison ne fonctionne que si les colonnes présentent les MÊMES
- * critères, chacune disant lesquels elle comprend. Trois listes de contenus
- * différents, si bien écrites soient-elles, ne se comparent pas : elles se
- * lisent l'une après l'autre, et le lecteur repart sans avoir choisi.
+ * Trois colonnes de tarif, dans la forme éprouvée : nom, une ligne pour dire à
+ * qui elle s'adresse, un montant en grand, un bouton, puis ce qui est compris.
  *
- * D'où la forme du formulaire. Les critères ne sont pas rangés dans chaque
- * offre, ce qui obligerait à recopier les mêmes libellés trois fois et
- * garantirait qu'ils finissent par diverger. Ils sont saisis une seule fois,
- * avec trois cases à cocher : le tableau s'édite comme un tableau. Les cases
- * suivent l'ordre des offres déclarées au-dessus.
+ * Deux règles gouvernent le contenu, et elles vont contre l'instinct.
+ *
+ * On ne répète pas les avantages. Une version précédente affichait les mêmes
+ * neuf critères dans les trois colonnes, cochés ou barrés : la section devenait
+ * un mur, et le lecteur relisait trois fois la même chose pour trouver les deux
+ * lignes qui changeaient. Les colonnes suivantes reprennent donc la première
+ * d'une phrase, « tout One shot, plus », et ne listent que ce qu'elles ajoutent.
+ *
+ * Les libellés sont des étiquettes, pas des phrases. « Devis à prix ferme »,
+ * pas « Un devis à prix ferme avant de commencer ». Personne ne lit une liste
+ * de tarifs, on la balaie, et une ligne qui passe sur deux lignes casse le
+ * balayage.
  */
 export const OffersSection: GlobalConfig = {
   slug: "offers-section",
@@ -23,7 +27,7 @@ export const OffersSection: GlobalConfig = {
   access: { read: () => true },
   admin: {
     group: "Textes de l'accueil",
-    description: "Le comparatif des offres, entre les services et « à propos ».",
+    description: "Les trois formules, entre les services et « à propos ».",
   },
   hooks: revalidateGlobal([HOME]),
   fields: [
@@ -37,26 +41,86 @@ export const OffersSection: GlobalConfig = {
       labels: { singular: "Offre", plural: "Offres" },
       admin: {
         description:
-          "Trois au maximum : au-delà, les colonnes deviennent trop étroites pour que les critères restent lisibles. Placer la recommandée au milieu, c'est là que le regard se pose en premier.",
+          "Trois au maximum. La recommandée au milieu : c'est là que le regard se pose en premier.",
       },
       fields: [
         {
           type: "row",
           fields: [
             {
+              name: "icon",
+              type: "select",
+              required: true,
+              defaultValue: "doc",
+              label: "Pictogramme",
+              admin: { width: "25%" },
+              options: [
+                { label: "Document", value: "doc" },
+                { label: "Échange", value: "exchange" },
+                { label: "Calques", value: "layers" },
+                { label: "Horloge", value: "clock" },
+                { label: "Personnes", value: "users" },
+                { label: "Boîte", value: "box" },
+              ],
+            },
+            {
               name: "name",
               type: "text",
               required: true,
               label: "Nom",
-              admin: { width: "50%" },
+              admin: { width: "40%" },
             },
             {
               name: "badge",
               type: "text",
               label: "Pastille",
               admin: {
-                width: "50%",
-                description: "Facultative. Deux mots, sur une seule des trois.",
+                width: "35%",
+                description: "Facultative, sur une seule des trois.",
+              },
+            },
+          ],
+        },
+        {
+          name: "tagline",
+          type: "text",
+          required: true,
+          label: "À qui elle s'adresse",
+          admin: {
+            description:
+              "UNE ligne, huit mots au plus. C'est la seule prose de la colonne, et elle répond à la seule question du lecteur : est-ce la mienne ?",
+          },
+        },
+        {
+          type: "row",
+          fields: [
+            {
+              name: "pricePrefix",
+              type: "text",
+              label: "Avant le montant",
+              admin: {
+                width: "33%",
+                description: "En petit au-dessus : « à partir de ». Facultatif.",
+              },
+            },
+            {
+              name: "price",
+              type: "text",
+              required: true,
+              label: "Montant",
+              admin: {
+                width: "34%",
+                description:
+                  "Court, il est affiché en très grands caractères et ne doit pas passer à la ligne : « 300 € », « Sur devis ».",
+              },
+            },
+            {
+              name: "priceUnit",
+              type: "text",
+              label: "Unité",
+              admin: {
+                width: "33%",
+                description: "En petit sous le montant : « la prestation ».",
               },
             },
           ],
@@ -65,36 +129,16 @@ export const OffersSection: GlobalConfig = {
           type: "row",
           fields: [
             {
-              name: "anchor",
+              name: "trend",
               type: "text",
-              required: true,
-              label: "Repère",
+              label: "Gain",
               admin: {
-                width: "40%",
+                width: "100%",
                 description:
-                  "Le grand mot de la colonne : « 1 projet », « 12 mois », « Sur mesure ». L'unité qu'on achète, pas un prix.",
-              },
-            },
-            {
-              name: "anchorNote",
-              type: "text",
-              label: "Précision sous le repère",
-              admin: {
-                width: "60%",
-                description: "Quatre mots, par exemple « livré en deux semaines ».",
+                  "Facultatif. Pastille à flèche montante sous le montant : « 20 % moins cher ».",
               },
             },
           ],
-        },
-        {
-          name: "pitch",
-          type: "textarea",
-          required: true,
-          label: "À qui elle s'adresse",
-          admin: {
-            description:
-              "Une phrase, deux au plus. C'est la seule prose de la colonne : devant trois offres, la question du lecteur est de savoir laquelle est la sienne, pas de lire un argumentaire.",
-          },
         },
         {
           type: "row",
@@ -103,62 +147,31 @@ export const OffersSection: GlobalConfig = {
               name: "ctaLabel",
               type: "text",
               label: "Libellé du bouton",
-              admin: {
-                width: "70%",
-                description:
-                  "Le bouton ouvre l'agenda. Laissé vide, la colonne n'a pas de bouton.",
-              },
+              admin: { width: "70%" },
             },
             {
               name: "highlight",
               type: "checkbox",
               label: "Mettre en avant",
-              admin: {
-                width: "30%",
-                description: "Une seule des trois.",
-              },
+              admin: { width: "30%", description: "Une seule des trois." },
             },
           ],
         },
-      ],
-    },
-    {
-      name: "features",
-      type: "array",
-      label: "Critères comparés",
-      labels: { singular: "Critère", plural: "Critères" },
-      admin: {
-        description:
-          "Une ligne par critère, cochée pour les colonnes qui la comprennent. Les cases suivent l'ordre des offres déclarées au-dessus. Ranger les critères communs aux trois en premier : le lecteur voit d'abord ce qu'il obtient dans tous les cas, puis ce qui distingue.",
-      },
-      fields: [
         {
-          name: "label",
-          type: "text",
-          required: true,
-          label: "Critère",
-          admin: { description: "Court. Il doit tenir sur une ou deux lignes en colonne étroite." },
-        },
-        {
-          type: "row",
+          name: "items",
+          type: "array",
+          label: "Ce que la colonne ajoute",
+          labels: { singular: "Ligne", plural: "Lignes" },
+          admin: {
+            description:
+              "Cinq ou six, pas davantage. Des étiquettes de trois à cinq mots, jamais des phrases : au-delà, la ligne passe sur deux niveaux et la liste cesse de se balayer. Sur les colonnes suivantes, ouvrir par « Tout One shot » plutôt que de répéter les mêmes avantages.",
+          },
           fields: [
             {
-              name: "in1",
-              type: "checkbox",
-              label: "1re colonne",
-              admin: { width: "33%" },
-            },
-            {
-              name: "in2",
-              type: "checkbox",
-              label: "2e colonne",
-              admin: { width: "33%" },
-            },
-            {
-              name: "in3",
-              type: "checkbox",
-              label: "3e colonne",
-              admin: { width: "33%" },
+              name: "label",
+              type: "text",
+              required: true,
+              label: "Libellé",
             },
           ],
         },
@@ -170,7 +183,7 @@ export const OffersSection: GlobalConfig = {
       label: "Ligne de fin",
       admin: {
         description:
-          "Sous le tableau. C'est là qu'on répond à l'objection que le tableau laisse entière : « je ne sais pas laquelle est la mienne ».",
+          "Sous les colonnes. C'est là qu'on répond à l'objection que trois offres laissent entière : « je ne sais pas laquelle est la mienne ».",
       },
     },
   ],

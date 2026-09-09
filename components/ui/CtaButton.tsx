@@ -15,11 +15,13 @@ type Props = {
    * offres parfaitement valables passeraient pour des seconds choix ; la
    * hiérarchie se joue entre le plein et le contour.
    *
-   * Ces deux-là portent une flèche et non la pastille de disponibilité : dans
-   * une colonne de comparatif, un point vert se lit comme une marque de plus
-   * dans la liste juste au-dessous, ce qu'il n'est pas.
+   * "inverse" = la même, en clair sur une carte sombre.
+   *
+   * Ces trois-là portent une flèche et non la pastille de disponibilité : dans
+   * une colonne de tarif, un point vert se lit comme une marque de plus dans
+   * la liste juste au-dessous, ce qu'il n'est pas.
    */
-  variant?: "full" | "compact" | "link" | "solid" | "outline";
+  variant?: "full" | "compact" | "link" | "solid" | "outline" | "inverse";
   /** Portrait d'Axel, injecté depuis un composant serveur. */
   avatar?: ReactNode;
   /** Libellé de la variante compacte. Le défaut convient partout ailleurs. */
@@ -41,7 +43,7 @@ export function CtaButton({
     "cta group inline-flex items-center rounded-full border border-line bg-surface " +
     "shadow-e1 hover:border-line-2 hover:shadow-e2";
 
-  if (variant === "solid" || variant === "outline") {
+  if (variant === "solid" || variant === "outline" || variant === "inverse") {
     return (
       <button
         type="button"
@@ -50,9 +52,10 @@ export function CtaButton({
           "group inline-flex h-11 items-center justify-center gap-2.5 rounded-full",
           "px-5 text-[0.875rem] font-semibold shadow-e1",
           "transition-[background-color,border-color,box-shadow] duration-200 hover:shadow-e2",
-          variant === "solid"
-            ? "bg-ink text-white hover:bg-ink-2"
-            : "border border-line bg-surface text-ink hover:border-line-2",
+          variant === "solid" && "bg-ink text-white hover:bg-ink-2",
+          variant === "outline" &&
+            "border border-line bg-surface text-ink hover:border-line-2",
+          variant === "inverse" && "bg-white text-ink hover:bg-white/90",
           className,
         )}
       >

@@ -1,40 +1,38 @@
 import { AccentTitle } from "@/components/ui/AccentTitle";
 import { CtaButton } from "@/components/ui/CtaButton";
+import { FeatureIcon } from "@/components/ui/FeatureIcon";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { cn } from "@/lib/cn";
-import { getOffersSection, type Offer, type OfferFeature } from "@/lib/content";
+import { getOffersSection, type Offer } from "@/lib/content";
 import { typo } from "@/lib/typo";
 
 /**
  * Section « Trois façons de travailler ensemble ».
  *
- * C'est un comparatif, et la forme découle entièrement de là. Devant plusieurs
- * offres, personne ne lit trois argumentaires : on balaie en travers, ligne
- * par ligne, pour voir ce qui change d'une colonne à l'autre. Une version
- * précédente donnait à chaque offre sa propre prose, ce qui rendait la lecture
- * en travers impossible et la section deux fois trop longue.
+ * Trois colonnes de tarif, dans l'ordre éprouvé : pictogramme et nom, une
+ * ligne pour se reconnaître, le montant en grand, ce qui est compris, puis le
+ * bouton en pied de carte.
  *
- * Trois décisions en découlent.
+ * Le bouton est en bas et non sous le prix, contrairement à une version
+ * précédente. Placé avant la liste, il demande de choisir avant d'avoir lu ce
+ * qu'on achète ; en pied, il conclut la lecture au moment où la décision est
+ * mûre. C'est aussi la seule position qui aligne les trois boutons.
  *
- * Les critères sont les mêmes partout, et seule la marque change. Un critère
- * absent se raye plutôt que de disparaître : ce qu'une offre ne comprend pas
- * en dit autant que ce qu'elle comprend, et une ligne manquante décalerait
- * tout le reste de la colonne.
+ * Les avantages ne sont pas répétés. Afficher les mêmes lignes dans les trois
+ * colonnes, cochées ou barrées, faisait un mur où le lecteur relisait trois
+ * fois la même chose pour trouver les deux qui changeaient. Les colonnes
+ * suivantes ouvrent donc leur liste par « Tout One shot », et n'énumèrent que
+ * ce qu'elles ajoutent.
  *
- * Le repère chiffré remplace le prix. Une colonne de comparatif a besoin d'un
- * point d'ancrage en grands caractères, sinon le regard n'a nulle part où se
- * poser ; « 12 mois » dit le rythme de la relation, ce qui est plus utile
- * qu'un montant et n'engage pas un tarif sur une page statique.
- *
- * Les lignes de toutes les colonnes s'alignent par grille imbriquée. Sans
- * cela, un titre qui passe sur deux lignes dans une colonne décale ses
- * critères d'un cran, et la comparaison en travers est perdue.
+ * La colonne recommandée s'inverse en sombre. Sur une page entièrement claire,
+ * c'est le seul contraste qui la désigne sans ajouter de couleur, et il
+ * fonctionne à distance, avant qu'on ait lu le moindre mot.
  */
 export async function Offers() {
   const section = await getOffersSection();
   if (!section) return null;
 
-  const { offers, features } = section;
+  const { offers } = section;
 
   return (
     <section id="offres" className="section scroll-mt-24">
@@ -51,16 +49,11 @@ export async function Offers() {
           lead={section.lead || undefined}
         />
 
-        {/* Cinq lignes partagées : identité, repère, adresse, action, critères.
-            Chaque colonne les redéclare pour son propre contenu. */}
-        {/* Pas d'étape à deux colonnes quand il y en a trois : la troisième
-            se retrouverait seule sur une deuxième ligne, à moitié large, et
-            le comparatif se lirait en deux fois. On passe donc directement de
-            l'empilement aux trois colonnes. */}
+        {/* Quatre lignes partagées : identité, montant, liste, action. */}
         <div
           className={cn(
-            "mt-14 grid gap-4 lg:gap-x-5 lg:gap-y-7",
-            "lg:[grid-template-rows:auto_auto_auto_auto_1fr]",
+            "mt-16 grid gap-6 lg:gap-5",
+            "lg:[grid-template-rows:auto_auto_1fr_auto]",
             offers.length >= 3 ? "lg:grid-cols-3" : "md:grid-cols-2",
           )}
         >
@@ -69,7 +62,6 @@ export async function Offers() {
               key={offre.name}
               offre={offre}
               rang={i}
-              features={features}
               seule={offers.length === 1}
             />
           ))}
@@ -78,7 +70,7 @@ export async function Offers() {
         {section.footnote && (
           <p
             data-reveal
-            className="mx-auto mt-10 max-w-[46rem] text-center text-[0.95rem] leading-relaxed text-muted"
+            className="mx-auto mt-12 max-w-[44rem] text-center text-[0.9rem] leading-relaxed text-muted"
           >
             {typo(section.footnote)}
           </p>
@@ -91,130 +83,188 @@ export async function Offers() {
 function Colonne({
   offre,
   rang,
-  features,
   seule,
 }: {
   offre: Offer;
   rang: number;
-  features: OfferFeature[];
   seule: boolean;
 }) {
-  const enAvant = offre.highlight;
+  const sombre = offre.highlight;
 
   return (
     <article
       data-reveal
       style={{ "--reveal-delay": `${rang * 80}ms` } as React.CSSProperties}
       className={cn(
-        "relative grid gap-y-7 overflow-hidden rounded-card p-6 md:p-7",
-        !seule && "lg:row-span-5 lg:grid-rows-subgrid lg:gap-y-0",
-        enAvant
-          ? "border border-ink/12 bg-surface shadow-e2"
-          : "border border-line bg-paper",
+        "relative grid gap-y-8 rounded-cta p-8 md:p-9",
+        !seule && "lg:row-span-4 lg:grid-rows-subgrid lg:gap-y-0",
+        sombre
+          ? "bg-ink text-white shadow-e2 lg:-my-4 lg:py-13"
+          : "border border-line bg-surface",
       )}
     >
-      {enAvant && (
-        <span aria-hidden="true" className="absolute inset-x-0 top-0 h-[3px] bg-accent" />
-      )}
+      <header>
+        <div className="flex items-start justify-between gap-3">
+          <span
+            className={cn(
+              "grid h-11 w-11 shrink-0 place-items-center rounded-[14px]",
+              sombre ? "bg-white/10 text-white" : "bg-paper text-ink-2",
+            )}
+          >
+            <FeatureIcon name={offre.icon} />
+          </span>
 
-      {/* 1. Identité */}
-      <header className="flex items-center justify-between gap-3">
-        <h3 className="text-[1.35rem] font-bold tracking-[-0.03em] text-ink">
+          {offre.badge && (
+            <span
+              className={cn(
+                "shrink-0 rounded-full px-3 py-1.5 text-[0.7rem] font-semibold",
+                sombre ? "bg-accent text-white" : "bg-paper text-muted",
+              )}
+            >
+              {offre.badge}
+            </span>
+          )}
+        </div>
+
+        <h3
+          className={cn(
+            "mt-5 text-[1.45rem] font-bold tracking-[-0.03em]",
+            sombre ? "text-white" : "text-ink",
+          )}
+        >
           {offre.name}
         </h3>
-        {offre.badge && (
-          <span className="shrink-0 rounded-full bg-accent px-3 py-1 text-[0.7rem] font-semibold text-white">
-            {offre.badge}
-          </span>
-        )}
+        <p
+          className={cn(
+            "mt-1.5 text-[0.9rem] leading-snug",
+            sombre ? "text-white/65" : "text-muted",
+          )}
+        >
+          {typo(offre.tagline)}
+        </p>
       </header>
 
-      {/* 2. Le repère, en grands caractères. C'est lui qui donne à la colonne
-             son point d'ancrage, à la place du prix. */}
+      {/* Le montant occupe sa propre ligne. Posé à côté de son unité, comme
+          le font les grilles anglaises où le prix tient en trois caractères,
+          « dès 300 € » se coupait avant l'euro et « Sur devis » avant
+          « devis » : une colonne de trois cent trente pixels n'a pas la place
+          des deux. */}
       <div>
-        <p className="text-[clamp(2.1rem,1.6rem+1.4vw,2.75rem)] font-bold leading-none tracking-[-0.04em] text-ink">
-          {offre.anchor}
+        {offre.pricePrefix && (
+          <p
+            className={cn(
+              "mb-2 text-[0.8rem]",
+              sombre ? "text-white/55" : "text-label",
+            )}
+          >
+            {typo(offre.pricePrefix)}
+          </p>
+        )}
+
+        <p
+          className={cn(
+            "whitespace-nowrap text-[clamp(2.1rem,1.6rem+1.4vw,2.6rem)] font-bold leading-none tracking-[-0.04em]",
+            sombre ? "text-white" : "text-ink",
+          )}
+        >
+          {offre.price}
         </p>
-        {offre.anchorNote && (
-          <p className="mt-2.5 text-[0.85rem] text-muted">{typo(offre.anchorNote)}</p>
+
+        {offre.priceUnit && (
+          <p
+            className={cn(
+              "mt-2.5 text-[0.875rem]",
+              sombre ? "text-white/60" : "text-muted",
+            )}
+          >
+            {typo(offre.priceUnit)}
+          </p>
+        )}
+
+        {offre.trend && (
+          <p
+            className={cn(
+              "mt-4 inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[0.78rem] font-semibold",
+              sombre ? "bg-white/12 text-white" : "bg-accent/10 text-accent",
+            )}
+          >
+            <FlecheGain />
+            {typo(offre.trend)}
+          </p>
         )}
       </div>
 
-      {/* 3. À qui elle s'adresse */}
-      <p className="text-[0.92rem] leading-relaxed text-ink-2">{typo(offre.pitch)}</p>
+      {offre.items.length > 0 ? (
+        <ul
+          className={cn(
+            "space-y-3.5 border-t pt-8",
+            sombre ? "border-white/12" : "border-line",
+          )}
+        >
+          {offre.items.map((item) => (
+            <li key={item} className="flex items-start gap-3">
+              <span
+                aria-hidden="true"
+                className={cn(
+                  "mt-[0.1em] grid h-[1.2rem] w-[1.2rem] shrink-0 place-items-center rounded-full",
+                  sombre ? "bg-white/12 text-white" : "bg-accent/10 text-accent",
+                )}
+              >
+                <svg
+                  viewBox="0 0 16 16"
+                  className="h-2.5 w-2.5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M3 8.5 6.2 12 13 4.5" />
+                </svg>
+              </span>
+              <span
+                className={cn(
+                  "text-[0.92rem] leading-snug",
+                  sombre ? "text-white/85" : "text-ink-2",
+                )}
+              >
+                {typo(item)}
+              </span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div aria-hidden="true" />
+      )}
 
-      {/* 4. L'action. Les trois colonnes ont un bouton, parce que les trois
-             offres sont des choix valables : la hiérarchie se joue entre plein
-             et contour, pas entre un bouton et un lien qui ferait passer deux
-             options légitimes pour des lots de consolation. */}
       <div>
         {offre.ctaLabel && (
           <CtaButton
-            variant={enAvant ? "solid" : "outline"}
+            variant={sombre ? "inverse" : "outline"}
             label={offre.ctaLabel}
             className="w-full justify-center"
           />
         )}
       </div>
-
-      {/* 5. Les critères */}
-      {features.length > 0 ? (
-        <ul className="space-y-3 border-t border-line pt-6">
-          {features.map((critere) => {
-            const compris = critere.included[rang] ?? false;
-            return (
-              <li key={critere.label} className="flex items-start gap-2.5">
-                <Marque compris={compris} />
-                {/* Pas de rature sur les lignes absentes : sur une colonne qui
-                    en compte cinq, elle transforme la moitié du tableau en
-                    barbelés. Le signe et la teinte disent déjà l'exclusion, et
-                    la forme de la croix la dit sans dépendre de la couleur. */}
-                <span
-                  className={cn(
-                    "text-[0.875rem] leading-snug",
-                    compris ? "text-ink-2" : "text-faint",
-                  )}
-                >
-                  {typo(critere.label)}
-                </span>
-              </li>
-            );
-          })}
-        </ul>
-      ) : (
-        <div aria-hidden="true" />
-      )}
     </article>
   );
 }
 
-/**
- * Marque de présence.
- *
- * Deux formes distinctes et pas seulement deux couleurs : sur un écran mal
- * réglé comme pour un daltonien, la teinte ne suffit pas à dire l'inclusion.
- * Le texte porte d'ailleurs la même information par sa rature.
- */
-function Marque({ compris }: { compris: boolean }) {
+/** Flèche de progression, comme sur une courbe de cotation. */
+function FlecheGain() {
   return (
-    <span
+    <svg
       aria-hidden="true"
-      className={cn(
-        "mt-[0.15em] grid h-[1.15rem] w-[1.15rem] shrink-0 place-items-center rounded-full",
-        compris ? "bg-accent/10 text-accent" : "bg-line text-faint",
-      )}
+      viewBox="0 0 16 16"
+      className="h-3.5 w-3.5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.9"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     >
-      <svg
-        viewBox="0 0 16 16"
-        className="h-2.5 w-2.5"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        {compris ? <path d="M3 8.5 6.2 12 13 4.5" /> : <path d="M4 4l8 8M12 4l-8 8" />}
-      </svg>
-    </span>
+      <path d="M2 11.5 6 7.5l2.6 2.6L14 4.5" />
+      <path d="M10.2 4.5H14V8.3" />
+    </svg>
   );
 }

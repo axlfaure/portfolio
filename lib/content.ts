@@ -647,27 +647,24 @@ export const getServicesSection = cache(async (): Promise<SectionHeader | null> 
 );
 
 export type Offer = {
+  icon: FeatureIconName;
   name: string;
   badge: string;
-  /** L'unité qu'on achète : « 1 projet », « 12 mois », « Sur mesure ». */
-  anchor: string;
-  anchorNote: string;
-  pitch: string;
+  /** Une ligne, pour se reconnaître ou passer son chemin. */
+  tagline: string;
+  pricePrefix: string;
+  price: string;
+  priceUnit: string;
+  /** Le gain, en pastille à flèche montante. */
+  trend: string;
   ctaLabel: string;
   highlight: boolean;
-};
-
-/** Une ligne du comparatif, avec la liste de ce qu'elle vaut par colonne. */
-export type OfferFeature = {
-  label: string;
-  /** Un booléen par offre, dans l'ordre des colonnes. */
-  included: boolean[];
+  items: string[];
 };
 
 export type OffersSectionContent = SectionHeader & {
   lead: string;
   offers: Offer[];
-  features: OfferFeature[];
   footnote: string;
 };
 
@@ -679,36 +676,22 @@ export const getOffersSection = cache(
     // n'apparaisse pas du tout que de laisser un titre suivi de rien.
     if (!doc || !tete || !doc.offers?.length) return null;
 
-    const offers = doc.offers.map((offre) => ({
-      name: offre.name,
-      badge: offre.badge ?? "",
-      anchor: offre.anchor,
-      anchorNote: offre.anchorNote ?? "",
-      pitch: offre.pitch,
-      ctaLabel: offre.ctaLabel ?? "",
-      highlight: Boolean(offre.highlight),
-    }));
-
-    /*
-     * Les trois cases du formulaire redeviennent ici un tableau indexé comme
-     * les colonnes. C'est le seul endroit où la correspondance « 1re case =
-     * 1re offre » est écrite : la vue n'a plus qu'à lire par position, et une
-     * quatrième colonne ne demanderait qu'une case de plus.
-     */
-    const features = (doc.features ?? []).map((ligne) => ({
-      label: ligne.label,
-      included: [
-        Boolean(ligne.in1),
-        Boolean(ligne.in2),
-        Boolean(ligne.in3),
-      ].slice(0, offers.length),
-    }));
-
     return {
       ...tete,
       lead: doc.lead ?? "",
-      offers,
-      features,
+      offers: doc.offers.map((offre) => ({
+        icon: (offre.icon ?? "doc") as FeatureIconName,
+        name: offre.name,
+        badge: offre.badge ?? "",
+        tagline: offre.tagline,
+        pricePrefix: offre.pricePrefix ?? "",
+        price: offre.price,
+        priceUnit: offre.priceUnit ?? "",
+        trend: offre.trend ?? "",
+        ctaLabel: offre.ctaLabel ?? "",
+        highlight: Boolean(offre.highlight),
+        items: (offre.items ?? []).map((ligne) => ligne.label),
+      })),
       footnote: doc.footnote ?? "",
     };
   },
