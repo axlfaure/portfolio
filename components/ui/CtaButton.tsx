@@ -11,6 +11,8 @@ type Props = {
   variant?: "full" | "compact";
   /** Portrait d'Axel, injecté depuis un composant serveur. */
   avatar?: ReactNode;
+  /** Libellé de la variante compacte. Le défaut convient partout ailleurs. */
+  label?: string;
   className?: string;
 };
 
@@ -18,7 +20,12 @@ type Props = {
  * Bouton signature du site. Unique appel à l'action, présent dans le hero,
  * la navigation et la carte CTA finale.
  */
-export function CtaButton({ variant = "full", avatar, className }: Props) {
+export function CtaButton({
+  variant = "full",
+  avatar,
+  label = "Parlons de votre projet",
+  className,
+}: Props) {
   const base =
     "cta group inline-flex items-center rounded-full border border-line bg-surface " +
     "shadow-e1 hover:border-line-2 hover:shadow-e2";
@@ -31,9 +38,7 @@ export function CtaButton({ variant = "full", avatar, className }: Props) {
         className={cn(base, "h-11 gap-2.5 pl-4 pr-5", className)}
       >
         <Dot />
-        <span className="text-[0.875rem] font-semibold text-ink">
-          Parlons de votre projet
-        </span>
+        <span className="text-[0.875rem] font-semibold text-ink">{label}</span>
       </button>
     );
   }

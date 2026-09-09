@@ -19,6 +19,7 @@ import { About } from "./cms/globals/About";
 import { ContextSection } from "./cms/globals/ContextSection";
 import { FinalCta } from "./cms/globals/FinalCta";
 import { Hero } from "./cms/globals/Hero";
+import { OffersSection } from "./cms/globals/OffersSection";
 import {
   FaqSection,
   ProjectsSection,
@@ -117,6 +118,7 @@ export default buildConfig({
     ContextSection,
     ProjectsSection,
     ServicesSection,
+    OffersSection,
     About,
     ReviewsSection,
     FaqSection,

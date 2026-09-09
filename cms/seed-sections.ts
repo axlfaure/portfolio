@@ -118,6 +118,87 @@ const SECTIONS: { slug: string; data: Record<string, unknown> }[] = [
     },
   },
   {
+    slug: "offers-section",
+    data: {
+      eyebrow: "Travailler ensemble",
+      titleStart: "Deux façons de",
+      titleAccent: "travailler ensemble.",
+      lead: "L'une pour un besoin isolé, l'autre pour arrêter de les commander un par un. Dans les deux cas, un seul interlocuteur, du premier appel avec votre ingénieur jusqu'à la livraison dans vos locaux.",
+      offers: [
+        {
+          name: "Substrat",
+          kicker: "Au projet",
+          origin: "La base sur laquelle tout le reste pousse.",
+          pitch:
+            "Vous avez un salon dans six semaines, une identité à refaire, des posts LinkedIn à prévoir, le programme de votre séminaire. On en parle, je chiffre la demande, vous validez, et je livre sous deux semaines. Rien de plus.",
+          punch: "La bonne formule quand le besoin est isolé, et peu récurrent.",
+          highlight: false,
+          ctaLabel: "Parlons de votre besoin",
+          items: [
+            {
+              lead: "Un premier échange",
+              text: "avec vous, et avec le chercheur ou l'ingénieur dont vous voulez parler.",
+            },
+            { lead: "Un devis avant de commencer,", text: "à prix ferme." },
+            { lead: "Deux allers-retours inclus", text: "dans chaque prestation." },
+            { lead: "Les fichiers sources livrés,", text: "aux formats qui servent." },
+            { lead: "Le conseil compris dans le prix,", text: "jamais facturé à part." },
+            {
+              lead: "Déduite de Circuit",
+              text: "si vous passez à l'année dans les trois mois.",
+            },
+          ],
+        },
+        {
+          name: "Circuit",
+          kicker: "Sur l'année",
+          badge: "Quatre places par an",
+          origin: "Un assemblage fini, qui tourne toute l'année.",
+          pitch:
+            "Ce qui vous coûte cher, ce n'est pas le visuel, c'est d'éditer plusieurs commandes, avec plusieurs prestataires, à des tarifs différents. Entre les devis, les bons de commande et la comptabilité, un flyer à 400 € vous prend plus de temps interne qu'il ne coûte. Alors on inverse : on définit un budget une fois, on passe une seule commande, et vous piochez dedans toute l'année.",
+          punch:
+            "Vous n'achetez plus un visuel : vous achetez le fait de ne plus avoir à en acheter un par un.",
+          highlight: true,
+          ctaLabel: "Voir si Circuit vous convient",
+          items: [
+            {
+              lead: "Une seule commande pour l'année,",
+              text: "définie ensemble et payée au fur et à mesure des prestations.",
+            },
+            {
+              lead: "Une grille tarifaire figée sur douze mois,",
+              text: "de 10 à 20 % sous mes tarifs habituels.",
+            },
+            {
+              lead: "Tous les leviers dans la même commande :",
+              text: "print de salon, schémas scientifiques, newsletters, identité, sites, photo et vidéo.",
+            },
+            {
+              lead: "Un seul interlocuteur,",
+              text: "y compris quand je mobilise imprimeurs, photographes ou développeurs.",
+            },
+            {
+              lead: "Le conseil inclus :",
+              text: "où mettre l'effort, comment articuler un salon, comment faire mieux avec moins.",
+            },
+            {
+              lead: "Les délais tenus ou compensés :",
+              text: "10 % de remise par jour ouvré de retard.",
+            },
+            {
+              lead: "L'automatisation de vos supports,",
+              text: "par des outils sur mesure, quand une tâche revient assez souvent pour valoir mieux que moi.",
+            },
+            {
+              lead: "Une seule clause :",
+              text: "consommer 60 % de la commande sur l'année. Le reste ne vous est pas facturé.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     slug: "reviews-section",
     data: {
       eyebrow: "Avis clients",

@@ -9,6 +9,7 @@ import type {
   Mail as MailDoc,
   ProjectsSection as ProjectsSectionDoc,
   ReviewsSection as ReviewsSectionDoc,
+  OffersSection as OffersSectionDoc,
   ServicesSection as ServicesSectionDoc,
   Post as PostDoc,
   Project as ProjectDoc,
@@ -643,6 +644,52 @@ export const getProjectsSection = cache(
 
 export const getServicesSection = cache(async (): Promise<SectionHeader | null> =>
   enTete(await lireGlobal<ServicesSectionDoc>("services-section")),
+);
+
+export type Offer = {
+  name: string;
+  kicker: string;
+  badge: string;
+  origin: string;
+  pitch: string;
+  punch: string;
+  highlight: boolean;
+  items: { lead: string; text: string }[];
+  ctaLabel: string;
+};
+
+export type OffersSectionContent = SectionHeader & {
+  lead: string;
+  offers: Offer[];
+};
+
+export const getOffersSection = cache(
+  async (): Promise<OffersSectionContent | null> => {
+    const doc = await lireGlobal<OffersSectionDoc>("offers-section");
+    const tete = enTete(doc);
+    // Un en-tête sans offre ne vaut pas une section : mieux vaut qu'elle
+    // n'apparaisse pas du tout que de laisser un titre suivi de rien.
+    if (!doc || !tete || !doc.offers?.length) return null;
+
+    return {
+      ...tete,
+      lead: doc.lead ?? "",
+      offers: doc.offers.map((offre) => ({
+        name: offre.name,
+        kicker: offre.kicker,
+        badge: offre.badge ?? "",
+        origin: offre.origin ?? "",
+        pitch: offre.pitch,
+        punch: offre.punch ?? "",
+        highlight: Boolean(offre.highlight),
+        items: (offre.items ?? []).map((ligne) => ({
+          lead: ligne.lead,
+          text: ligne.text ?? "",
+        })),
+        ctaLabel: offre.ctaLabel ?? "",
+      })),
+    };
+  },
 );
 
 export const getReviewsSection = cache(async (): Promise<SectionHeader | null> =>

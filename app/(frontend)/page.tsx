@@ -3,6 +3,7 @@ import { About } from "@/components/sections/About";
 import { Faq } from "@/components/sections/Faq";
 import { FinalCta } from "@/components/sections/FinalCta";
 import { Hero } from "@/components/sections/Hero";
+import { Offers } from "@/components/sections/Offers";
 import { Projects } from "@/components/sections/Projects";
 import { Reviews } from "@/components/sections/Reviews";
 import { Services } from "@/components/sections/Services";
@@ -16,6 +17,7 @@ export default function HomePage() {
       <Projects />
       <TestimonialBanner />
       <Services />
+      <Offers />
       <About />
       <Reviews />
       <Faq />
