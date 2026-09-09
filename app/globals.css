@@ -22,9 +22,18 @@
   --color-line: #e5e5e8;
   --color-line-2: #d6d7db;
   --color-accent: #2f42d8;
-  /* Voile pastel des tuiles d'icône et fond du filet qui les borde. Écrits en
-     dur plutôt qu'en color-mix : ce sont des couleurs de thème, et Tailwind
-     doit pouvoir en tirer bg-accent-soft sans passer par une fonction. */
+  /* Trois teintes dérivées, écrites en dur plutôt qu'en color-mix : ce sont
+     des couleurs de thème, et Tailwind doit pouvoir en tirer bg-accent-soft
+     ou text-accent-deep sans passer par une fonction.
+
+     --deep sert au texte. L'accent plein est un bleu vif, juste ce qu'il faut
+     pour une pastille ou un pictogramme de vingt pixels ; en capitales
+     espacées de onze pixels, répété à chaque section, il tire l'œil et
+     fatigue. La version profonde monte à 10:1 sur le papier, contre 6,4 pour
+     l'accent plein : plus lisible, et beaucoup plus calme.
+
+     --soft et --line font le voile des tuiles et le filet qui les borde. */
+  --color-accent-deep: #252f8a;
   --color-accent-soft: #eef0fd;
   --color-accent-line: #dbdffa;
   --color-success: #12a05c;
@@ -219,16 +228,17 @@
     text-wrap: pretty;
   }
 
-  /* Le surtitre porte la couleur de marque. Il est minuscule, en capitales
-     espacées, et n'apparaît qu'une fois par section : c'est la place qui
-     supporte une couleur sans que la page devienne bavarde. Une surface
-     sombre le reprend avec un text-* de Tailwind. */
+  /* Le surtitre porte la couleur de marque, dans sa version profonde : en
+     capitales espacées, l'accent plein vibrait. Il est minuscule et
+     n'apparaît qu'une fois par section, c'est la place qui supporte une
+     couleur sans que la page devienne bavarde. Une surface sombre le reprend
+     avec un text-* de Tailwind. */
   .eyebrow {
     font-family: var(--font-mono);
     font-size: 0.68rem;
     letter-spacing: 0.15em;
     text-transform: uppercase;
-    color: var(--color-accent);
+    color: var(--color-accent-deep);
     line-height: 1;
   }
 

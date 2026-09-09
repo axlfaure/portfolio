@@ -35,7 +35,10 @@ export function ServiceCard({
           : "transition-colors duration-200 hover:bg-paper",
       )}
     >
-      <span className="grid h-10 w-10 place-items-center rounded-[11px] border border-accent-line bg-accent-soft text-accent transition-colors duration-200 group-hover:border-accent group-hover:bg-accent group-hover:text-white">
+      {/* Au survol la tuile se fonce d'un cran, elle ne s'inverse pas :
+          renverser le fond et le texte fait un clignotement à chaque passage
+          de souris sur une grille de six cartes. */}
+      <span className="grid h-10 w-10 place-items-center rounded-[11px] border border-accent-line bg-accent-soft text-accent transition-colors duration-200 group-hover:bg-accent-line group-hover:text-accent-deep">
         <ServiceIcon name={service.icon} />
       </span>
 

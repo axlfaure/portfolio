@@ -26,6 +26,10 @@ export function NavLinks({ services }: { services: NavService[] }) {
   useEffect(() => {
     if (pathname !== "/") return;
 
+    // Repérage de la section lue, pour les entrées qui pointent vers une
+    // ancre de l'accueil. Aucune n'en pointe aujourd'hui : le code reste en
+    // place parce qu'il ne coûte rien et qu'il reprendra du service dès qu'on
+    // en remettra une, mais il ne fait rien tant qu'il n'y en a pas.
     const sections = navLinks
       .filter((link) => link.href.includes("#"))
       .map((link) => document.querySelector(link.href.replace("/", "")))
@@ -203,7 +207,7 @@ function ServicesMenu({
                       : "translate-y-1 opacity-0",
                   )}
                 >
-                  <span className="mt-px grid h-9 w-9 shrink-0 place-items-center rounded-[10px] border border-accent-line bg-accent-soft text-accent transition-colors duration-200 group-hover/item:border-accent group-hover/item:bg-accent group-hover/item:text-white">
+                  <span className="mt-px grid h-9 w-9 shrink-0 place-items-center rounded-[10px] border border-accent-line bg-accent-soft text-accent transition-colors duration-200 group-hover/item:bg-accent-line group-hover/item:text-accent-deep">
                     <ServiceIcon name={service.icon} />
                   </span>
 

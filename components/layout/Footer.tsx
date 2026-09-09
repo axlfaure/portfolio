@@ -58,7 +58,7 @@ export function Footer() {
               <ul className="mt-4 space-y-0.5">
                 {column.links.map((link) => {
                   const classes =
-                    "inline-block py-1.5 text-[0.9rem] text-muted transition-colors duration-200 hover:text-accent";
+                    "inline-block py-1.5 text-[0.9rem] text-muted transition-colors duration-200 hover:text-accent-deep";
 
                   // Un lien sortant ne passe pas par le routeur : Link
                   // préchargerait une route qui n'existe pas ici, et le
