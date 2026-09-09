@@ -52,7 +52,7 @@ export async function Offers() {
         {/* Quatre lignes partagées : identité, montant, liste, action. */}
         <div
           className={cn(
-            "mt-16 grid gap-6 lg:gap-5",
+            "mt-16 grid gap-6 lg:gap-x-5 lg:gap-y-8",
             "lg:[grid-template-rows:auto_auto_1fr_auto]",
             offers.length >= 3 ? "lg:grid-cols-3" : "md:grid-cols-2",
           )}
@@ -70,7 +70,7 @@ export async function Offers() {
         {section.footnote && (
           <p
             data-reveal
-            className="mx-auto mt-12 max-w-[44rem] text-center text-[0.9rem] leading-relaxed text-muted"
+            className="mx-auto mt-12 max-w-[44rem] text-balance text-center text-[0.9rem] leading-relaxed text-muted"
           >
             {typo(section.footnote)}
           </p>
@@ -90,6 +90,9 @@ function Colonne({
   seule: boolean;
 }) {
   const sombre = offre.highlight;
+  // Identifiant stable entre le serveur et le navigateur, tiré du nom de la
+  // colonne : useId n'existe pas dans un composant serveur.
+  const identifiant = `offre-${offre.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
 
   return (
     <article
@@ -97,10 +100,20 @@ function Colonne({
       style={{ "--reveal-delay": `${rang * 80}ms` } as React.CSSProperties}
       className={cn(
         "relative grid gap-y-8 rounded-cta p-8 md:p-9",
-        !seule && "lg:row-span-4 lg:grid-rows-subgrid lg:gap-y-0",
-        sombre
-          ? "bg-ink text-white shadow-e2 lg:-my-4 lg:py-13"
-          : "border border-line bg-surface",
+        // Pas de gap-y-0 ici : une grille imbriquée qui déclare son propre
+        // espacement remplace celui de la grille parente, et les quatre zones
+        // se retrouvaient collées. Cela ne se voyait que sur la colonne à la
+        // liste la plus longue, les autres ayant du mou : son dernier point
+        // touchait le bouton. La valeur du parent vaut celle d'ici, les zones
+        // sont donc espacées pareil qu'une carte soit empilée ou en colonne.
+        !seule && "lg:row-span-4 lg:grid-rows-subgrid",
+        // Le même gabarit pour les trois. Une version précédente donnait à la
+        // carte sombre un peu plus de hauteur et une marge négative, pour
+        // qu'elle déborde de la rangée : comme les trois cartes partagent les
+        // lignes de la grille, ce supplément de remplissage mangeait la hauteur
+        // allouée et son dernier point passait sous le bouton. Le contraste
+        // suffit à la désigner, il n'a pas besoin d'un débordement.
+        sombre ? "bg-ink text-white shadow-e2" : "border border-line bg-surface",
       )}
     >
       <header>
@@ -134,9 +147,12 @@ function Colonne({
         >
           {offre.name}
         </h3>
+        {/* text-balance répartit les mots sur deux lignes égales plutôt que de
+            laisser un dernier mot seul, ce qui arrivait à « l'année. » et à
+            « case. ». */}
         <p
           className={cn(
-            "mt-1.5 text-[0.9rem] leading-snug",
+            "mt-2 text-balance text-[0.9rem] leading-snug",
             sombre ? "text-white/65" : "text-muted",
           )}
         >
@@ -161,13 +177,25 @@ function Colonne({
           </p>
         )}
 
-        <p
-          className={cn(
-            "whitespace-nowrap text-[clamp(2.1rem,1.6rem+1.4vw,2.6rem)] font-bold leading-none tracking-[-0.04em]",
-            sombre ? "text-white" : "text-ink",
+        <p className="flex items-baseline gap-1.5">
+          <span
+            className={cn(
+              "whitespace-nowrap text-[clamp(2.1rem,1.6rem+1.4vw,2.6rem)] font-bold leading-none tracking-[-0.04em]",
+              sombre ? "text-white" : "text-ink",
+            )}
+          >
+            {offre.price}
+          </span>
+          {offre.priceSuffix && (
+            <span
+              className={cn(
+                "whitespace-nowrap text-[0.95rem] font-medium",
+                sombre ? "text-white/55" : "text-label",
+              )}
+            >
+              {typo(offre.priceSuffix)}
+            </span>
           )}
-        >
-          {offre.price}
         </p>
 
         {offre.priceUnit && (
@@ -188,7 +216,7 @@ function Colonne({
               sombre ? "bg-white/12 text-white" : "bg-accent/10 text-accent",
             )}
           >
-            <FlecheGain />
+            {offre.trendUp && <FlecheGain />}
             {typo(offre.trend)}
           </p>
         )}
@@ -201,8 +229,8 @@ function Colonne({
             sombre ? "border-white/12" : "border-line",
           )}
         >
-          {offre.items.map((item) => (
-            <li key={item} className="flex items-start gap-3">
+          {offre.items.map((item, i) => (
+            <li key={item.label} className="relative flex items-start gap-3">
               <span
                 aria-hidden="true"
                 className={cn(
@@ -228,7 +256,14 @@ function Colonne({
                   sombre ? "text-white/85" : "text-ink-2",
                 )}
               >
-                {typo(item)}
+                {typo(item.label)}
+                {item.note && (
+                  <Precision
+                    texte={item.note}
+                    id={`${identifiant}-${i}`}
+                    sombre={sombre}
+                  />
+                )}
               </span>
             </li>
           ))}
@@ -247,6 +282,69 @@ function Colonne({
         )}
       </div>
     </article>
+  );
+}
+
+/**
+ * Réserve attachée à une ligne.
+ *
+ * Elle se déclenche au survol ET à la prise de focus, ce qui n'est pas un
+ * raffinement : une infobulle qui ne répond qu'à la souris est invisible au
+ * doigt comme au clavier, or c'est précisément là qu'on lit une réserve
+ * d'engagement.
+ *
+ * Le « i » ne mesure que dix-sept pixels, ce qui est trois fois moins que la
+ * cible tactile minimale. Il est donc doublé d'une zone sensible invisible,
+ * posée en absolu pour ne pas déranger la ligne de texte qui l'entoure. Et le
+ * texte est rattaché au libellé, pour qu'un lecteur d'écran l'énonce à la
+ * suite plutôt que de le laisser orphelin.
+ *
+ * L'infobulle est positionnée sur la ligne entière et non sur l'icône : dans
+ * une colonne étroite, ancrée à un « i » posé en fin de ligne, elle sortirait
+ * de la carte.
+ */
+function Precision({
+  texte,
+  id,
+  sombre,
+}: {
+  texte: string;
+  id: string;
+  sombre: boolean;
+}) {
+  return (
+    <span className="group/note">
+      <button
+        type="button"
+        aria-label="Précision"
+        aria-describedby={id}
+        className={cn(
+          "relative ml-1.5 inline-grid h-[1.05rem] w-[1.05rem] translate-y-[0.12em]",
+          "place-items-center rounded-full text-[0.65rem] font-bold",
+          "transition-colors duration-200",
+          "before:absolute before:-inset-3.5 before:content-['']",
+          sombre
+            ? "bg-white/15 text-white/70 hover:bg-white/25 hover:text-white"
+            : "bg-line text-label hover:bg-line-2 hover:text-ink",
+        )}
+      >
+        i
+      </button>
+
+      <span
+        role="tooltip"
+        id={id}
+        className={cn(
+          "pointer-events-none absolute inset-x-0 top-full z-10 mt-2 rounded-[10px] px-3 py-2",
+          "text-[0.8rem] font-normal leading-snug shadow-e2",
+          "opacity-0 transition-opacity duration-200",
+          "group-hover/note:opacity-100 group-focus-within/note:opacity-100",
+          sombre ? "bg-white text-ink" : "bg-ink text-white",
+        )}
+      >
+        {typo(texte)}
+      </span>
+    </span>
   );
 }
 

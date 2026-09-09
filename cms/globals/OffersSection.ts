@@ -100,7 +100,8 @@ export const OffersSection: GlobalConfig = {
               label: "Avant le montant",
               admin: {
                 width: "33%",
-                description: "En petit au-dessus : « à partir de ». Facultatif.",
+                description:
+                  "En petit au-dessus du montant : « à partir de ». À remplir sur les trois, pour la même raison que la pastille.",
               },
             },
             {
@@ -115,12 +116,22 @@ export const OffersSection: GlobalConfig = {
               },
             },
             {
-              name: "priceUnit",
+              name: "priceSuffix",
               type: "text",
-              label: "Unité",
+              label: "Unité collée au montant",
               admin: {
                 width: "33%",
-                description: "En petit sous le montant : « la prestation ».",
+                description: "En petit, sur la même ligne que le montant : « / jour ».",
+              },
+            },
+            {
+              name: "priceUnit",
+              type: "text",
+              label: "Précision sous le montant",
+              admin: {
+                width: "34%",
+                description:
+                  "La ligne suivante : « sur 12 mois d'engagement ». Quatre mots, elle passe sur deux lignes au-delà.",
               },
             },
           ],
@@ -131,11 +142,20 @@ export const OffersSection: GlobalConfig = {
             {
               name: "trend",
               type: "text",
-              label: "Gain",
+              label: "Pastille",
               admin: {
-                width: "100%",
+                width: "70%",
                 description:
-                  "Facultatif. Pastille à flèche montante sous le montant : « 20 % moins cher ».",
+                  "Sous le montant. À remplir sur les TROIS colonnes : un emplacement laissé vide sur l'une décale tout ce qui suit sur les autres. « Sans engagement », « 20 % moins cher ».",
+              },
+            },
+            {
+              name: "trendUp",
+              type: "checkbox",
+              label: "Flèche de progression",
+              admin: {
+                width: "30%",
+                description: "Pour un gain chiffré.",
               },
             },
           ],
@@ -172,6 +192,15 @@ export const OffersSection: GlobalConfig = {
               type: "text",
               required: true,
               label: "Libellé",
+            },
+            {
+              name: "note",
+              type: "text",
+              label: "Précision au survol",
+              admin: {
+                description:
+                  "Facultative. Ajoute un « i » à côté du libellé, qui révèle cette phrase au survol comme au clavier. À réserver aux engagements qui appellent une réserve : une précision qu'on cache est une précision que personne ne lira.",
+              },
             },
           ],
         },

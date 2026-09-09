@@ -654,12 +654,15 @@ export type Offer = {
   tagline: string;
   pricePrefix: string;
   price: string;
+  /** Collé au montant, sur la même ligne : « / jour ». */
+  priceSuffix: string;
   priceUnit: string;
-  /** Le gain, en pastille à flèche montante. */
+  /** La pastille sous le montant. */
   trend: string;
+  trendUp: boolean;
   ctaLabel: string;
   highlight: boolean;
-  items: string[];
+  items: { label: string; note: string }[];
 };
 
 export type OffersSectionContent = SectionHeader & {
@@ -686,11 +689,16 @@ export const getOffersSection = cache(
         tagline: offre.tagline,
         pricePrefix: offre.pricePrefix ?? "",
         price: offre.price,
+        priceSuffix: offre.priceSuffix ?? "",
         priceUnit: offre.priceUnit ?? "",
         trend: offre.trend ?? "",
+        trendUp: Boolean(offre.trendUp),
         ctaLabel: offre.ctaLabel ?? "",
         highlight: Boolean(offre.highlight),
-        items: (offre.items ?? []).map((ligne) => ligne.label),
+        items: (offre.items ?? []).map((ligne) => ({
+          label: ligne.label,
+          note: ligne.note ?? "",
+        })),
       })),
       footnote: doc.footnote ?? "",
     };
