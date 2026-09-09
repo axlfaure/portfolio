@@ -86,9 +86,15 @@ export default function OpengraphImage() {
         {/* Même partition que les titres du site : le sans tient l'énoncé, la
             serif italique porte le mot qui compte. L'alignement se fait sur la
             ligne de pied et non sur le bas des boîtes, sinon les jambages de
-            l'italique remontent tout le second membre. */}
+            l'italique remontent tout le second membre.
+
+            Les deux corps ne sont pas égaux parce que les deux polices n'ont
+            pas la même hauteur d'œil : 0,544 em pour Jakarta, 0,510 pour
+            Instrument Serif. À corps égal, la serif paraîtrait plus petite.
+            45 sur 42, c'est le rapport 0,544 / 0,510 : les minuscules des deux
+            membres montent alors exactement à la même hauteur. */}
         <div
-          style={{ display: "flex", alignItems: "baseline", gap: 18, marginTop: 14 }}
+          style={{ display: "flex", alignItems: "baseline", gap: 16, marginTop: 14 }}
         >
           <div style={{ display: "flex", fontSize: 42, color: "#2E3035" }}>
             Studio créatif
@@ -98,7 +104,7 @@ export default function OpengraphImage() {
               display: "flex",
               fontFamily: "Instrument",
               fontStyle: "italic",
-              fontSize: 62,
+              fontSize: 45,
               color: ACCENT,
               lineHeight: 1,
             }}
