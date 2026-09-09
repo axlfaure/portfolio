@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SocialLinks } from "@/components/ui/SocialLinks";
 import { site } from "@/lib/site";
 
 /**
@@ -30,7 +31,6 @@ const columns: { title: string; links: Lien[] }[] = [
     links: [
       { href: "/#contact", label: "Prendre rendez-vous" },
       { href: `mailto:${site.email}`, label: site.email },
-      { href: site.instagram, label: "Instagram", externe: true },
       { href: "/mentions-legales", label: "Mentions légales" },
     ],
   },
@@ -40,8 +40,12 @@ export function Footer() {
   return (
     <footer className="border-t border-line">
       <div className="container-site py-[clamp(3rem,6vw,4.5rem)]">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.2fr)_repeat(3,minmax(0,1fr))] lg:gap-12">
-          <div>
+        <div
+          data-reveal
+          data-reveal-stagger
+          className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.2fr)_repeat(3,minmax(0,1fr))] lg:gap-12"
+        >
+          <div data-reveal-item>
             <p className="text-[1.05rem] font-bold tracking-[-0.02em] text-ink">
               {site.name}
             </p>
@@ -50,10 +54,12 @@ export function Footer() {
               sites web et outils de production pour la recherche et
               l&apos;industrie.
             </p>
+
+            <SocialLinks />
           </div>
 
           {columns.map((column) => (
-            <nav key={column.title} aria-label={column.title}>
+            <nav key={column.title} data-reveal-item aria-label={column.title}>
               <p className="eyebrow">{column.title}</p>
               {/* Pas d'espacement entre les éléments : c'est le remplissage
                   des liens qui l'assure, et il doit rester à l'intérieur de la

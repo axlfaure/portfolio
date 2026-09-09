@@ -448,6 +448,12 @@
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
+    /* Les retards aussi, et pas seulement les durées. Une cascade annule son
+       mouvement mais garde son attente : le contenu apparaîtrait d'un coup,
+       une demi-seconde après, ce qui est précisément le genre de surgissement
+       que ce réglage sert à éviter. */
+    animation-delay: 0.001ms !important;
+    transition-delay: 0.001ms !important;
     scroll-behavior: auto !important;
   }
 }
@@ -719,18 +725,99 @@ html.lenis body {
   animation-delay: calc(var(--reveal-delay, 0ms) + 620ms);
 }
 
-/* ---- Révélations au scroll ---- */
-[data-js] [data-reveal] {
+/* ---- Révélations au scroll ----
+
+   Deux gestes, et deux seulement. Un bloc monte de seize pixels en se
+   révélant ; une suite de blocs fait le même geste, décalé de soixante-dix
+   millisecondes d'un élément au suivant.
+
+   Le décalage est un mécanisme du système et non un réglage recopié. Avant, il
+   fallait poser une variable à la main sur chaque enfant, et trois sections
+   seulement le faisaient : partout ailleurs, six cartes apparaissaient d'un
+   seul coup, ce qui donne un à-coup au lieu d'un mouvement.
+
+   La durée descend de 820 à 700 ms. Isolée on ne la sentait pas, mais mise en
+   cascade sur six éléments elle traînait : le dernier finissait presque une
+   seconde et demie après le premier. */
+[data-js] [data-reveal],
+[data-js] [data-reveal-item] {
   opacity: 0;
   transform: translate3d(0, 16px, 0);
   transition:
-    opacity 820ms var(--ease-expo),
-    transform 820ms var(--ease-expo);
+    opacity 700ms var(--ease-expo),
+    transform 700ms var(--ease-expo);
   transition-delay: var(--reveal-delay, 0ms);
 }
 
-[data-js] [data-reveal].is-in {
+[data-js] [data-reveal].is-in,
+[data-js] [data-reveal-stagger].is-in [data-reveal-item] {
   opacity: 1;
+  transform: none;
+}
+
+/* Un conteneur qui cadence ses enfants ne s'anime pas lui-même : les deux
+   mouvements se superposeraient et le groupe partirait de trente-deux pixels
+   plus bas que ses éléments. Il n'est plus qu'un déclencheur. */
+[data-js] [data-reveal][data-reveal-stagger] {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+
+[data-js] [data-reveal-stagger].is-in > [data-reveal-item]:nth-child(1) {
+  transition-delay: 0ms;
+}
+
+[data-js] [data-reveal-stagger].is-in > [data-reveal-item]:nth-child(2) {
+  transition-delay: 70ms;
+}
+
+[data-js] [data-reveal-stagger].is-in > [data-reveal-item]:nth-child(3) {
+  transition-delay: 140ms;
+}
+
+[data-js] [data-reveal-stagger].is-in > [data-reveal-item]:nth-child(4) {
+  transition-delay: 210ms;
+}
+
+[data-js] [data-reveal-stagger].is-in > [data-reveal-item]:nth-child(5) {
+  transition-delay: 280ms;
+}
+
+[data-js] [data-reveal-stagger].is-in > [data-reveal-item]:nth-child(6) {
+  transition-delay: 350ms;
+}
+
+[data-js] [data-reveal-stagger].is-in > [data-reveal-item]:nth-child(7) {
+  transition-delay: 420ms;
+}
+
+[data-js] [data-reveal-stagger].is-in > [data-reveal-item]:nth-child(8) {
+  transition-delay: 490ms;
+}
+
+[data-js] [data-reveal-stagger].is-in > [data-reveal-item]:nth-child(9) {
+  transition-delay: 560ms;
+}
+
+/* Au-delà du neuvième, tout le monde arrive ensemble. Une grille de quatorze
+   projets étalée jusqu'au bout mettrait une seconde entière à se remplir, et
+   la cascade cesserait d'être une élégance pour devenir une attente. */
+[data-js] [data-reveal-stagger].is-in > [data-reveal-item]:nth-child(n + 10) {
+  transition-delay: 630ms;
+}
+
+/* Variante pour les visuels : la même montée, plus une prise d'échelle
+   imperceptible. Sur une image, un déplacement seul se lit comme un glissement ;
+   la mise à l'échelle lui donne l'impression de se poser. */
+[data-js] [data-reveal-item][data-reveal-zoom],
+[data-js] [data-reveal][data-reveal-zoom] {
+  transform: translate3d(0, 14px, 0) scale(0.985);
+  transform-origin: center;
+}
+
+[data-js] [data-reveal][data-reveal-zoom].is-in,
+[data-js] [data-reveal-stagger].is-in [data-reveal-item][data-reveal-zoom] {
   transform: none;
 }
 

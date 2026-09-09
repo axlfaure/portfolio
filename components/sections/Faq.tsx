@@ -25,11 +25,13 @@ export async function Faq() {
 
         <div
           data-reveal
+          data-reveal-stagger
           className="overflow-hidden rounded-card border border-line bg-surface"
         >
           {faq.map((item) => (
             <details
               key={item.slug}
+              data-reveal-item
               name="faq"
               className="group border-line [&:not(:first-child)]:border-t"
             >

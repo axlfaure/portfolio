@@ -26,6 +26,7 @@ export const site = {
   url: "https://portfolio.axelfaure.fr",
   email: "axelfaure64@gmail.com",
   instagram: "https://www.instagram.com/axelfauredesign",
+  linkedin: "https://www.linkedin.com/in/axel-faure/",
   calendlyUrl: "https://calendly.com/axelfaure64/30min",
   /** Portrait détouré, fond bleu conservé. */
   portrait: "/axel.png",

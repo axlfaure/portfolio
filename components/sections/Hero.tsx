@@ -234,7 +234,13 @@ function SocialProof({
   );
 }
 
-/** Quatre chiffres posés directement sur le fond, sans carte ni filet. */
+/**
+ * Quatre chiffres posés directement sur le fond, sans carte ni filet.
+ *
+ * Pas de cascade au scroll ici : ils arrivent déjà l'un après l'autre par la
+ * séquence d'entrée du hero, à soixante-dix millisecondes d'écart. Un second
+ * mécanisme par-dessus ne ferait rien de plus.
+ */
 function Stats({ chiffres }: { chiffres?: HeroSection["stats"] }) {
   return (
     <dl className="mt-[clamp(3rem,7vw,5rem)] grid w-full max-w-[62rem] grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4">

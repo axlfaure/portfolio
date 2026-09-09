@@ -163,10 +163,11 @@ function Blocs({ offres }: { offres: Offer[] }) {
         <section key={groupe.titre}>
           <h2 className="eyebrow">{groupe.titre}</h2>
 
-          <div className="mt-5 space-y-4">
+          <div data-reveal data-reveal-stagger className="mt-5 space-y-4">
             {groupe.lignes.map((ligne) => (
               <article
                 key={ligne.label}
+                data-reveal-item
                 className="relative rounded-card border border-line bg-surface p-5"
               >
                 <h3 className="text-[0.95rem] font-semibold leading-snug text-ink">

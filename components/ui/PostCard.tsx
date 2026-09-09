@@ -26,6 +26,7 @@ export function PostCard({
   return (
     <article
       data-reveal
+      data-reveal-zoom
       style={
         { "--reveal-delay": `${(index % 3) * 70}ms` } as React.CSSProperties
       }
