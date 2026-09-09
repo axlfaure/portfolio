@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { MONOGRAMME_OG, POLICES_OG, TAILLE_OG } from "@/lib/og";
+import { MONOGRAMME_OG, POLICES_OG, TAILLE_OG, px } from "@/lib/og";
 import { site } from "@/lib/site";
 
 /**
@@ -13,8 +13,14 @@ import { site } from "@/lib/site";
  * ou un article, celle-ci annonce quelqu'un. Elle porte donc le nom et la
  * baseline, là où les autres portent un titre et un visuel.
  *
- * Elle se remplace par un `opengraph-image.jpg` de 1200 × 630 posé dans ce
- * dossier, à condition de supprimer ce fichier : les deux se cumuleraient.
+ * Toutes les mesures sont écrites dans le repère de mille deux cents par six
+ * cent trente et passées par `px`, qui les porte à la résolution de rendu.
+ * C'est ce qui permet de dessiner en pensant à la dimension attendue tout en
+ * livrant deux fois plus de détail aux réseaux, qui réduisent et recompressent
+ * avant d'afficher.
+ *
+ * Elle se remplace par un `opengraph-image.jpg` posé dans ce dossier, à
+ * condition de supprimer ce fichier : les deux se cumuleraient.
  */
 export const alt = `${site.name}, ${site.baseline}`;
 export const size = TAILLE_OG;
@@ -38,39 +44,46 @@ export default function OpengraphImage() {
         justifyContent: "space-between",
         background: PAPIER,
         color: INK,
-        padding: "70px 84px",
+        padding: `${px(70)}px ${px(84)}px`,
         fontFamily: "Jakarta",
         position: "relative",
       }}
     >
       {/* Le monogramme en grand, débordant du cadre. Il occupe la moitié
           droite que la version précédente laissait vide, sans jamais devenir
-          une image : à 5 % il fait une texture. Il est décalé assez à droite
-          pour ne pas passer sous la baseline, qui perdait en netteté. */}
+          une image : à 5 % il fait une texture. */}
       {MONOGRAMME_OG && (
         <img
           src={MONOGRAMME_OG}
           alt=""
-          width={900}
-          height={674}
-          style={{ position: "absolute", right: -285, top: -25, opacity: 0.055 }}
+          width={px(900)}
+          height={px(674)}
+          style={{ position: "absolute", right: px(-285), top: px(-25), opacity: 0.055 }}
         />
       )}
 
-      <div style={{ display: "flex", alignItems: "center", gap: 26 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: px(26) }}>
         {MONOGRAMME_OG && (
           <>
-            <img src={MONOGRAMME_OG} alt="" width={78} height={58} />
+            <img src={MONOGRAMME_OG} alt="" width={px(78)} height={px(58)} />
             <div
-              style={{ display: "flex", width: 1, height: 36, background: "#D5D6D9" }}
+              style={{
+                display: "flex",
+                width: px(1),
+                height: px(36),
+                background: "#D5D6D9",
+              }}
             />
           </>
         )}
+        {/* Vingt-quatre et non vingt : réduite à la largeur d'un encart
+            LinkedIn, cette ligne tombait sous douze pixels, taille à laquelle
+            une capitale espacée ne survit pas à une recompression. */}
         <div
           style={{
             display: "flex",
-            fontSize: 20,
-            letterSpacing: 4,
+            fontSize: px(24),
+            letterSpacing: px(4),
             textTransform: "uppercase",
             color: GRIS,
           }}
@@ -80,7 +93,9 @@ export default function OpengraphImage() {
       </div>
 
       <div style={{ display: "flex", flexDirection: "column" }}>
-        <div style={{ display: "flex", fontSize: 92, letterSpacing: -3.5 }}>
+        <div
+          style={{ display: "flex", fontSize: px(92), letterSpacing: px(-3.5) }}
+        >
           {site.name}
         </div>
         {/* Même partition que les titres du site : le sans tient l'énoncé, la
@@ -91,12 +106,16 @@ export default function OpengraphImage() {
             Les deux corps ne sont pas égaux parce que les deux polices n'ont
             pas la même hauteur d'œil : 0,544 em pour Jakarta, 0,510 pour
             Instrument Serif. À corps égal, la serif paraîtrait plus petite.
-            45 sur 42, c'est le rapport 0,544 / 0,510 : les minuscules des deux
-            membres montent alors exactement à la même hauteur. */}
+            45 sur 42, c'est le rapport 0,544 / 0,510. */}
         <div
-          style={{ display: "flex", alignItems: "baseline", gap: 16, marginTop: 14 }}
+          style={{
+            display: "flex",
+            alignItems: "baseline",
+            gap: px(16),
+            marginTop: px(14),
+          }}
         >
-          <div style={{ display: "flex", fontSize: 42, color: "#2E3035" }}>
+          <div style={{ display: "flex", fontSize: px(42), color: "#2E3035" }}>
             Studio créatif
           </div>
           <div
@@ -104,7 +123,7 @@ export default function OpengraphImage() {
               display: "flex",
               fontFamily: "Instrument",
               fontStyle: "italic",
-              fontSize: 45,
+              fontSize: px(45),
               color: ACCENT,
               lineHeight: 1,
             }}
@@ -114,9 +133,13 @@ export default function OpengraphImage() {
         </div>
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 22 }}>
-        <div style={{ display: "flex", width: 88, height: 3, background: INK }} />
-        <div style={{ display: "flex", fontSize: 23, color: GRIS }}>
+      <div style={{ display: "flex", alignItems: "center", gap: px(22) }}>
+        <div
+          style={{ display: "flex", width: px(88), height: px(3), background: INK }}
+        />
+        {/* Vingt-sept et non vingt-trois, pour la même raison que le surtitre :
+            c'est la ligne qui partait la première en bouillie. */}
+        <div style={{ display: "flex", fontSize: px(27), color: GRIS }}>
           Branding · Salon &amp; print · Web · 3D &amp; motion
         </div>
       </div>

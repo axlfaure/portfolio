@@ -22,7 +22,29 @@ import { site } from "./site";
  * moitié typographique, qui se suffit à elle-même.
  */
 
-export const TAILLE_OG = { width: 1200, height: 630 };
+/**
+ * Taille des vignettes de partage.
+ *
+ * Mille deux cents par six cent trente est la dimension attendue, mais on rend
+ * au double. Les réseaux ne servent jamais le fichier tel quel : ils le
+ * réduisent à la taille de leur encart, puis le recompressent, et une image
+ * calée pile sur la dimension nominale n'a alors plus aucune réserve de
+ * détail. Le résultat était net au pixel dans le fichier d'origine et flou
+ * dans l'aperçu LinkedIn, vérification faite des deux côtés.
+ *
+ * Au double, leur réduction part d'une matière suffisante et le texte tient.
+ * Le poids passe d'une cinquantaine de kilooctets à environ deux cents, très
+ * loin des cinq mégaoctets qu'ils acceptent.
+ */
+export const ECHELLE_OG = 2;
+
+export const TAILLE_OG = {
+  width: 1200 * ECHELLE_OG,
+  height: 630 * ECHELLE_OG,
+};
+
+/** Convertit une mesure dessinée en 1200 × 630 vers la taille de rendu. */
+export const px = (valeur: number) => valeur * ECHELLE_OG;
 
 /** Lecture au chargement du module, donc au build, jamais à la requête. */
 function lireOuNull(relatif: string) {
@@ -96,9 +118,12 @@ const TYPES: Record<string, string> = {
  * Lit un visuel du CMS et le rend en URL de données.
  *
  * Payload range à côté de chaque fichier ses versions redimensionnées, sous la
- * forme `nom-900x506.jpg`. On préfère celle de 900 px : la vignette n'en
- * affiche que 540, et incorporer l'original de quatre mille pixels en base64
- * ferait une page de plusieurs mégaoctets pour rien.
+ * forme `nom-900x506.jpg`. On garde celle de 900 px, bien que la vignette lui
+ * réserve mille pixels depuis le passage au rendu double. Une variante de mille
+ * six cents existe, mais la carte pèse déjà plus d'un mégaoctet : la prendre la
+ * doublerait pour rattraper un agrandissement de 1,11, que la réduction du
+ * réseau destinataire effacera de toute façon. Incorporer l'original de quatre
+ * mille pixels, lui, ferait plusieurs mégaoctets pour rien.
  */
 export async function visuelEnBase64(src: string | null | undefined) {
   if (!src) return null;
@@ -168,26 +193,31 @@ export function CarteOg({
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          padding: "68px 64px",
-          width: visuel ? 700 : 1200,
+          padding: `${px(68)}px ${px(64)}px`,
+          width: visuel ? px(700) : px(1200),
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 22 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: px(22) }}>
           {MONOGRAMME_OG && (
             <>
               {/* eslint-disable-next-line @next/next/no-img-element --
                   Satori compose côté serveur, next/image n'y a pas cours. */}
-              <img src={MONOGRAMME_OG} alt="" width={62} height={46} />
+              <img src={MONOGRAMME_OG} alt="" width={px(62)} height={px(46)} />
               <div
-                style={{ display: "flex", width: 1, height: 28, background: "#D5D6D9" }}
+                style={{
+                  display: "flex",
+                  width: px(1),
+                  height: px(28),
+                  background: "#D5D6D9",
+                }}
               />
             </>
           )}
           <div
             style={{
               display: "flex",
-              fontSize: 21,
-              letterSpacing: 4,
+              fontSize: px(24),
+              letterSpacing: px(4),
               textTransform: "uppercase",
               color: "#62656B",
             }}
@@ -199,35 +229,37 @@ export function CarteOg({
         <div
           style={{
             display: "flex",
-            fontSize: titre.length > 64 ? 46 : 58,
+            fontSize: titre.length > 64 ? px(46) : px(58),
             fontWeight: 700,
-            letterSpacing: -2,
+            letterSpacing: px(-2),
             lineHeight: 1.12,
-            maxWidth: visuel ? 560 : 900,
+            maxWidth: visuel ? px(560) : px(900),
           }}
         >
           {titre}
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
-          <div style={{ display: "flex", width: 74, height: 4, background: "#2F42D8" }} />
-          <div style={{ display: "flex", fontSize: 23, color: "#62656B" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: px(18) }}>
+          <div
+            style={{ display: "flex", width: px(74), height: px(4), background: "#2F42D8" }}
+          />
+          <div style={{ display: "flex", fontSize: px(27), color: "#62656B" }}>
             {pied ?? `${site.name} · ${site.city}`}
           </div>
         </div>
       </div>
 
       {visuel && (
-        <div style={{ display: "flex", width: 500, height: "100%" }}>
+        <div style={{ display: "flex", width: px(500), height: "100%" }}>
           {/* eslint-disable-next-line @next/next/no-img-element --
               ImageResponse ne connaît que <img> : il compose l'image sur le
               serveur avec Satori, où next/image n'a pas cours. */}
           <img
             src={visuel}
             alt=""
-            width={500}
-            height={630}
-            style={{ width: 500, height: 630, objectFit: "cover" }}
+            width={px(500)}
+            height={px(630)}
+            style={{ width: px(500), height: px(630), objectFit: "cover" }}
           />
         </div>
       )}
