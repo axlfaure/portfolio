@@ -648,48 +648,68 @@ export const getServicesSection = cache(async (): Promise<SectionHeader | null> 
 
 export type Offer = {
   name: string;
-  kicker: string;
   badge: string;
+  /** L'unité qu'on achète : « 1 projet », « 12 mois », « Sur mesure ». */
+  anchor: string;
+  anchorNote: string;
   pitch: string;
-  /** Ce qu'on achète, en quatre mots. Affiché en pastille. */
-  terms: string;
-  /** À qui l'offre s'adresse. La ligne qui permet de se reconnaître. */
-  forWho: string;
-  highlight: boolean;
-  items: { lead: string; text: string }[];
   ctaLabel: string;
+  highlight: boolean;
+};
+
+/** Une ligne du comparatif, avec la liste de ce qu'elle vaut par colonne. */
+export type OfferFeature = {
+  label: string;
+  /** Un booléen par offre, dans l'ordre des colonnes. */
+  included: boolean[];
 };
 
 export type OffersSectionContent = SectionHeader & {
   lead: string;
   offers: Offer[];
+  features: OfferFeature[];
+  footnote: string;
 };
 
 export const getOffersSection = cache(
   async (): Promise<OffersSectionContent | null> => {
     const doc = await lireGlobal<OffersSectionDoc>("offers-section");
     const tete = enTete(doc);
-    // Un en-tête sans offre ne vaut pas une section : mieux vaut qu'elle
+    // Un en-tête sans colonne ne vaut pas une section : mieux vaut qu'elle
     // n'apparaisse pas du tout que de laisser un titre suivi de rien.
     if (!doc || !tete || !doc.offers?.length) return null;
+
+    const offers = doc.offers.map((offre) => ({
+      name: offre.name,
+      badge: offre.badge ?? "",
+      anchor: offre.anchor,
+      anchorNote: offre.anchorNote ?? "",
+      pitch: offre.pitch,
+      ctaLabel: offre.ctaLabel ?? "",
+      highlight: Boolean(offre.highlight),
+    }));
+
+    /*
+     * Les trois cases du formulaire redeviennent ici un tableau indexé comme
+     * les colonnes. C'est le seul endroit où la correspondance « 1re case =
+     * 1re offre » est écrite : la vue n'a plus qu'à lire par position, et une
+     * quatrième colonne ne demanderait qu'une case de plus.
+     */
+    const features = (doc.features ?? []).map((ligne) => ({
+      label: ligne.label,
+      included: [
+        Boolean(ligne.in1),
+        Boolean(ligne.in2),
+        Boolean(ligne.in3),
+      ].slice(0, offers.length),
+    }));
 
     return {
       ...tete,
       lead: doc.lead ?? "",
-      offers: doc.offers.map((offre) => ({
-        name: offre.name,
-        kicker: offre.kicker,
-        badge: offre.badge ?? "",
-        pitch: offre.pitch,
-        terms: offre.terms ?? "",
-        forWho: offre.forWho ?? "",
-        highlight: Boolean(offre.highlight),
-        items: (offre.items ?? []).map((ligne) => ({
-          lead: ligne.lead,
-          text: ligne.text ?? "",
-        })),
-        ctaLabel: offre.ctaLabel ?? "",
-      })),
+      offers,
+      features,
+      footnote: doc.footnote ?? "",
     };
   },
 );

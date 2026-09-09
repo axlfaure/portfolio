@@ -2,34 +2,39 @@ import { AccentTitle } from "@/components/ui/AccentTitle";
 import { CtaButton } from "@/components/ui/CtaButton";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { cn } from "@/lib/cn";
-import { getOffersSection, type Offer } from "@/lib/content";
+import { getOffersSection, type Offer, type OfferFeature } from "@/lib/content";
 import { typo } from "@/lib/typo";
 
 /**
- * Section « Deux façons de travailler ensemble ».
+ * Section « Trois façons de travailler ensemble ».
  *
- * Deux cartes lues côte à côte, ce qui impose une contrainte que la première
- * version ignorait : quand deux cartes se comparent, le regard va de gauche à
- * droite par bandes horizontales, pas de haut en bas colonne après colonne. Si
- * la promesse de gauche fait trois lignes et celle de droite sept, tout ce qui
- * suit est décalé et la comparaison devient impossible à faire de tête.
+ * C'est un comparatif, et la forme découle entièrement de là. Devant plusieurs
+ * offres, personne ne lit trois argumentaires : on balaie en travers, ligne
+ * par ligne, pour voir ce qui change d'une colonne à l'autre. Une version
+ * précédente donnait à chaque offre sa propre prose, ce qui rendait la lecture
+ * en travers impossible et la section deux fois trop longue.
  *
- * D'où la grille imbriquée. Chaque carte occupe cinq lignes de la grille
- * parente et redéclare ces mêmes lignes pour son propre contenu : identité,
- * promesse, « pour qui », liste, action. Les cinq zones s'alignent donc entre
- * les deux cartes quelle que soit la longueur des textes, et les deux boutons
- * finissent à la même hauteur sans qu'on ait à borner quoi que ce soit.
+ * Trois décisions en découlent.
  *
- * Sous `lg`, les cartes s'empilent et la grille imbriquée n'a plus d'objet :
- * il n'y a plus rien à comparer sur une même ligne.
+ * Les critères sont les mêmes partout, et seule la marque change. Un critère
+ * absent se raye plutôt que de disparaître : ce qu'une offre ne comprend pas
+ * en dit autant que ce qu'elle comprend, et une ligne manquante décalerait
+ * tout le reste de la colonne.
  *
- * L'argument central, lui, est monté dans l'accroche de la section. Il vaut
- * pour les deux offres, et le répéter dans chaque carte les allongeait sans
- * rien apprendre.
+ * Le repère chiffré remplace le prix. Une colonne de comparatif a besoin d'un
+ * point d'ancrage en grands caractères, sinon le regard n'a nulle part où se
+ * poser ; « 12 mois » dit le rythme de la relation, ce qui est plus utile
+ * qu'un montant et n'engage pas un tarif sur une page statique.
+ *
+ * Les lignes de toutes les colonnes s'alignent par grille imbriquée. Sans
+ * cela, un titre qui passe sur deux lignes dans une colonne décale ses
+ * critères d'un cran, et la comparaison en travers est perdue.
  */
 export async function Offers() {
   const section = await getOffersSection();
   if (!section) return null;
+
+  const { offers, features } = section;
 
   return (
     <section id="offres" className="section scroll-mt-24">
@@ -46,109 +51,170 @@ export async function Offers() {
           lead={section.lead || undefined}
         />
 
-        <div className="mt-14 grid gap-5 lg:grid-cols-2 lg:gap-x-6 lg:gap-y-8 lg:[grid-template-rows:auto_auto_auto_1fr_auto]">
-          {section.offers.map((offre, i) => (
-            <Carte key={offre.name} offre={offre} rang={i} />
+        {/* Cinq lignes partagées : identité, repère, adresse, action, critères.
+            Chaque colonne les redéclare pour son propre contenu. */}
+        {/* Pas d'étape à deux colonnes quand il y en a trois : la troisième
+            se retrouverait seule sur une deuxième ligne, à moitié large, et
+            le comparatif se lirait en deux fois. On passe donc directement de
+            l'empilement aux trois colonnes. */}
+        <div
+          className={cn(
+            "mt-14 grid gap-4 lg:gap-x-5 lg:gap-y-7",
+            "lg:[grid-template-rows:auto_auto_auto_auto_1fr]",
+            offers.length >= 3 ? "lg:grid-cols-3" : "md:grid-cols-2",
+          )}
+        >
+          {offers.map((offre, i) => (
+            <Colonne
+              key={offre.name}
+              offre={offre}
+              rang={i}
+              features={features}
+              seule={offers.length === 1}
+            />
           ))}
         </div>
+
+        {section.footnote && (
+          <p
+            data-reveal
+            className="mx-auto mt-10 max-w-[46rem] text-center text-[0.95rem] leading-relaxed text-muted"
+          >
+            {typo(section.footnote)}
+          </p>
+        )}
       </div>
     </section>
   );
 }
 
-function Carte({ offre, rang }: { offre: Offer; rang: number }) {
+function Colonne({
+  offre,
+  rang,
+  features,
+  seule,
+}: {
+  offre: Offer;
+  rang: number;
+  features: OfferFeature[];
+  seule: boolean;
+}) {
   const enAvant = offre.highlight;
 
   return (
     <article
       data-reveal
-      style={{ "--reveal-delay": `${rang * 90}ms` } as React.CSSProperties}
+      style={{ "--reveal-delay": `${rang * 80}ms` } as React.CSSProperties}
       className={cn(
-        "relative grid gap-y-8 overflow-hidden rounded-card p-7 md:p-9",
-        "lg:row-span-5 lg:grid-rows-subgrid",
+        "relative grid gap-y-7 overflow-hidden rounded-card p-6 md:p-7",
+        !seule && "lg:row-span-5 lg:grid-rows-subgrid lg:gap-y-0",
         enAvant
-          ? "border border-ink/12 bg-surface shadow-e1"
+          ? "border border-ink/12 bg-surface shadow-e2"
           : "border border-line bg-paper",
       )}
     >
-      {/* Le filet d'accent fait le travail d'une pastille « recommandé », sans
-          le mot, qui sonnerait comme une réclame sur une page qui n'en fait
-          nulle part ailleurs. */}
       {enAvant && (
         <span aria-hidden="true" className="absolute inset-x-0 top-0 h-[3px] bg-accent" />
       )}
 
-      <header>
-        <div className="flex items-center justify-between gap-3">
-          <p className="eyebrow">{offre.kicker}</p>
-          {offre.badge && (
-            <span className="shrink-0 rounded-full border border-line-2 px-3 py-1 text-[0.7rem] font-medium text-muted">
-              {offre.badge}
-            </span>
-          )}
-        </div>
-        <h3 className="mt-3.5 text-[clamp(1.75rem,1.3rem+1.2vw,2.15rem)] font-bold tracking-[-0.03em] text-ink">
+      {/* 1. Identité */}
+      <header className="flex items-center justify-between gap-3">
+        <h3 className="text-[1.35rem] font-bold tracking-[-0.03em] text-ink">
           {offre.name}
         </h3>
+        {offre.badge && (
+          <span className="shrink-0 rounded-full bg-accent px-3 py-1 text-[0.7rem] font-semibold text-white">
+            {offre.badge}
+          </span>
+        )}
       </header>
 
+      {/* 2. Le repère, en grands caractères. C'est lui qui donne à la colonne
+             son point d'ancrage, à la place du prix. */}
       <div>
-        <p className="text-[1rem] leading-relaxed text-ink-2">{typo(offre.pitch)}</p>
-
-        {offre.terms && (
-          <p className="mt-5 inline-flex items-center gap-2.5 rounded-full border border-line-2 px-4 py-2 text-[0.8rem] font-semibold text-ink">
-            <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-accent" />
-            {typo(offre.terms)}
-          </p>
+        <p className="text-[clamp(2.1rem,1.6rem+1.4vw,2.75rem)] font-bold leading-none tracking-[-0.04em] text-ink">
+          {offre.anchor}
+        </p>
+        {offre.anchorNote && (
+          <p className="mt-2.5 text-[0.85rem] text-muted">{typo(offre.anchorNote)}</p>
         )}
       </div>
 
-      {/* L'encadré s'inverse d'une carte à l'autre : sur fond papier il lui
-          faut le blanc, sur fond blanc le papier. Sans quoi il disparaît sur
-          l'une des deux. */}
-      {offre.forWho ? (
-        <div
-          className={cn(
-            "rounded-[14px] border border-line px-5 py-4",
-            enAvant ? "bg-paper" : "bg-surface",
-          )}
-        >
-          <p className="eyebrow">Pour qui</p>
-          <p className="mt-2 text-[0.9rem] leading-relaxed text-muted">
-            {typo(offre.forWho)}
-          </p>
-        </div>
-      ) : (
-        <div aria-hidden="true" />
-      )}
+      {/* 3. À qui elle s'adresse */}
+      <p className="text-[0.92rem] leading-relaxed text-ink-2">{typo(offre.pitch)}</p>
 
-      {offre.items.length > 0 ? (
-        <ul className="space-y-3.5">
-          {offre.items.map((ligne) => (
-            <li key={ligne.lead} className="flex gap-3">
-              <span
-                aria-hidden="true"
-                className="mt-[0.5em] h-1.5 w-1.5 shrink-0 rounded-full bg-accent"
-              />
-              <span className="text-[0.92rem] leading-relaxed text-muted">
-                <strong className="font-semibold text-ink">{typo(ligne.lead)}</strong>
-                {ligne.text && <> {typo(ligne.text)}</>}
-              </span>
-            </li>
-          ))}
+      {/* 4. L'action. Les trois colonnes ont un bouton, parce que les trois
+             offres sont des choix valables : la hiérarchie se joue entre plein
+             et contour, pas entre un bouton et un lien qui ferait passer deux
+             options légitimes pour des lots de consolation. */}
+      <div>
+        {offre.ctaLabel && (
+          <CtaButton
+            variant={enAvant ? "solid" : "outline"}
+            label={offre.ctaLabel}
+            className="w-full justify-center"
+          />
+        )}
+      </div>
+
+      {/* 5. Les critères */}
+      {features.length > 0 ? (
+        <ul className="space-y-3 border-t border-line pt-6">
+          {features.map((critere) => {
+            const compris = critere.included[rang] ?? false;
+            return (
+              <li key={critere.label} className="flex items-start gap-2.5">
+                <Marque compris={compris} />
+                {/* Pas de rature sur les lignes absentes : sur une colonne qui
+                    en compte cinq, elle transforme la moitié du tableau en
+                    barbelés. Le signe et la teinte disent déjà l'exclusion, et
+                    la forme de la croix la dit sans dépendre de la couleur. */}
+                <span
+                  className={cn(
+                    "text-[0.875rem] leading-snug",
+                    compris ? "text-ink-2" : "text-faint",
+                  )}
+                >
+                  {typo(critere.label)}
+                </span>
+              </li>
+            );
+          })}
         </ul>
       ) : (
         <div aria-hidden="true" />
       )}
-
-      {/* Une seule action principale par section : la carte mise en avant
-          garde la pilule, l'autre passe en lien. Deux boutons identiques
-          côte à côte se neutralisent, et le lecteur repart sans avoir choisi. */}
-      <div>
-        {offre.ctaLabel && (
-          <CtaButton variant={enAvant ? "compact" : "link"} label={offre.ctaLabel} />
-        )}
-      </div>
     </article>
+  );
+}
+
+/**
+ * Marque de présence.
+ *
+ * Deux formes distinctes et pas seulement deux couleurs : sur un écran mal
+ * réglé comme pour un daltonien, la teinte ne suffit pas à dire l'inclusion.
+ * Le texte porte d'ailleurs la même information par sa rature.
+ */
+function Marque({ compris }: { compris: boolean }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cn(
+        "mt-[0.15em] grid h-[1.15rem] w-[1.15rem] shrink-0 place-items-center rounded-full",
+        compris ? "bg-accent/10 text-accent" : "bg-line text-faint",
+      )}
+    >
+      <svg
+        viewBox="0 0 16 16"
+        className="h-2.5 w-2.5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {compris ? <path d="M3 8.5 6.2 12 13 4.5" /> : <path d="M4 4l8 8M12 4l-8 8" />}
+      </svg>
+    </span>
   );
 }

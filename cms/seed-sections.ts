@@ -121,82 +121,72 @@ const SECTIONS: { slug: string; data: Record<string, unknown> }[] = [
     slug: "offers-section",
     data: {
       eyebrow: "Travailler ensemble",
-      titleStart: "Deux façons de",
+      titleStart: "Trois façons de",
       titleAccent: "travailler ensemble.",
-      lead: "Ce qui coûte cher, ce n'est pas le visuel, c'est de le commander. Entre le devis, le bon de commande et la comptabilité, un flyer à 400 € prend plus de temps interne qu'il ne coûte. D'où deux formules, selon que le besoin revienne ou non.",
+      lead: "Ce qui coûte cher, ce n'est pas le visuel, c'est de le commander. Selon que le besoin revienne ou non, on ne s'organise pas de la même façon.",
       offers: [
         {
           name: "One shot",
-          kicker: "Au projet",
-          pitch:
-            "Un besoin, un devis, une livraison sous deux semaines. Vous validez avant que je commence, et le prix ne bouge plus ensuite.",
-          terms: "Sur devis, à prix ferme",
-          forWho:
-            "Les structures sans équipe communication, et celles dont les besoins visuels restent occasionnels.",
-          highlight: false,
+          anchor: "1 projet",
+          anchorNote: "livré en deux semaines",
+          pitch: "Un besoin isolé, sans suite prévue. Un salon, une identité, un site.",
           ctaLabel: "Chiffrer un besoin",
-          items: [
-            {
-              lead: "Un premier échange",
-              text: "avec vous, et avec l'ingénieur ou le chercheur dont vous voulez parler.",
-            },
-            { lead: "Deux allers-retours inclus", text: "dans chaque prestation." },
-            { lead: "Les fichiers sources livrés,", text: "aux formats qui servent." },
-            { lead: "Le conseil compris dans le prix,", text: "jamais facturé à part." },
-            { lead: "Une livraison sous deux semaines,", text: "annoncée au devis." },
-            {
-              lead: "Déduite de Partner",
-              text: "si vous passez à l'année dans les trois mois.",
-            },
-          ],
+          highlight: false,
         },
         {
           name: "Partner",
-          kicker: "Sur l'année",
-          badge: "Quatre places",
+          badge: "Recommandée",
+          anchor: "12 mois",
+          anchorNote: "quatre places par an",
           pitch:
-            "Un budget défini une fois, une seule commande, et vous piochez dedans toute l'année. Vous n'achetez plus un visuel : vous achetez le fait de ne plus avoir à en acheter un par un.",
-          terms: "Budget annuel, grille figée douze mois",
-          forWho:
-            "Les équipes communication dont les besoins reviennent, et qui veulent éditer le moins de commandes possible.",
+            "Des besoins qui reviennent. Un budget, une seule commande, et vous piochez dedans toute l'année.",
+          ctaLabel: "Voir si Partner convient",
           highlight: true,
-          ctaLabel: "Voir si Partner vous convient",
-          items: [
-            {
-              lead: "Une seule commande pour l'année,",
-              text: "payée au fur et à mesure des prestations.",
-            },
-            {
-              lead: "Une grille figée douze mois,",
-              text: "de 10 à 20 % sous mes tarifs habituels.",
-            },
-            {
-              lead: "Tous les leviers dans la même commande :",
-              text: "print de salon, schémas scientifiques, newsletters, identité, sites, photo et vidéo.",
-            },
-            {
-              lead: "Un seul interlocuteur,",
-              text: "y compris quand je mobilise imprimeurs, photographes ou développeurs.",
-            },
-            {
-              lead: "Le conseil inclus :",
-              text: "où mettre l'effort, comment faire mieux avec moins.",
-            },
-            {
-              lead: "Les délais tenus ou compensés :",
-              text: "10 % de remise par jour ouvré de retard.",
-            },
-            {
-              lead: "L'automatisation de vos supports,",
-              text: "par des outils sur mesure, quand une tâche revient assez souvent pour valoir mieux que moi.",
-            },
-            {
-              lead: "Une seule clause :",
-              text: "consommer 60 % de la commande sur l'année. Le reste ne vous est pas facturé.",
-            },
-          ],
+        },
+        {
+          name: "Custom",
+          anchor: "Sur mesure",
+          anchorNote: "périmètre défini ensemble",
+          pitch:
+            "Un projet qui n'entre dans aucune case. Un outil métier, un dispositif de salon complet, une production vidéo.",
+          ctaLabel: "En parler",
+          highlight: false,
         },
       ],
+      /*
+       * Les quatre premiers critères sont communs aux trois colonnes, et c'est
+       * volontaire : le lecteur voit d'abord ce qu'il obtient dans tous les cas,
+       * avant ce qui distingue. Ouvrir sur les différences ferait de la première
+       * colonne une version amputée des autres.
+       */
+      features: [
+        {
+          label: "Un interlocuteur unique, du premier appel à la livraison",
+          in1: true,
+          in2: true,
+          in3: true,
+        },
+        { label: "Un devis à prix ferme avant de commencer", in1: true, in2: true, in3: true },
+        { label: "Les fichiers sources livrés, aux formats qui servent", in1: true, in2: true, in3: true },
+        { label: "Le conseil compris dans le prix", in1: true, in2: true, in3: true },
+        { label: "Une seule commande pour toute l'année", in1: false, in2: true, in3: false },
+        {
+          label: "Une grille tarifaire figée, de 10 à 20 % moins chère",
+          in1: false,
+          in2: true,
+          in3: false,
+        },
+        { label: "Les délais tenus, ou remisés en cas de retard", in1: false, in2: true, in3: true },
+        {
+          label: "L'automatisation de vos supports récurrents",
+          in1: false,
+          in2: true,
+          in3: true,
+        },
+        { label: "Un devis construit hors grille, au cas par cas", in1: false, in2: false, in3: true },
+      ],
+      footnote:
+        "Pas sûr de savoir laquelle est la vôtre ? Trente minutes suffisent à trancher, et je vous le dirai même si c'est la moins chère des trois.",
     },
   },
   {

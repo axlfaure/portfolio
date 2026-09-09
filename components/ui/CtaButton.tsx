@@ -9,10 +9,17 @@ import { Dot } from "./Dot";
 type Props = {
   /**
    * "full" = pilule avec portrait et deux lignes. "compact" = texte seul (nav).
-   * "link" = lien souligné, pour une action secondaire présentée à côté d'une
-   * principale : deux pilules identiques côte à côte ne désignent rien.
+   * "link" = lien souligné, pour une action secondaire isolée.
+   * "solid" et "outline" = les deux poids d'un comparatif. Les colonnes non
+   * recommandées gardent un vrai bouton plutôt qu'un lien, sans quoi deux
+   * offres parfaitement valables passeraient pour des seconds choix ; la
+   * hiérarchie se joue entre le plein et le contour.
+   *
+   * Ces deux-là portent une flèche et non la pastille de disponibilité : dans
+   * une colonne de comparatif, un point vert se lit comme une marque de plus
+   * dans la liste juste au-dessous, ce qu'il n'est pas.
    */
-  variant?: "full" | "compact" | "link";
+  variant?: "full" | "compact" | "link" | "solid" | "outline";
   /** Portrait d'Axel, injecté depuis un composant serveur. */
   avatar?: ReactNode;
   /** Libellé de la variante compacte. Le défaut convient partout ailleurs. */
@@ -33,6 +40,38 @@ export function CtaButton({
   const base =
     "cta group inline-flex items-center rounded-full border border-line bg-surface " +
     "shadow-e1 hover:border-line-2 hover:shadow-e2";
+
+  if (variant === "solid" || variant === "outline") {
+    return (
+      <button
+        type="button"
+        onClick={openCalendly}
+        className={cn(
+          "group inline-flex h-11 items-center justify-center gap-2.5 rounded-full",
+          "px-5 text-[0.875rem] font-semibold shadow-e1",
+          "transition-[background-color,border-color,box-shadow] duration-200 hover:shadow-e2",
+          variant === "solid"
+            ? "bg-ink text-white hover:bg-ink-2"
+            : "border border-line bg-surface text-ink hover:border-line-2",
+          className,
+        )}
+      >
+        {label}
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 16 16"
+          className="h-3.5 w-3.5 transition-transform duration-200 ease-site group-hover:translate-x-0.5"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.75"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M3 8h10M9 4l4 4-4 4" />
+        </svg>
+      </button>
+    );
+  }
 
   if (variant === "link") {
     return (
