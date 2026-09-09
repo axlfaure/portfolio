@@ -26,10 +26,10 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
   return {
     title: `${project.title} · ${project.client}`,
-    description: project.teaser || `${project.client} — ${project.title}.`,
+    description: project.teaser || `${project.client} : ${project.title}.`,
     openGraph: {
       title: `${project.title} · ${project.client}`,
-      description: project.teaser || `${project.client} — ${project.title}.`,
+      description: project.teaser || `${project.client} : ${project.title}.`,
       type: "article",
     },
   };
@@ -81,7 +81,7 @@ export default async function ProjetPage({ params }: Params) {
         <Media
           data-reveal
           src={project.cover}
-          alt={`${project.client} — ${project.title}`}
+          alt={`${project.client}, ${project.title}`}
           ratio="16 / 10"
           sizes="(min-width: 70rem) 66rem, 92vw"
           priority
@@ -133,7 +133,7 @@ export default async function ProjetPage({ params }: Params) {
               <Media
                 key={src}
                 src={src}
-                alt={`${project.title} — visuel ${i + 1}`}
+                alt={`${project.title}, visuel ${i + 1}`}
                 ratio="4 / 3"
                 sizes="(min-width: 40rem) 33rem, 92vw"
                 className={`rounded-card ${

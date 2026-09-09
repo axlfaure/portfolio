@@ -66,28 +66,31 @@ export const OffersSection: GlobalConfig = {
           ],
         },
         {
-          name: "origin",
-          type: "text",
-          label: "Origine du nom",
-          admin: {
-            description:
-              "Une ligne en italique sous le nom. C'est ce qui rend un nom de code lisible sans qu'on ait à l'expliquer en réunion.",
-          },
-        },
-        {
           name: "pitch",
           type: "textarea",
           required: true,
-          label: "Présentation",
-          admin: { description: "Trois à cinq phrases. Le problème avant la solution." },
-        },
-        {
-          name: "punch",
-          type: "text",
-          label: "Phrase de chute",
+          label: "Promesse",
           admin: {
             description:
-              "Facultative, affichée en gras sous la présentation. Une seule phrase, celle qu'on doit retenir.",
+              "Deux phrases, pas plus. Les deux offres se lisent côte à côte : une promesse deux fois plus longue que l'autre décale toute la carte et rend la comparaison impossible.",
+          },
+        },
+        {
+          name: "terms",
+          type: "text",
+          label: "Repère d'engagement",
+          admin: {
+            description:
+              "La pastille sous la promesse. Ce qu'on achète, en quatre mots : « Sur devis, à prix ferme », « Budget annuel, grille figée douze mois ».",
+          },
+        },
+        {
+          name: "forWho",
+          type: "textarea",
+          label: "Pour qui",
+          admin: {
+            description:
+              "Encadré, à mi-carte. C'est la ligne qui fait le travail : devant deux offres, la seule question du lecteur est de savoir laquelle est la sienne.",
           },
         },
         {
@@ -96,7 +99,7 @@ export const OffersSection: GlobalConfig = {
           label: "Mettre en avant",
           admin: {
             description:
-              "Pose la carte sur fond blanc avec une ombre. À ne cocher que sur une seule des deux : deux cartes mises en avant, c'est aucune.",
+              "Pose la carte sur fond blanc avec une ombre et un filet d'accent. À ne cocher que sur une seule des deux : deux cartes mises en avant, c'est aucune.",
           },
         },
         {

@@ -123,50 +123,51 @@ const SECTIONS: { slug: string; data: Record<string, unknown> }[] = [
       eyebrow: "Travailler ensemble",
       titleStart: "Deux façons de",
       titleAccent: "travailler ensemble.",
-      lead: "L'une pour un besoin isolé, l'autre pour arrêter de les commander un par un. Dans les deux cas, un seul interlocuteur, du premier appel avec votre ingénieur jusqu'à la livraison dans vos locaux.",
+      lead: "Ce qui coûte cher, ce n'est pas le visuel, c'est de le commander. Entre le devis, le bon de commande et la comptabilité, un flyer à 400 € prend plus de temps interne qu'il ne coûte. D'où deux formules, selon que le besoin revienne ou non.",
       offers: [
         {
-          name: "Substrat",
+          name: "One shot",
           kicker: "Au projet",
-          origin: "La base sur laquelle tout le reste pousse.",
           pitch:
-            "Vous avez un salon dans six semaines, une identité à refaire, des posts LinkedIn à prévoir, le programme de votre séminaire. On en parle, je chiffre la demande, vous validez, et je livre sous deux semaines. Rien de plus.",
-          punch: "La bonne formule quand le besoin est isolé, et peu récurrent.",
+            "Un besoin, un devis, une livraison sous deux semaines. Vous validez avant que je commence, et le prix ne bouge plus ensuite.",
+          terms: "Sur devis, à prix ferme",
+          forWho:
+            "Les structures sans équipe communication, et celles dont les besoins visuels restent occasionnels.",
           highlight: false,
-          ctaLabel: "Parlons de votre besoin",
+          ctaLabel: "Chiffrer un besoin",
           items: [
             {
               lead: "Un premier échange",
-              text: "avec vous, et avec le chercheur ou l'ingénieur dont vous voulez parler.",
+              text: "avec vous, et avec l'ingénieur ou le chercheur dont vous voulez parler.",
             },
-            { lead: "Un devis avant de commencer,", text: "à prix ferme." },
             { lead: "Deux allers-retours inclus", text: "dans chaque prestation." },
             { lead: "Les fichiers sources livrés,", text: "aux formats qui servent." },
             { lead: "Le conseil compris dans le prix,", text: "jamais facturé à part." },
+            { lead: "Une livraison sous deux semaines,", text: "annoncée au devis." },
             {
-              lead: "Déduite de Circuit",
+              lead: "Déduite de Partner",
               text: "si vous passez à l'année dans les trois mois.",
             },
           ],
         },
         {
-          name: "Circuit",
+          name: "Partner",
           kicker: "Sur l'année",
-          badge: "Quatre places par an",
-          origin: "Un assemblage fini, qui tourne toute l'année.",
+          badge: "Quatre places",
           pitch:
-            "Ce qui vous coûte cher, ce n'est pas le visuel, c'est d'éditer plusieurs commandes, avec plusieurs prestataires, à des tarifs différents. Entre les devis, les bons de commande et la comptabilité, un flyer à 400 € vous prend plus de temps interne qu'il ne coûte. Alors on inverse : on définit un budget une fois, on passe une seule commande, et vous piochez dedans toute l'année.",
-          punch:
-            "Vous n'achetez plus un visuel : vous achetez le fait de ne plus avoir à en acheter un par un.",
+            "Un budget défini une fois, une seule commande, et vous piochez dedans toute l'année. Vous n'achetez plus un visuel : vous achetez le fait de ne plus avoir à en acheter un par un.",
+          terms: "Budget annuel, grille figée douze mois",
+          forWho:
+            "Les équipes communication dont les besoins reviennent, et qui veulent éditer le moins de commandes possible.",
           highlight: true,
-          ctaLabel: "Voir si Circuit vous convient",
+          ctaLabel: "Voir si Partner vous convient",
           items: [
             {
               lead: "Une seule commande pour l'année,",
-              text: "définie ensemble et payée au fur et à mesure des prestations.",
+              text: "payée au fur et à mesure des prestations.",
             },
             {
-              lead: "Une grille tarifaire figée sur douze mois,",
+              lead: "Une grille figée douze mois,",
               text: "de 10 à 20 % sous mes tarifs habituels.",
             },
             {
@@ -179,7 +180,7 @@ const SECTIONS: { slug: string; data: Record<string, unknown> }[] = [
             },
             {
               lead: "Le conseil inclus :",
-              text: "où mettre l'effort, comment articuler un salon, comment faire mieux avec moins.",
+              text: "où mettre l'effort, comment faire mieux avec moins.",
             },
             {
               lead: "Les délais tenus ou compensés :",

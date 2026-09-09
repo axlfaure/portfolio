@@ -47,7 +47,7 @@ async function main() {
   const fake = testimonials.filter(
     (t) => /pr[ée]nom|nom|structure|lorem/i.test(`${t.name} ${t.org}`),
   );
-  line("nom ou structure factice", fake.map((t) => `${t.slug} — « ${t.name} · ${t.org} »`));
+  line("nom ou structure factice", fake.map((t) => `${t.slug} : « ${t.name} · ${t.org} »`));
   line("sans photo", testimonials.filter((t) => !t.avatar).map((t) => t.slug));
 
   console.log("\n=== ARTICLES ===");

@@ -7,8 +7,12 @@ import { availability } from "@/lib/site";
 import { Dot } from "./Dot";
 
 type Props = {
-  /** "full" = pilule avec portrait et deux lignes. "compact" = texte seul (nav). */
-  variant?: "full" | "compact";
+  /**
+   * "full" = pilule avec portrait et deux lignes. "compact" = texte seul (nav).
+   * "link" = lien souligné, pour une action secondaire présentée à côté d'une
+   * principale : deux pilules identiques côte à côte ne désignent rien.
+   */
+  variant?: "full" | "compact" | "link";
   /** Portrait d'Axel, injecté depuis un composant serveur. */
   avatar?: ReactNode;
   /** Libellé de la variante compacte. Le défaut convient partout ailleurs. */
@@ -29,6 +33,37 @@ export function CtaButton({
   const base =
     "cta group inline-flex items-center rounded-full border border-line bg-surface " +
     "shadow-e1 hover:border-line-2 hover:shadow-e2";
+
+  if (variant === "link") {
+    return (
+      <button
+        type="button"
+        onClick={openCalendly}
+        /* py-3 et non py-1 : le lien reste une cible tactile, et 44 px est le
+           minimum sous lequel un doigt manque sa cible une fois sur trois. */
+        className={cn(
+          "group inline-flex items-center gap-2 py-3 text-[0.9rem] font-semibold text-ink",
+          "underline decoration-line-2 decoration-1 underline-offset-[6px]",
+          "transition-colors duration-200 hover:decoration-ink",
+          className,
+        )}
+      >
+        {label}
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 16 16"
+          className="h-3.5 w-3.5 transition-transform duration-200 ease-site group-hover:translate-x-0.5"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.75"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M3 8h10M9 4l4 4-4 4" />
+        </svg>
+      </button>
+    );
+  }
 
   if (variant === "compact") {
     return (

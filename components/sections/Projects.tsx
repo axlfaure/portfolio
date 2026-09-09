@@ -136,7 +136,7 @@ export async function Projects() {
                       ) : (
                         <Media
                           src={project.cover}
-                          alt={`${project.client} — ${project.title}`}
+                          alt={`${project.client}, ${project.title}`}
                           ratio="4 / 3"
                           sizes="(min-width: 56rem) 32rem, 80vw"
                           className="rounded-[12px]"

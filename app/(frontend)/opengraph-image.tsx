@@ -16,7 +16,7 @@ import { site } from "@/lib/site";
  * Elle se remplace par un `opengraph-image.jpg` de 1200 × 630 posé dans ce
  * dossier, à condition de supprimer ce fichier : les deux se cumuleraient.
  */
-export const alt = `${site.name} — ${site.baseline}`;
+export const alt = `${site.name}, ${site.baseline}`;
 export const size = TAILLE_OG;
 export const contentType = "image/png";
 

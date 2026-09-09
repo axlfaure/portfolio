@@ -23,7 +23,7 @@ export async function Nav() {
           droite glissait alors dans la colonne du milieu, ce qui plaçait le
           burger juste après le logo au lieu du bord droit. */}
       <div className="container-site flex h-20 items-center justify-between gap-6">
-        <Link href="/" aria-label={`${site.name} — accueil`}>
+        <Link href="/" aria-label={`${site.name}, accueil`}>
           <Logo />
         </Link>
 

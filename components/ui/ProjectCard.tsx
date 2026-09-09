@@ -32,7 +32,7 @@ export function ProjectCard({
       <div className="relative overflow-hidden rounded-project bg-sunk">
         <Media
           src={project.cover}
-          alt={`${project.client} — ${project.title}`}
+          alt={`${project.client}, ${project.title}`}
           ratio="4 / 3"
           sizes="(min-width: 64rem) 21rem, (min-width: 40rem) 45vw, 92vw"
           className="transition-transform duration-[620ms] ease-expo group-hover:scale-[1.04]"

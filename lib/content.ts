@@ -650,9 +650,11 @@ export type Offer = {
   name: string;
   kicker: string;
   badge: string;
-  origin: string;
   pitch: string;
-  punch: string;
+  /** Ce qu'on achète, en quatre mots. Affiché en pastille. */
+  terms: string;
+  /** À qui l'offre s'adresse. La ligne qui permet de se reconnaître. */
+  forWho: string;
   highlight: boolean;
   items: { lead: string; text: string }[];
   ctaLabel: string;
@@ -678,9 +680,9 @@ export const getOffersSection = cache(
         name: offre.name,
         kicker: offre.kicker,
         badge: offre.badge ?? "",
-        origin: offre.origin ?? "",
         pitch: offre.pitch,
-        punch: offre.punch ?? "",
+        terms: offre.terms ?? "",
+        forWho: offre.forWho ?? "",
         highlight: Boolean(offre.highlight),
         items: (offre.items ?? []).map((ligne) => ({
           lead: ligne.lead,
