@@ -75,7 +75,7 @@ export async function Offers() {
         >
           <Link
             href="/offres"
-            className="group inline-flex items-center gap-2 text-[0.9rem] font-semibold text-ink underline decoration-line-2 decoration-1 underline-offset-[6px] transition-colors duration-200 hover:decoration-ink"
+            className="group inline-flex items-center gap-2 py-3 text-[0.9rem] font-semibold text-ink underline decoration-line-2 decoration-1 underline-offset-[6px] transition-colors duration-200 hover:decoration-ink"
           >
             Voir le comparatif détaillé
             <svg
@@ -142,7 +142,11 @@ function Colonne({
       )}
     >
       <header>
-        <div className="flex items-start justify-between gap-3">
+        {/* Pictogramme et pastille côte à côte. Renvoyée au bord droit par un
+            justify-between, la pastille se retrouvait à cent onze pixels de
+            l'icône, isolée dans le vide, et ne se lisait plus comme une
+            qualification de l'offre. */}
+        <div className="flex items-center gap-3">
           <span
             className={cn(
               "grid h-11 w-11 shrink-0 place-items-center rounded-[14px]",

@@ -23,7 +23,14 @@ export async function Nav() {
           droite glissait alors dans la colonne du milieu, ce qui plaçait le
           burger juste après le logo au lieu du bord droit. */}
       <div className="container-site flex h-20 items-center justify-between gap-6">
-        <Link href="/" aria-label={`${site.name}, accueil`}>
+        {/* Le remplissage vertical est annulé par une marge négative : la
+            cible passe de vingt-huit à quarante-quatre pixels sans que la
+            hauteur de la barre bouge d'un pixel. */}
+        <Link
+          href="/"
+          aria-label={`${site.name}, accueil`}
+          className="-my-2 inline-flex items-center py-2"
+        >
           <Logo />
         </Link>
 

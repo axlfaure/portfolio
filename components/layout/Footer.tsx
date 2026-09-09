@@ -55,10 +55,18 @@ export function Footer() {
           {columns.map((column) => (
             <nav key={column.title} aria-label={column.title}>
               <p className="eyebrow">{column.title}</p>
-              <ul className="mt-4 space-y-0.5">
+              {/* Pas d'espacement entre les éléments : c'est le remplissage
+                  des liens qui l'assure, et il doit rester à l'intérieur de la
+                  zone cliquable. Un écart posé entre eux fabriquerait des
+                  bandes mortes entre deux cibles. */}
+              <ul className="mt-4">
                 {column.links.map((link) => {
+                  // py-3 et non py-1.5 : à trente-cinq pixels de haut, ces
+                  // liens passaient sous la cible tactile minimale de
+                  // quarante-quatre, et ils sont côte à côte verticalement,
+                  // c'est-à-dire dans la configuration où l'on se trompe.
                   const classes =
-                    "inline-block py-1.5 text-[0.9rem] text-muted transition-colors duration-200 hover:text-accent-deep";
+                    "inline-block py-3 text-[0.9rem] text-muted transition-colors duration-200 hover:text-accent-deep";
 
                   // Un lien sortant ne passe pas par le routeur : Link
                   // préchargerait une route qui n'existe pas ici, et le

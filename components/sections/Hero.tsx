@@ -143,7 +143,7 @@ function SocialProof({
   return (
     <Link
       href="#avis"
-      className="group flex flex-wrap items-center justify-center gap-x-5 gap-y-3"
+      className="group flex flex-wrap items-center justify-center gap-x-4 gap-y-3"
     >
       <span className="flex items-center">
         {faces.map((src, i) => (
@@ -159,7 +159,11 @@ function SocialProof({
             }
             className={cn(
               "face-in relative -ml-2.5 first:ml-0",
-              i >= 4 && "hidden sm:inline-block",
+              // Trois portraits au téléphone et non quatre : avec les étoiles,
+              // la rangée occupait deux cent soixante-dix-neuf pixels sur trois
+              // cent trente, et cette masse de quarante pixels de haut écrasait
+              // la ligne de texte de douze qui la suit.
+              i >= 3 && "hidden sm:inline-block",
             )}
           >
             <span className="face">

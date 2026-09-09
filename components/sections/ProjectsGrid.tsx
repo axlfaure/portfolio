@@ -66,7 +66,10 @@ export function ProjectsGrid({
               aria-pressed={current}
               onClick={() => setActive(name)}
               className={cn(
-                "rounded-full border px-4 py-2 text-[0.85rem] font-medium transition-[background-color,border-color,color] duration-200",
+                // py-2.5 et non py-2 : à quarante pixels de haut, ces pastilles
+                // passaient sous la cible tactile minimale, et elles sont
+                // serrées les unes contre les autres sur une seule ligne.
+                "rounded-full border px-4 py-2.5 text-[0.85rem] font-medium transition-[background-color,border-color,color] duration-200",
                 current
                   ? "border-ink bg-ink text-white"
                   : "border-line bg-surface text-muted hover:border-line-2 hover:text-ink",
