@@ -1,7 +1,7 @@
 # Déploiement
 
 Le site tourne sur un hébergement Node.js Infomaniak, à l'adresse
-`portfolio.axelfaure.fr`.
+`axelfaure.fr`.
 
 ## Mode d'emploi
 
@@ -104,7 +104,7 @@ toujours sans qu'on puisse la relire ni la comparer.
 
 | | Qui | Comment | Effet |
 |---|---|---|---|
-| **Contenu** : textes, images, projets, tarifs | Axel seul | `portfolio.axelfaure.fr/admin` | Immédiat |
+| **Contenu** : textes, images, projets, tarifs | Axel seul | `axelfaure.fr/admin` | Immédiat |
 | **Code** : design, sections, comportements | Développement puis déploiement | `npm run sync` puis `build` et `deploy` | Après redémarrage |
 
 Le contenu ne passe jamais par git. La base (`.data/site.db`) et les fichiers
@@ -150,8 +150,13 @@ l'archive par la même connexion que la commande d'installation.
 ## Mettre la base à niveau
 
 ```bash
-cd /srv/customer/sites/portfolio.axelfaure.fr && npm run db:sync
+cd "$DEPLOY_PATH" && npm run db:sync
 ```
+
+Le chemin est celui de `DEPLOY_PATH` dans `.env.deploy`. Attention : chez
+Infomaniak le dossier du site porte le nom du domaine, et un changement de
+domaine principal peut donc le renommer. Vérifier avec `ls /srv/customer/sites`
+avant de supposer.
 
 À lancer sur le serveur, application arrêtée, **quand le déploiement l'a
 demandé**. La commande ajoute les tables et colonnes qu'un champ nouveau

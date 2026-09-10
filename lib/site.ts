@@ -14,16 +14,21 @@ export const site = {
    *
    * Elle ne sert pas qu'à l'affichage : elle fabrique les balises canoniques,
    * le sitemap, le robots.txt, les données structurées et l'adresse absolue de
-   * la vignette de partage. Y mettre le domaine futur plutôt que le domaine
-   * courant a un coût immédiat : chaque page a annoncé à Google que sa version
-   * de référence se trouvait sur axelfaure.fr, où elle renvoie 404 puisque ce
-   * domaine sert encore l'ancien site, et LinkedIn est allé y chercher une
-   * vignette qui n'existait pas.
+   * la vignette de partage. Elle se met donc à jour dans la même séance que la
+   * bascule d'hébergement, jamais avant, jamais après.
    *
-   * À basculer sur "https://axelfaure.fr" le jour où ce domaine servira ce
-   * site, et pas avant.
+   * Les deux sens de l'erreur ont été commis, et coûtent la même chose. En
+   * avance, le site annonçait axelfaure.fr quand il était servi sur
+   * portfolio.axelfaure.fr : Google recevait des canoniques vers du 404 et
+   * LinkedIn cherchait une vignette inexistante. En retard, il a annoncé
+   * portfolio.axelfaure.fr une fois le sous-domaine supprimé du DNS, ce qui
+   * était pire encore : un nom qui ne résout plus, donc un sitemap entier
+   * d'adresses mortes.
+   *
+   * Passée sur "https://axelfaure.fr" le 10 septembre 2026, jour où ce domaine
+   * a commencé à servir ce site.
    */
-  url: "https://portfolio.axelfaure.fr",
+  url: "https://axelfaure.fr",
   email: "axelfaure64@gmail.com",
   instagram: "https://www.instagram.com/axelfauredesign",
   linkedin: "https://www.linkedin.com/in/axel-faure/",
