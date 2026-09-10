@@ -369,12 +369,18 @@
   animation-direction: reverse;
 }
 
-.ticker-col:hover .ticker-col-track,
-.ticker-col:focus-within .ticker-col-track {
-  animation-play-state: paused;
-}
+/* Le ralentissement au SURVOL est piloté par TickerEase, en JavaScript.
+   `animation-play-state` n'est pas animable : elle coupe la bande en une
+   image, et c'est ce coup de frein qu'on sentait. L'API Web Animations, elle,
+   donne accès au `playbackRate` de l'animation CSS et permet de le faire
+   descendre puis remonter sur une courbe.
 
-.ticker:hover .ticker-track,
+   Le FOCUS reste traité ici, et l'arrêt y est volontairement net : qui arrive
+   au clavier sur une bande en mouvement veut l'immobiliser tout de suite pour
+   atteindre un lien, pas la voir ralentir sur une demi-seconde. C'est aussi ce
+   qui garde la pause au clavier sur les appareils sans survol, où TickerEase
+   ne se câble pas. */
+.ticker-col:focus-within .ticker-col-track,
 .ticker:focus-within .ticker-track {
   animation-play-state: paused;
 }

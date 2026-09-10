@@ -22,19 +22,27 @@ export default async function ProjetsPage() {
    * bouton qui ne renvoie rien est pire qu'un bouton absent.
    */
   const services = await getServices();
+  const projets = await getProjects();
+
+  // Les brouillons ne sont pas dans `projets` mais restent cités par les
+  // services : sans ce jeu de références, un service dont tous les projets
+  // sont en brouillon ouvrirait un filtre qui ne renvoie rien.
+  const publies = new Set(projets.map((project) => project.slug));
+
   const parProjet = new Map<string, string[]>();
   for (const service of services) {
     for (const slug of service.projects) {
+      if (!publies.has(slug)) continue;
       parProjet.set(slug, [...(parProjet.get(slug) ?? []), service.title]);
     }
   }
   const familles = services
-    .filter((service) => service.projects.length > 0)
+    .filter((service) => service.projects.some((slug) => publies.has(slug)))
     .map((service) => service.title);
 
   // Les cartes sont rendues ici : elles vérifient sur disque la présence
   // des visuels, ce que la grille cliente ne peut pas faire.
-  const items = (await getProjects()).map((project, i) => ({
+  const items = projets.map((project, i) => ({
     slug: project.slug,
     familles: parProjet.get(project.slug) ?? [],
     card: <ProjectCard project={project} index={i} />,

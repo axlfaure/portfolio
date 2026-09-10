@@ -27,7 +27,7 @@ export const Projects: CollectionConfig = {
   access: { read: () => true },
   admin: {
     useAsTitle: "title",
-    defaultColumns: ["cover", "title", "client", "featured", "order"],
+    defaultColumns: ["cover", "title", "client", "draft", "featured", "order"],
     group: "Contenu",
   },
   hooks: revalidate((doc) => [HOME, "/projets", `/projets/${doc.slug}`]),
@@ -242,6 +242,16 @@ export const Projects: CollectionConfig = {
           ],
         },
       ],
+    },
+    {
+      name: "draft",
+      type: "checkbox",
+      label: "Brouillon",
+      admin: {
+        position: "sidebar",
+        description:
+          "Coché, le projet disparaît entièrement du site public : bandeau, page Projets, page du projet, plan du site. Il reste modifiable ici, avec tous ses visuels et son récit.",
+      },
     },
     {
       name: "featured",

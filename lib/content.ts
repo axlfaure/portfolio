@@ -216,6 +216,19 @@ function toProject(doc: ProjectDoc): Project {
   };
 }
 
+/**
+ * Les projets publiés, dans l'ordre éditorial.
+ *
+ * Le filtre des brouillons est posé ici et nulle part ailleurs, et c'est ce
+ * qui le rend sûr : tout ce qui affiche un projet passe par cette fonction,
+ * le bandeau de l'accueil, la page Projets, la page d'un projet, le lien vers
+ * le projet suivant, la génération des routes statiques et le plan du site. Un
+ * brouillon n'a donc pas d'URL à découvrir, pas seulement pas de lien.
+ *
+ * Le tri se fait sur les documents et non dans la requête : le champ vaut
+ * `null` sur toutes les fiches créées avant l'ajout du champ, et une clause
+ * `not_equals: true` ne les aurait pas retenues.
+ */
 export const getProjects = cache(async (): Promise<Project[]> => {
   const payload = await db();
   const { docs } = await payload.find({
@@ -223,7 +236,7 @@ export const getProjects = cache(async (): Promise<Project[]> => {
     sort: "order",
     ...QUERY,
   });
-  return docs.map(toProject);
+  return docs.filter((doc) => !doc.draft).map(toProject);
 });
 
 export const getFeaturedProjects = cache(async (): Promise<Project[]> =>

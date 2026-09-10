@@ -4,7 +4,6 @@ import { Stars } from "@/components/ui/Stars";
 import { TickerColumn } from "@/components/ui/TickerColumn";
 import type { Testimonial } from "@/lib/content";
 import { AccentTitle } from "@/components/ui/AccentTitle";
-import { ReviewsCarousel } from "@/components/ui/ReviewsCarousel";
 import { cn } from "@/lib/cn";
 import { getQuotedTestimonials, getReviewsSection } from "@/lib/content";
 
@@ -22,8 +21,8 @@ function Card({
    * 588 px de haut, plus que la fenêtre du mur elle-même, et on ne voyait
    * jamais qu'une carte à la fois. Un cran de moins sur le corps de texte et
    * sur les marges suffit à en faire tenir deux, ce qui est le minimum pour
-   * qu'un mur ressemble à un mur. Le carrousel du téléphone, lui, garde la
-   * taille pleine : il n'a qu'une carte à montrer.
+   * qu'un mur ressemble à un mur. La pile du téléphone, elle, garde la taille
+   * pleine : rien ne l'oblige à tenir dans une hauteur donnée.
    */
   compact?: boolean;
 }) {
@@ -171,14 +170,29 @@ export async function Reviews() {
         />
       </div>
 
-      {/* Sous 48rem, un carrousel : deux bandes qui glissent en sens inverse
-          dans une fenêtre de 300 px ne se lisent ni l'une ni l'autre. */}
-      <div className="container-site mt-12 md:hidden">
-        <ReviewsCarousel
-          items={testimonials.map((t) => (
-            <Card key={t.slug} testimonial={t} className="w-full" />
-          ))}
-        />
+      {/*
+       * Sous 48rem, la pile, et rien d'autre.
+       *
+       * Il y avait là un carrousel à aimantation, avance automatique et
+       * hauteur asservie à la carte affichée. Chacune de ces trois choses
+       * était défendable, les trois ensemble se battaient : les avis vont de
+       * 143 à 606 signes, donc du simple au quadruple en hauteur, et
+       * redimensionner le conteneur pendant que le doigt le fait défiler
+       * perturbe l'aimantation du navigateur. La piste s'immobilisait entre
+       * deux cartes, et le geste horizontal se transformait en un défilement
+       * vertical erratique.
+       *
+       * Une pile n'a aucun de ces problèmes, et pas seulement parce qu'elle
+       * est plus simple : chaque carte prend la hauteur de sa citation, ce qui
+       * est exactement ce que le mur fait sur grand écran. Le téléphone lit
+       * donc la même chose, dans une colonne au lieu de trois. Il n'y a plus
+       * ni avance automatique, ni piste à faire glisser, ni hauteur à animer,
+       * ni JavaScript.
+       */}
+      <div className="container-site mt-12 space-y-4 md:hidden">
+        {testimonials.map((t) => (
+          <Card key={t.slug} testimonial={t} className="w-full" />
+        ))}
       </div>
 
       <div className="mt-16 lg:mt-24">
