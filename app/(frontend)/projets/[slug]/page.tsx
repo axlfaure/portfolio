@@ -55,13 +55,16 @@ export default async function ProjetPage({ params }: Params) {
         />
 
         {/* 2 — Titre */}
-        <header className="mt-10 border-t border-line pt-8" data-reveal>
+        <header
+          className="mt-10 max-w-[46rem] border-t border-line pt-8 lg:mx-auto"
+          data-reveal
+        >
           <div className="flex items-baseline justify-between gap-6">
             <p className="meta">{project.client}</p>
             {project.year && <p className="meta shrink-0">{project.year}</p>}
           </div>
 
-          <h1 className="h1 mt-5 max-w-[20ch]">{project.title}</h1>
+          <h1 className="h1 mt-5">{project.title}</h1>
 
           {project.teaser && <p className="lead mt-5">{project.teaser}</p>}
 
@@ -89,7 +92,10 @@ export default async function ProjetPage({ params }: Params) {
         />
 
         {/* 4 et 5 — Le contexte / Ce que j'ai fait */}
-        <div className="mt-[clamp(3rem,6vw,4.5rem)]" data-reveal>
+        <div
+          className="mt-[clamp(3rem,6vw,4.5rem)] max-w-[40rem] lg:mx-auto"
+          data-reveal
+        >
           {project.body ? (
             <Mdx source={project.body} />
           ) : (
@@ -150,13 +156,13 @@ export default async function ProjetPage({ params }: Params) {
         {testimonial && (
           <figure
             data-reveal
-            className="mt-[clamp(3rem,6vw,4.5rem)] rounded-card border border-line bg-surface p-8"
+            className="mt-[clamp(3rem,6vw,4.5rem)] max-w-[46rem] rounded-card border border-line bg-surface p-8 lg:mx-auto"
           >
             <Stars rating={testimonial.rating} />
             {/* Un client peut n'avoir laissé qu'une note. On affiche alors ses
                 étoiles et son nom, sans rien inventer entre guillemets. */}
             {testimonial.quote ? (
-              <blockquote className="mt-5 max-w-[42rem] text-[1.1rem] font-semibold leading-snug text-ink">
+              <blockquote className="mt-5 text-[1.1rem] font-semibold leading-snug text-ink">
                 « {testimonial.quote} »
               </blockquote>
             ) : null}

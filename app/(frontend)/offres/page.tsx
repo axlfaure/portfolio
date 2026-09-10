@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ComparatifOffres } from "@/components/sections/ComparatifOffres";
 import { FinalCta } from "@/components/sections/FinalCta";
+import { IntroOffres } from "@/components/sections/IntroOffres";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { getOffersSection } from "@/lib/content";
 
@@ -13,6 +14,7 @@ export const metadata: Metadata = {
 
 export default async function OffresPage() {
   const section = await getOffersSection();
+  const offres = section?.offers ?? [];
 
   return (
     <>
@@ -26,10 +28,15 @@ export default async function OffresPage() {
               <em className="accent hl hl--scroll">ligne par ligne.</em>
             </>
           }
-          lead="Trois façons de travailler ensemble. Ce tableau dit exactement ce que comprend chacune, y compris ce qu'elle ne comprend pas."
+          lead="Trois façons de travailler ensemble, selon la place que la création prend chez vous."
         />
 
-        <ComparatifOffres offres={section?.offers ?? []} />
+        <IntroOffres offres={offres} />
+
+        {/* Le tableau enchaîne sans être annoncé : ses en-têtes de colonnes
+            portent déjà les noms lus juste au-dessus, et une transition
+            rédigée ne faisait que retarder la consultation. */}
+        <ComparatifOffres offres={offres} />
       </div>
 
       <FinalCta />

@@ -34,6 +34,13 @@ export type LigneComparatif = {
 
 export type GroupeComparatif = {
   titre: string;
+  /**
+   * Un groupe de catalogue énumère ce qu'on sait produire, pas ce qu'on
+   * promet. La distinction ne sert qu'ici : le socle commun affiché en
+   * introduction ne doit contenir que des engagements. Sans elle, « site web
+   * et interfaces » se retrouverait présenté comme une garantie.
+   */
+  catalogue?: boolean;
   lignes: LigneComparatif[];
 };
 
@@ -111,6 +118,7 @@ export const COMPARATIF: GroupeComparatif[] = [
   },
   {
     titre: "Ce qu'on peut produire",
+    catalogue: true,
     lignes: [
       {
         label: "Print : kakémonos, affiches, brochures, posters",
@@ -135,3 +143,51 @@ export const COMPARATIF: GroupeComparatif[] = [
     ],
   },
 ];
+
+/**
+ * Ce que le lecteur reconnaît avant de lire une grille.
+ *
+ * Une offre ne se choisit pas sur une colonne de cases cochées, elle se
+ * choisit sur une situation. Ces trois phrases arrivent donc avant le
+ * comparatif, et se lisent dans l'ordre inverse d'une grille tarifaire : le
+ * cas d'abord, le nom de l'offre ensuite.
+ *
+ * Même contrat d'ordre que `valeurs` : une entrée par offre, dans l'ordre des
+ * colonnes.
+ */
+export type Situation = {
+  /** L'accroche, à la deuxième personne : c'est elle qu'on se reconnaît. */
+  titre: string;
+  texte: string;
+};
+
+export const SITUATIONS: [Situation, Situation, Situation] = [
+  {
+    titre: "Vous savez déjà ce qu'il vous faut",
+    texte:
+      "Un besoin identifié, avec une date et un budget déjà fléché. Il reste à le faire, proprement, une fois, sans engager la suite.",
+  },
+  {
+    titre: "Vous en commandez plusieurs par an",
+    texte:
+      "Et vous passez plus de temps à monter des commandes qu'à créer. La création est devenue une fonction chez vous, elle n'est plus un achat.",
+  },
+  {
+    titre: "Ça n'entre dans aucune case",
+    texte:
+      "Un outil interne, une ligne pilote, un consortium. Le périmètre se cadre avant de se chiffrer, parce que personne ne sait encore tout ce qu'il contient.",
+  },
+];
+/**
+ * Le socle commun aux trois offres.
+ *
+ * Il n'est pas écrit à la main, il se déduit : ce sont les engagements dont
+ * les trois colonnes valent `true`. Une garantie retirée d'une seule offre
+ * disparaît donc d'elle-même de l'introduction, et il devient impossible que
+ * la page promette en haut ce que le tableau dément en bas.
+ */
+export const SOCLE_COMMUN: LigneComparatif[] = COMPARATIF.filter(
+  (groupe) => !groupe.catalogue,
+)
+  .flatMap((groupe) => groupe.lignes)
+  .filter((ligne) => ligne.valeurs.every((valeur) => valeur === true));

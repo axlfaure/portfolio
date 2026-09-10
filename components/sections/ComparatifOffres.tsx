@@ -33,11 +33,11 @@ export function ComparatifOffres({ offres }: { offres: Offer[] }) {
 
   return (
     <>
-      <div className="mt-14 hidden lg:block" data-reveal>
+      <div className="mt-[clamp(3.5rem,7vw,5rem)] hidden lg:block" data-reveal>
         <Tableau offres={offres} />
       </div>
 
-      <div className="mt-12 lg:hidden" data-reveal>
+      <div className="mt-[clamp(3rem,7vw,4.5rem)] lg:hidden" data-reveal>
         <Blocs offres={offres} />
       </div>
     </>
