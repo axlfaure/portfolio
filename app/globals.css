@@ -369,26 +369,19 @@
   animation-direction: reverse;
 }
 
-/* Le ralentissement au SURVOL est piloté par TickerEase, en JavaScript.
-   `animation-play-state` n'est pas animable : elle coupe la bande en une
-   image, et c'est ce coup de frein qu'on sentait. L'API Web Animations, elle,
-   donne accès au `playbackRate` de l'animation CSS et permet de le faire
-   descendre puis remonter sur une courbe.
-
-   Le FOCUS reste traité ici, et l'arrêt y est volontairement net : qui arrive
-   au clavier sur une bande en mouvement veut l'immobiliser tout de suite pour
-   atteindre un lien, pas la voir ralentir sur une demi-seconde. C'est aussi ce
-   qui garde la pause au clavier sur les appareils sans survol, où TickerEase
-   ne se câble pas. */
-.ticker:focus-within .ticker-track {
-  animation-play-state: paused;
-}
-
-/* Le mur d'avis garde l'arrêt net au survol comme au focus, et TickerEase
-   l'ignore. Trois colonnes serrées, remplies de cartes de hauteurs très
-   inégales : on y traverse une colonne pour en atteindre une autre, et chaque
-   traversée lançait un ralenti puis une reprise. Le ralenti convient à une
-   bande qu'on survole pour la regarder, pas à une grille qu'on parcourt. */
+/* Arrêt net, au survol comme au focus, sur les deux familles de bandes.
+   C'est volontairement binaire, et une tentative d'adoucissement a été
+   retirée : `animation-play-state` n'étant pas animable, il fallait passer par
+   le `playbackRate` de l'API Web Animations, ce qui déplaçait la bande d'un
+   coup à un autre endroit de la section au lieu de la ralentir. La cause
+   probable est connue — affecter `playbackRate` recalcule `currentTime` à
+   partir d'un `startTime` inchangé, là où `updatePlaybackRate` préserve la
+   position — mais elle n'a pas pu être vérifiée : la timeline est gelée dans
+   un document caché, donc dans le panneau de prévisualisation, et le défaut
+   ne s'y reproduit pas. Une bande qui saute est pire qu'une bande qui
+   s'arrête franchement. */
+.ticker:hover .ticker-track,
+.ticker:focus-within .ticker-track,
 .ticker-col:hover .ticker-col-track,
 .ticker-col:focus-within .ticker-col-track {
   animation-play-state: paused;

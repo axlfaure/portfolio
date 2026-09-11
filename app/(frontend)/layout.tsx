@@ -7,7 +7,6 @@ import {
 import { CalendlyModal } from "@/components/layout/CalendlyModal";
 import { Footer } from "@/components/layout/Footer";
 import { RevealObserver } from "@/components/motion/RevealObserver";
-import { TickerEase } from "@/components/motion/TickerEase";
 import { StackFocus } from "@/components/motion/StackFocus";
 import { SmoothScroll } from "@/components/motion/SmoothScroll";
 import { Nav } from "@/components/layout/Nav";
@@ -103,7 +102,6 @@ export default function RootLayout({
         </PageLoader>
         <SmoothScroll />
         <RevealObserver />
-        <TickerEase />
         <StackFocus />
         <Nav />
         <main id="contenu">{children}</main>
