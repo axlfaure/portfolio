@@ -5,8 +5,17 @@ import { useEffect } from "react";
 /** Durée du ralentissement, et de la reprise. */
 const DUREE = 520;
 
-/** Les deux familles de bandes défilantes, horizontale et verticale. */
-const ZONES = ".ticker, .ticker-col";
+/**
+ * Les bandes horizontales seulement.
+ *
+ * Les colonnes verticales du mur d'avis en sont exclues, et gardent leur arrêt
+ * net en CSS. Elles sont trois, côte à côte, remplies de cartes de hauteurs
+ * très inégales, et le ralenti y produisait plus de gêne que de confort : on
+ * traverse une colonne pour en atteindre une autre, et chaque traversée
+ * lançait une rampe. Une bande de logos, elle, est seule et large : on la
+ * survole pour la regarder, pas pour aller ailleurs.
+ */
+const ZONES = ".ticker";
 
 /**
  * Décélération et reprise des bandes défilantes au survol.
