@@ -46,6 +46,43 @@ const nextConfig: NextConfig = {
      */
     globalNotFound: true,
   },
+
+  /**
+   * Cinq adresses de l'ancien site WordPress restaient indexées et
+   * répondaient 404 depuis la refonte, alors qu'elles occupent les
+   * meilleures positions du site hors nom propre, de 4,5 à 7,7. Les
+   * renvoyer rend ces impressions cliquables sans attendre un gain de
+   * position : c'est le seul correctif de référencement dont l'effet ne
+   * dépend pas du temps.
+   *
+   * `/contact` ne figure pas dans la liste. Elle vaut mieux qu'un renvoi :
+   * elle a sa propre page, qui répond 200 et peut se classer.
+   *
+   * `statusCode: 301` plutôt que `permanent: true`, qui émet un 308. Google
+   * traite les deux de la même façon, mais la décision écrite du côté
+   * référencement porte sur un 301, et certains outils d'audit ne
+   * reconnaissent que celui-là.
+   *
+   * Les adresses indexées portent une barre oblique finale. Next la retire
+   * par une première redirection avant de consulter cette liste : le
+   * visiteur passe donc par deux sauts, ce qui ne coûte rien.
+   */
+  async redirects() {
+    return [
+      {
+        source: "/visuels-flyers",
+        destination: "/services/supports-salon-print",
+        statusCode: 301,
+      },
+      {
+        source: "/dev",
+        destination: "/services/site-web-interfaces",
+        statusCode: 301,
+      },
+      { source: "/realisations-2", destination: "/projets", statusCode: 301 },
+      { source: "/1596-2", destination: "/projets", statusCode: 301 },
+    ];
+  },
 };
 
 /**

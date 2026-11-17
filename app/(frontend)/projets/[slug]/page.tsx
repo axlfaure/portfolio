@@ -27,10 +27,12 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   return {
     title: `${project.title} · ${project.client}`,
     description: project.teaser || `${project.client} : ${project.title}.`,
+    alternates: { canonical: `/projets/${project.slug}` },
     openGraph: {
       title: `${project.title} · ${project.client}`,
       description: project.teaser || `${project.client} : ${project.title}.`,
       type: "article",
+      url: `/projets/${project.slug}`,
     },
   };
 }

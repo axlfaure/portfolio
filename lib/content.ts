@@ -44,6 +44,8 @@ export type Kpi = { value: string; label: string };
 
 export type Project = {
   slug: string;
+  /** Horodatage Payload du document, pour le `lastmod` du sitemap. */
+  updatedAt: string;
   client: string;
   title: string;
   teaser: string;
@@ -124,6 +126,8 @@ export type Engagement = { name: string; best: string; points: string[] };
 
 export type Service = {
   slug: string;
+  /** Horodatage Payload du document, pour le `lastmod` du sitemap. */
+  updatedAt: string;
   title: string;
   heading: string;
   short: string;
@@ -152,6 +156,8 @@ export type Service = {
 
 export type Post = {
   slug: string;
+  /** Horodatage Payload du document, pour le `lastmod` du sitemap. */
+  updatedAt: string;
   title: string;
   excerpt: string;
   category: string;
@@ -189,6 +195,7 @@ const QUERY = { limit: 200, depth: 2, overrideAccess: false } as const;
 function toProject(doc: ProjectDoc): Project {
   return {
     slug: doc.slug,
+    updatedAt: doc.updatedAt,
     client: doc.client,
     title: doc.title,
     teaser: doc.teaser ?? "",
@@ -309,6 +316,7 @@ export const getFeaturedTestimonial = cache(
 function toService(doc: ServiceDoc): Service {
   return {
     slug: doc.slug,
+    updatedAt: doc.updatedAt,
     title: doc.title,
     heading: doc.heading,
     short: doc.short,
@@ -371,6 +379,7 @@ export const getServiceProjects = cache(
 function toPost(doc: PostDoc): Post {
   return {
     slug: doc.slug,
+    updatedAt: doc.updatedAt,
     title: doc.title,
     excerpt: doc.excerpt,
     category: doc.category,

@@ -6,7 +6,7 @@ import { getServices } from "@/lib/content";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Services",
+  title: "Graphiste tech et industrie à Grenoble",
   description:
     "Identité visuelle, supports de salon, sites web, automatisation, 3D et photo pour les structures de la recherche, de l'innovation et de l'industrie. Grenoble et Auvergne-Rhône-Alpes.",
   alternates: { canonical: "/services" },

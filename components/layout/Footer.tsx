@@ -29,6 +29,7 @@ const columns: { title: string; links: Lien[] }[] = [
   {
     title: "Contact",
     links: [
+      { href: "/contact", label: "Contact" },
       { href: "/#contact", label: "Prendre rendez-vous" },
       { href: `mailto:${site.email}`, label: site.email },
       { href: "/mentions-legales", label: "Mentions légales" },
