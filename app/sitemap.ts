@@ -20,6 +20,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
    * Les pages fixes n'ont pas de date propre : leur contenu vient du code et
    * des globaux de Payload, et rien n'horodate leur dernière retouche. Elles
    * gardent donc la date du build, la seule honnête à leur sujet.
+   *
+   * `/mentions-legales` n'y figure pas, et c'est volontaire : la page porte
+   * `robots: { index: false }`. Un plan du site est une liste d'adresses dont
+   * on demande l'indexation, et y déclarer une page qu'on interdit d'indexer
+   * est une contradiction, que Search Console remonte en « exclue par une
+   * balise noindex ».
    */
   const fixed = [
     { url: site.url, priority: 1, lastModified: now },
@@ -28,7 +34,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${site.url}/projets`, priority: 0.8, lastModified: now },
     { url: `${site.url}/contact`, priority: 0.8, lastModified: now },
     { url: `${site.url}/blog`, priority: 0.7, lastModified: now },
-    { url: `${site.url}/mentions-legales`, priority: 0.2, lastModified: now },
   ];
 
   /*
