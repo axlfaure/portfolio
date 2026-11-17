@@ -2,6 +2,22 @@ import type { MetadataRoute } from "next";
 import { getPosts, getProjects, getServices } from "@/lib/content";
 import { site } from "@/lib/site";
 
+/**
+ * Revalidation horaire, en filet.
+ *
+ * Ce fichier est un gestionnaire de route particulier, mis en cache par
+ * défaut : sans cette ligne, il est figé à la compilation, et un projet
+ * publié depuis l'administration resterait absent du plan jusqu'au
+ * déploiement suivant.
+ *
+ * Les crochets de publication purgent déjà `/sitemap.xml` à chaque
+ * enregistrement, ce qui est immédiat. Cette heure est la garantie de
+ * dernier recours si cette purge ne portait pas, et elle ne coûte qu'une
+ * poignée de lectures en base : Google ne relit pas un plan du site plus
+ * souvent.
+ */
+export const revalidate = 3600;
+
 /** Plan du site : pages fixes, services, projets et articles. */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();

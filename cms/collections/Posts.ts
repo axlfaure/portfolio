@@ -1,6 +1,6 @@
 import type { CollectionConfig } from "payload";
 import { slugField } from "../fields/slug";
-import { revalidate } from "../hooks/revalidate";
+import { SITEMAP, revalidate } from "../hooks/revalidate";
 
 /** Articles du blog. */
 export const Posts: CollectionConfig = {
@@ -12,7 +12,7 @@ export const Posts: CollectionConfig = {
     defaultColumns: ["cover", "title", "category", "date"],
     group: "Contenu",
   },
-  hooks: revalidate((doc) => ["/blog", `/blog/${doc.slug}`]),
+  hooks: revalidate((doc) => ["/blog", `/blog/${doc.slug}`, SITEMAP]),
   defaultSort: "-date",
   fields: [
     { name: "title", type: "text", required: true, label: "Titre" },

@@ -1,6 +1,6 @@
 import type { CollectionConfig } from "payload";
 import { orderField, slugField } from "../fields/slug";
-import { HOME, revalidate } from "../hooks/revalidate";
+import { HOME, SITEMAP, revalidate } from "../hooks/revalidate";
 
 /** Les six pictogrammes de service dessinés dans `ServiceIcon`. */
 const SERVICE_ICONS = ["identity", "print", "web", "automation", "motion", "photo"] as const;
@@ -33,7 +33,12 @@ export const Services: CollectionConfig = {
     defaultColumns: ["title", "tier", "order"],
     group: "Contenu",
   },
-  hooks: revalidate((doc) => [HOME, "/services", `/services/${doc.slug}`]),
+  hooks: revalidate((doc) => [
+    HOME,
+    "/services",
+    `/services/${doc.slug}`,
+    SITEMAP,
+  ]),
   defaultSort: "order",
   fields: [
     {

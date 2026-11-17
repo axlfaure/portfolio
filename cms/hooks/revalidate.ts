@@ -69,3 +69,17 @@ export function revalidateGlobal(paths: string[]) {
 
 /** Pages qui agrègent du contenu : elles bougent dès qu'un document change. */
 export const HOME = "/";
+
+/**
+ * Le plan du site, qui liste les projets, les services et les articles.
+ *
+ * Il est figé à la compilation comme les pages, mais les crochets ne le
+ * purgeaient pas : un projet publié depuis l'administration entrait bien dans
+ * le site et restait absent du plan jusqu'au déploiement suivant. C'est le
+ * même piège que celui décrit en tête de ce fichier, appliqué au plan du site.
+ *
+ * `app/sitemap.ts` porte en plus une revalidation horaire, qui rattrape le cas
+ * où cette purge ne porterait pas : les deux se complètent, l'une immédiate et
+ * l'autre garantie.
+ */
+export const SITEMAP = "/sitemap.xml";

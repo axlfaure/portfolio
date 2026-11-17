@@ -1,6 +1,6 @@
 import type { CollectionConfig } from "payload";
 import { orderField, slugField } from "../fields/slug";
-import { HOME, revalidate } from "../hooks/revalidate";
+import { HOME, SITEMAP, revalidate } from "../hooks/revalidate";
 
 /**
  * Projets du portfolio.
@@ -30,7 +30,12 @@ export const Projects: CollectionConfig = {
     defaultColumns: ["cover", "title", "client", "draft", "featured", "order"],
     group: "Contenu",
   },
-  hooks: revalidate((doc) => [HOME, "/projets", `/projets/${doc.slug}`]),
+  hooks: revalidate((doc) => [
+    HOME,
+    "/projets",
+    `/projets/${doc.slug}`,
+    SITEMAP,
+  ]),
   defaultSort: "order",
   fields: [
     {
